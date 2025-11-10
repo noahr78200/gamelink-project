@@ -1,0 +1,62 @@
+:root{
+    --text-color: rgb(255, 255, 255);
+    --background-color: radial-gradient(circle at top right, #0f1011 10%, #737689 100%);
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src:url("../FONTS/Roboto-Regular.ttf");
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src:url("../FONTS/Roboto-Bold.ttf");
+    font-weight: 700;
+    font-style: normal;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--background-color);
+    background-attachment: fixed;
+    color: var(--text-color);
+    font-family: 'Roboto', sans-serif;
+}
+
+a{
+    text-decoration: none;
+    color: var(--text-color);
+}
+
+body > header{
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 5rem;
+    width: 100%;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+body > header > * {
+    margin: 1% 2%;
+}
+    
+.Menu {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    font-size: 2rem;
+}
+
+body > header a:last-child img {
+    height: 3.5em;
+    width: auto;
+}

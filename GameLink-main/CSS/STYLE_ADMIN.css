@@ -1,0 +1,492 @@
+/* =========================================================
+   GAME•LINK — Thème "Metal Grey" 
+   Palette : gris acier + métal brossé, focus accessibility,
+   hover subtils, cartes nettes, dashboards lisibles.
+   ========================================================= */
+
+/* -------------------------------
+   Design tokens (gris/métal)
+-------------------------------- */
+:root{
+  /* Fond & panneaux */
+  --bg: #0f1115;
+  --bg-grad1: #11151c;
+  --bg-grad2: #0c0f14;
+
+  --panel:   #1a1e27;     /* carte standard (remplace #807894 trop mauve) */
+  --panel-2: #171b23;     /* carte secondaire / alert / KPI */
+  --panel-3: #141820;     /* variantes sombres */
+
+  /* Traits & texte */
+  --border: #2a3140;      /* trait acier bleuté */
+  --hoverBorder:#3a4559;
+  --footerBorder:#232836;
+
+  --text:#E7E9ED;
+  --muted:#8c95a3;
+  --valueMild:#C0C4CB;
+  --footerText:#9AA0A9;
+  --navText:#E9ECF4;
+  --placeholder:#606774;
+
+  /* Accents & états */
+  --up:#34d399;           /* vert acier */
+  --down:#f87171;         /* rouge acier */
+  --warning:#f59e0b;
+  --accent:#6ea8ff;       /* bleu acier */
+  --accent-2:#9aa6ff;
+
+  /* Charts & textures */
+  --chart1:#202633;       /* fond graph “acier” */
+  --chart2:#2c3444;
+  --chartDash:#3c475a;
+  --line:#525a66;
+  --altRow:#1b2130;
+
+  /* Rayons & gaps */
+  --g:16px;
+  --radius:14px;
+
+  /* Ombres métalliques */
+  --shadow-1: 0 8px 24px rgba(0,0,0,.35);
+  --shadow-2: 0 2px 0 rgba(255,255,255,.03) inset, 0 1px 0 rgba(255,255,255,.02);
+
+  /* Halo discret */
+  --glow: rgba(110,168,255,.12);
+}
+
+/* -------------------------------
+   Reset rapide + corps
+-------------------------------- */
+*{ box-sizing: border-box; }
+html,body{ height:100%; }
+body.admin{
+  margin:0;
+  color:var(--text);
+  background:
+    radial-gradient(1200px 560px at 75% -15%, var(--glow), transparent 60%),
+    linear-gradient(180deg, var(--bg-grad1), var(--bg-grad2));
+  font: 14px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+:focus-visible{
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Garde ta marge principale */
+body > main{
+  margin-top: 6rem;
+  margin-left: 1%;
+  margin-right: 1%;
+  font-size: clamp(14px, .9vw + 12px, 16px);
+}
+
+/* -------------------------------
+   Surface principale
+-------------------------------- */
+.admin-surface{
+  padding: var(--g);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background:
+    radial-gradient(1200px 480px at 12% -20%, var(--glow) 0%, transparent 60%),
+    linear-gradient(180deg, #161b24 0%, #10141b 100%);
+  box-shadow: var(--shadow-1), var(--shadow-2);
+}
+
+/* -------------------------------
+   KPI Row
+-------------------------------- */
+.kpi-row{
+  display:grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: var(--g);
+  margin-bottom: var(--g);
+}
+
+.kpi-card{
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  min-height: 92px;
+  position: relative;
+  overflow: hidden;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.kpi-card::after{
+  /* Fines stries métalliques diagonales très discrètes */
+  content:"";
+  position:absolute; inset:0;
+  background:
+    linear-gradient(120deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,0) 40%),
+    repeating-linear-gradient( 135deg,
+      rgba(255,255,255,.03) 0 2px,
+      rgba(255,255,255,0) 2px 6px
+    );
+  pointer-events:none;
+  mix-blend-mode: overlay;
+}
+.kpi-card:hover{
+  transform: translateY(-2px);
+  border-color: var(--hoverBorder);
+  box-shadow: 0 10px 28px rgba(0,0,0,.4);
+}
+
+.kpi-label{
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.kpi-main{
+  display:flex; align-items: baseline; gap: 10px; margin-top: 6px;
+}
+.kpi-value{
+  font-size: clamp(24px, 2.2vw + 8px, 34px);
+  font-weight: 800; color: var(--text);
+  text-shadow: 0 1px 0 rgba(0,0,0,.4);
+}
+
+.delta{
+  font-size:12px;
+  padding:3px 10px;
+  border-radius:999px;
+  border:1px solid transparent;
+  background: rgba(255,255,255,.03);
+}
+.delta.up{
+  color: var(--up);
+  border-color: rgba(52,211,153,.45);
+  background: rgba(52,211,153,.10);
+}
+.delta.down{
+  color: var(--down);
+  border-color: rgba(248,113,113,.45);
+  background: rgba(248,113,113,.10);
+}
+
+/* -------------------------------
+   Grille principale (charts + side)
+-------------------------------- */
+.admin-grid{
+  display:grid;
+  grid-template-columns: 11fr 16fr 9fr;
+  gap: var(--g);
+  margin-bottom: var(--g);
+}
+
+.stack{
+  display:grid;
+  gap: var(--g);
+  grid-auto-rows: 220px;
+}
+
+/* Cartes génériques */
+.card{
+  background: linear-gradient(180deg, var(--panel), var(--panel-3));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  overflow: hidden;
+  position:relative;
+  box-shadow: var(--shadow-2);
+  transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+.card:hover{
+  border-color: var(--hoverBorder);
+  box-shadow: 0 8px 22px rgba(0,0,0,.35);
+}
+
+.card-title{
+  color: var(--text);
+  font-weight: 700;
+  opacity: .95;
+  font-size: 15px;
+  letter-spacing: .02em;
+  margin-bottom: 10px;
+}
+
+/* Charts : placeholder "métal brossé" */
+.chart.big{ height: 420px; }
+
+.chart-placeholder{
+  height: 100%;
+  border-radius: 10px;
+  border: 1px dashed var(--chartDash);
+  background:
+    /* reflets acier */
+    linear-gradient( 180deg, rgba(255,255,255,.04), rgba(255,255,255,0) ),
+    /* métal brossé */
+    repeating-linear-gradient( -12deg,
+      rgba(255,255,255,.06) 0 1px,
+      rgba(255,255,255,0) 1px 5px
+    ),
+    linear-gradient(135deg, var(--chart1), var(--chart2));
+  position: relative;
+  overflow: hidden;
+}
+.chart-placeholder::after{
+  /* highlight doux qui balaye subtilement (sans animation par défaut) */
+  content:"";
+  position:absolute; inset:-20%;
+  background: radial-gradient(600px 200px at -10% -10%, rgba(255,255,255,.06), transparent 60%);
+  pointer-events:none;
+}
+
+/* -------------------------------
+   Toplist side card
+-------------------------------- */
+.sidecard .toplist{ list-style:none; margin:0; padding:0; }
+.sidecard .toplist li{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:10px 12px;
+  border-radius:10px;
+  transition: background .18s ease, transform .18s ease;
+}
+.sidecard .toplist li:nth-child(odd){ background: var(--altRow); }
+.sidecard .toplist li:hover{
+  transform: translateX(2px);
+  background: linear-gradient(90deg, rgba(110,168,255,.08), transparent 60%);
+}
+.sidecard .toplist span{ color: var(--text); }
+.sidecard .toplist b{ color: var(--valueMild); font-weight:700; }
+
+/* -------------------------------
+   Reports grid + table
+-------------------------------- */
+.reports-grid{
+  display:grid;
+  grid-template-columns: minmax(0,1.8fr) minmax(0,.6fr);
+  gap: var(--g);
+}
+
+.report-table{
+  width:100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  background: linear-gradient(180deg, var(--panel), var(--panel-3));
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.report-table thead th{
+  text-align:left;
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: .08em;
+  padding: 12px 14px;
+  background: linear-gradient(180deg, #1d2330, #181e2a);
+  border-bottom: 1px solid var(--border);
+}
+
+.report-table tbody tr{
+  transition: background .15s ease;
+}
+.report-table tbody tr:hover{
+  background: linear-gradient(90deg, rgba(110,168,255,.05), transparent 50%);
+}
+.report-table tbody td{
+  padding: 12px 14px;
+  border-top: 1px solid var(--border);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.avatar{
+  display:inline-block; width:24px; height:24px; border-radius:50%;
+  margin-right:8px; vertical-align: middle;
+  background:
+    radial-gradient(circle at 30% 30%, #aab1bb, #6b7280);
+  box-shadow: inset 0 1px 2px rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.06);
+}
+
+/* -------------------------------
+   Alert card
+-------------------------------- */
+.alert-card{
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
+  background: linear-gradient(180deg, var(--panel-2), var(--panel-3));
+  border: 1px solid var(--border);
+}
+.alert-icon{ font-size: 54px; filter: drop-shadow(0 2px 6px rgba(0,0,0,.4)); }
+.alert-text{ color: var(--text); text-align: center; font-weight: 600; }
+
+/* -------------------------------
+   Footer (si utilisé)
+-------------------------------- */
+.footer{
+  color: var(--footerText);
+  padding:16px 24px;
+  border-top:1px solid var(--footerBorder);
+  margin-top: 32px;
+  background: #0e1218;
+  border-radius: 0 0 12px 12px;
+}
+
+/* -------------------------------
+   Images header optionnelles
+-------------------------------- */
+.logo{ height: 28px; width:auto; display:block; }
+.avatar-btn{ height: 28px; width:auto; display:block; opacity:.9; }
+.avatar-btn:hover{ opacity:1; }
+
+/* -------------------------------
+   Motion preferences
+-------------------------------- */
+@media (prefers-reduced-motion: no-preference){
+  .chart-placeholder::after{
+    animation: sweep 4.5s ease-in-out infinite;
+  }
+  @keyframes sweep{
+    0%{ transform: translateX(-20%) translateY(-10%); opacity:.6; }
+    60%{ transform: translateX(10%) translateY(0%); opacity:.15; }
+    100%{ transform: translateX(40%) translateY(10%); opacity:0; }
+  }
+}
+
+/* -------------------------------
+   Responsive
+-------------------------------- */
+@media (max-width: 1200px){
+  .admin-grid{ grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+  .sidecard{ order:3; }
+  .chart.big{ order:2; height: 340px; }
+}
+@media (max-width: 800px){
+  .kpi-row, .admin-grid, .reports-grid{ grid-template-columns: 1fr; }
+  .chart.big{ height: 260px; }
+}
+
+/* ===== Modal central (verre / métal clair) ===== */
+.modal-overlay{
+  position: fixed; inset: 0; z-index: 999;
+  display: grid; place-items: center;
+  background: rgba(10, 12, 16, .45);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 0; pointer-events: none;
+  transition: opacity .18s ease;
+}
+.modal-overlay.open{ opacity: 1; pointer-events: auto; }
+
+.modal-card{
+  width: min(780px, 92vw);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06)),
+    var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.45), 0 1px 0 rgba(255,255,255,.10) inset;
+  color: var(--text);
+  overflow: hidden;
+  transform: translateY(10px) scale(.98);
+  transition: transform .18s ease, opacity .18s ease;
+}
+.modal-overlay.open .modal-card{ transform: translateY(0) scale(1); }
+
+.modal-header, .modal-footer{
+  padding: 14px 16px;
+  background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.08));
+  border-bottom: 1px solid var(--border);
+}
+.modal-footer{
+  border-top: 1px solid var(--border);
+  border-bottom: none;
+  display: flex; gap: 10px; align-items: center; justify-content: space-between;
+}
+
+.modal-header h3{ margin: 0; font-size: 18px; letter-spacing: .02em; }
+.modal-close{
+  appearance: none; border: 0; background: transparent;
+  color: var(--text); font-size: 26px; line-height: 1;
+  padding: 0 6px; cursor: pointer; opacity: .85;
+}
+.modal-close:hover{ opacity: 1; }
+
+.modal-body{ padding: 16px; }
+
+.modal-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 680px){ .modal-grid{ grid-template-columns: 1fr; } }
+
+.modal-block{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06)),
+    var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+}
+.modal-label{
+  color: var(--muted);
+  font: 700 12px/1 'Roboto', system-ui, sans-serif;
+  letter-spacing: .06em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.modal-value{
+  font: 500 15px/1.5 'Roboto', system-ui, sans-serif;
+  color: var(--text);
+  word-break: break-word;
+}
+.modal-value.mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+
+.badge{
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font: 700 11px/1 'Roboto', system-ui, sans-serif;
+  letter-spacing: .04em;
+}
+.badge-ok{ color: #aee7c9; border-color: rgba(174,231,201,.45); background: rgba(174,231,201,.10); }
+.badge-warn{ color: #ffd27e; border-color: rgba(255,210,126,.45); background: rgba(255,210,126,.12); }
+.badge-bad{ color: #ff9b9b; border-color: rgba(255,155,155,.45); background: rgba(255,155,155,.12); }
+
+/* Boutons de la modale */
+.btn{
+  border: 1px solid var(--border);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06)),
+    var(--panel);
+  color: var(--text);
+  padding: 8px 12px; border-radius: 10px; cursor: pointer;
+  font: 600 14px/1 'Roboto', system-ui, sans-serif;
+  transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+}
+.btn:hover{ transform: translateY(-1px); border-color: var(--hoverBorder); box-shadow: 0 6px 16px rgba(0,0,0,.25); }
+.btn:active{ transform: translateY(0); }
+
+.btn.primary{ border-color: rgba(143,182,255,.45); background: linear-gradient(180deg, rgba(143,182,255,.20), rgba(143,182,255,.06)); }
+.btn.warn{ border-color: rgba(245,158,11,.45); background: linear-gradient(180deg, rgba(245,158,11,.20), rgba(245,158,11,.06)); }
+.btn.danger{ border-color: rgba(239,100,100,.55); background: linear-gradient(180deg, rgba(239,100,100,.22), rgba(239,100,100,.06)); }
+.btn.ghost{ background: transparent; }
+
+/* Ligne cliquable + sélection dans la table */
+.report-table tbody tr.report-row { cursor: pointer; }
+.report-table tbody tr.is-selected{
+  outline: 2px solid var(--hoverBorder);
+  outline-offset: -2px;
+}
+/* Charts sizing */
+.card.chart canvas{
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 10px;
+}
+
+/* Optionnel: on n’affiche la bordure en tirets QUE si placeholder */
+.card.chart .chart-placeholder{ display:none; }

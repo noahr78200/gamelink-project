@@ -1,0 +1,5 @@
+[
+  { "q": "Quelle est la capitale de la France ?", "a": "paris", "enabled": true },
+  { "q": "Langue officielle du Brésil ?", "a": "portugais", "enabled": true },
+  { "q": "Capitale de l'Espagne ?", "a": "madrid", "enabled": true }
+]

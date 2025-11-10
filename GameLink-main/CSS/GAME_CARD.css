@@ -1,0 +1,84 @@
+/* ----- GAME CARD DESIGN ----- */
+
+:root {
+  --card-bg: rgba(255, 255, 255, 0.08);
+  --card-border: rgba(255, 255, 255, 0.15);
+  --card-hover: rgba(255, 255, 255, 0.25);
+  --radius: 15px;
+  --shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  --gap: 1.5rem;
+}
+
+/* Grille des jeux */
+#Game-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--gap);
+  padding: 2rem;
+  list-style: none;
+  margin: 0 auto;
+}
+
+/* Carte de jeu */
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  background: var(--card-bg);
+  
+  border-radius: var(--radius);
+  overflow: hidden;
+  text-align: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  border-color: var(--card-hover);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+}
+
+/* Image */
+.card img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.4s ease;
+}
+
+/* Effet de zoom fluide sans bouger le layout */
+.card:hover img {
+  transform: scale(1.05);
+}
+
+.card:hover img {
+  transform: scale(1.05);
+}
+
+/* Titre */
+.card h2 {
+  color: #fff;
+  font-family: "Roboto", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  margin: 0.8rem 0 1rem;
+  line-height: 1.3;
+  padding: 0 0.5rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Responsive */
+@media (min-width: 1600px) {
+  #Game-list {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+
+  .card img {
+    height: 300px;
+  }
+}
