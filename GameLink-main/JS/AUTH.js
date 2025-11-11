@@ -1,115 +1,143 @@
-// AUTH.js — version safe : NE BLOQUE PAS le submit, laisse PHP traiter
-
 document.addEventListener('DOMContentLoaded', () => {
-  // ====== 1) Références aux formulaires (si présents) ======
-  const loginForm  = document.getElementById('loginForm');
-  const signupForm = document.getElementById('signupForm');
-
-  // ====== 2) Bascule des onglets (optionnel) ======
-  // Attends des boutons avec data-tab-target=".nomOnglet" et des panneaux avec data-tab="nomOnglet"
-  const tabButtons = document.querySelectorAll('[data-tab-target]');
-  const tabPanels  = document.querySelectorAll('[data-tab]');
-  if (tabButtons.length && tabPanels.length) {
-    tabButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const target = btn.getAttribute('data-tab-target');
-        // cacher tous les panneaux
-        tabPanels.forEach(p => p.hidden = true);
-        // montrer le panneau ciblé
-        const panel = document.querySelector(`[data-tab="${CSS.escape(target.replace('.', ''))}"]`) 
-                   || document.querySelector(target);
-        if (panel) panel.hidden = false;
-        // état actif visuel (optionnel)
-        tabButtons.forEach(b => b.classList.remove('is-active'));
-        btn.classList.add('is-active');
-      });
+  // ----- Onglets Connexion/Inscription -----
+  const tabs = document.querySelectorAll('.auth-tab');
+  const forms = document.querySelectorAll('.auth-form');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('is-active'));
+      forms.forEach(f => f.classList.remove('is-active'));
+      tab.classList.add('is-active');
+      const target = document.querySelector(tab.dataset.target);
+      if (target) target.classList.add('is-active');
     });
-  }
+  });
 
-  // ====== 3) Afficher/Masquer les mots de passe ======
-  // On suppose un HTML du type:
-  // <div class="password-wrap">
-  //   <input type="password" ...>
-  //   <button type="button" class="toggle-visibility">👁️</button>
-  // </div>
+  // ----- Afficher / masquer les mots de passe -----
   document.querySelectorAll('.toggle-visibility').forEach(btn => {
     btn.addEventListener('click', () => {
-      // Si un data-target est donné, on l'utilise, sinon on prend l'input juste avant dans le wrap
-      const selector = btn.getAttribute('data-target');
-      let input;
-      if (selector) {
-        input = document.querySelector(selector);
-      } else {
-        const wrap = btn.closest('.password-wrap');
-        if (wrap) input = wrap.querySelector('input[type="password"], input[type="text"]');
-      }
+      const input = btn.previousElementSibling;
       if (!input) return;
       input.type = input.type === 'password' ? 'text' : 'password';
-      // Optionnel : feedback visuel
-      btn.setAttribute('aria-pressed', String(input.type === 'text'));
     });
   });
 
-  // ====== 4) Filtrage rapide des espaces pour les emails (UX) ======
-  const emailInputs = document.querySelectorAll('input[type="email"][name="email"]');
-  emailInputs.forEach(inp => {
-    inp.addEventListener('blur', () => {
-      inp.value = inp.value.trim();
-    });
-  });
+  // Helpers affichage d’erreur
+  function setError(id, msg){
+    const el = document.querySelector(`.error[data-for="${id}"]`);
+    if (el) el.textContent = msg || '';
+  }
 
-  // ====== 5) Fonction utilitaire : prépare le submit sans le bloquer ======
-  function wireSubmit(form) {
-    if (!form) return;
+  // Util: désactive le bouton submit + petit état "Envoi…"
+  function lockSubmit(form){
+    const btn = form.querySelector('button[type="submit"], input[type="submit"]');
+    if (!btn) return;
+    btn.dataset._txt = btn.textContent || btn.value || '';
+    if (btn.tagName === 'BUTTON') btn.textContent = 'Envoi…';
+    else btn.value = 'Envoi…';
+    btn.disabled = true;
+  }
+  function unlockSubmit(form){
+    const btn = form.querySelector('button[type="submit"], input[type="submit"]');
+    if (!btn) return;
+    const t = btn.dataset._txt || '';
+    if (btn.tagName === 'BUTTON') btn.textContent = t;
+    else btn.value = t;
+    btn.disabled = false;
+  }
 
-    form.addEventListener('submit', (e) => {
-      // Ne JAMAIS appeler e.preventDefault() ici → on laisse partir vers PHP
+  // ----- Soumission CONNEXION (vers PHP) -----
+  const loginForm = document.getElementById('login');
+  if (loginForm){
+    // Sécurité: si l'action est vide, on met celle attendue
+    if (!loginForm.getAttribute('action')) {
+      loginForm.setAttribute('action', '../INCLUDES/auth_login.php');
+    }
+    if (!loginForm.getAttribute('method')) {
+      loginForm.setAttribute('method', 'post');
+    }
 
-      // a) Validation HTML5 : si invalide, le navigateur bloque tout seul
-      if (!form.checkValidity()) {
-        // Déclenche les messages natifs si invalide
+    loginForm.addEventListener('submit', (e) => {
+      const email = document.getElementById('loginEmail');
+      const pass  = document.getElementById('loginPassword');
+
+      let ok = true;
+      setError('loginEmail',''); 
+      setError('loginPassword','');
+
+      if (!email || !email.value || !email.checkValidity()){
+        ok=false; setError('loginEmail','Email invalide');
+      }
+      if (!pass || !pass.value || pass.value.length < 6){
+        ok=false; setError('loginPassword','6 caractères minimum');
+      }
+
+      if (!ok){
+        // on empêche l’envoi uniquement si invalide
         e.preventDefault();
-        form.reportValidity();
+        loginForm.reportValidity?.();
         return;
       }
 
-      // b) Anti double-clic + petit feedback
-      const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
-      if (submitBtn && !submitBtn.disabled) {
-        submitBtn.dataset.originalText = submitBtn.textContent || submitBtn.value || '';
-        if (submitBtn.tagName === 'BUTTON') submitBtn.textContent = 'Envoi…';
-        if (submitBtn.tagName === 'INPUT')  submitBtn.value       = 'Envoi…';
-        submitBtn.disabled = true;
+      // UX anti double clic, puis on LAISSE PARTIR la requête vers PHP
+      lockSubmit(loginForm);
+
+      // "Se souvenir" sans bloquer l’envoi
+      const remember = document.getElementById('rememberMe');
+      if (remember && remember.checked) {
+        localStorage.setItem('rememberEmail', email.value.trim());
+      } else {
+        localStorage.removeItem('rememberEmail');
+      }
+      // NE PAS faire de window.location.href ici
+      // NE PAS faire de e.preventDefault() si tout est ok
+    });
+  }
+
+  // ----- Soumission INSCRIPTION (vers PHP) -----
+  const signupForm = document.getElementById('signup');
+  if (signupForm){
+    if (!signupForm.getAttribute('action')) {
+      signupForm.setAttribute('action', '../INCLUDES/auth_register.php');
+    }
+    if (!signupForm.getAttribute('method')) {
+      signupForm.setAttribute('method', 'post');
+    }
+
+    signupForm.addEventListener('submit', (e) => {
+      const name = document.getElementById('suName');
+      const email= document.getElementById('suEmail');
+      const pass = document.getElementById('suPass');
+      const conf = document.getElementById('suConfirm');
+      const cgu  = document.getElementById('suCgu');
+
+      setError('suName',''); setError('suEmail',''); setError('suPass',''); setError('suConfirm','');
+
+      let ok = true;
+      if (!name || !name.value || name.value.length < 3){ ok=false; setError('suName','3 caractères minimum'); }
+      if (!email || !email.value || !email.checkValidity()){ ok=false; setError('suEmail','Email invalide'); }
+      if (!pass || !pass.value || pass.value.length < 6){ ok=false; setError('suPass','6 caractères minimum'); }
+      if (!conf || pass.value !== conf.value){ ok=false; setError('suConfirm','Les mots de passe ne correspondent pas'); }
+      if (cgu && !cgu.checked){ ok=false; alert('Vous devez accepter les CGU.'); }
+
+      if (!ok){
+        // Empêche l’envoi seulement si invalide
+        e.preventDefault();
+        signupForm.reportValidity?.();
+        return;
       }
 
-      // c) Optionnel : verrouiller les champs pendant l'envoi
-      Array.from(form.elements).forEach(el => {
-        if (el.tagName === 'BUTTON' || el.type === 'submit') return;
-        if ('readOnly' in el) el.readOnly = true;
-      });
-
-      // d) IMPORTANT : on ne touche PAS à l'action → PHP reçoit la requête (POST)
-      //    Les redirections (captcha → ACCUEIL.php) sont gérées côté PHP.
+      // UX anti double clic, puis on laisse partir vers PHP
+      lockSubmit(signupForm);
+      // NE RIEN BLOQUER ensuite : pas de redirect JS, pas de preventDefault
     });
   }
 
-  // Brancher les formulaires (si présents)
-  wireSubmit(loginForm);
-  wireSubmit(signupForm);
-
-  // ====== 6) Messages d'erreur côté client (optionnel) ======
-  // Si tu veux afficher un message en dessous d'un champ quand il devient valide/invalide :
-  function liveFieldValidation(form) {
-    if (!form) return;
-    form.querySelectorAll('input[required], input[minlength]').forEach(inp => {
-      inp.addEventListener('input', () => {
-        const errEl = form.querySelector(`.error[data-for="${inp.id}"]`);
-        if (!errEl) return;
-        // Nettoie le message en saisie ; les erreurs serveur (flash) restent affichées côté PHP au rechargement
-        if (inp.validity.valid) errEl.textContent = '';
-      });
-    });
+  // Prérempli "se souvenir"
+  const remembered = localStorage.getItem('rememberEmail');
+  if (remembered){
+    const el = document.getElementById('loginEmail');
+    const cb = document.getElementById('rememberMe');
+    if (el) el.value = remembered;
+    if (cb) cb.checked = true;
   }
-  liveFieldValidation(loginForm);
-  liveFieldValidation(signupForm);
 });
