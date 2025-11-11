@@ -1,8 +1,6 @@
 <?php
-// AUTH.php
+// PAGE/AUTH.php - Page de connexion et inscription
 session_start();
-
-
 
 // Quel onglet afficher par défaut ? (ex: AUTH.php?tab=signup)
 $tab = $_GET['tab'] ?? 'login';
@@ -40,7 +38,7 @@ $csrf = $_SESSION['csrf'];
       </div>
 
       <!-- Connexion -->
-      <form id="login" class="auth-form <?= $tab==='login' ? 'is-active' : '' ?>" method="post" action="../INCLUDE/auth_login.php" novalidate>
+      <form id="login" class="auth-form <?= $tab==='login' ? 'is-active' : '' ?>" method="post" action="../INCLUDES/auth_login.php" novalidate>
         <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrf) ?>">
         <div class="field">
           <label for="loginEmail">Email</label>
@@ -59,7 +57,7 @@ $csrf = $_SESSION['csrf'];
       </form>
 
       <!-- Inscription -->
-      <form id="signup" class="auth-form <?= $tab==='signup' ? 'is-active' : '' ?>" method="post" action="../INCLUDE/auth_register.php" novalidate>
+      <form id="signup" class="auth-form <?= $tab==='signup' ? 'is-active' : '' ?>" method="post" action="../INCLUDES/auth_register.php" novalidate>
         <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrf) ?>">
         <div class="field">
           <label for="suName">Pseudo</label>
@@ -87,7 +85,7 @@ $csrf = $_SESSION['csrf'];
           </div>
           <p class="error" data-for="suConfirm"><?= $flash['errors']['suConfirm'] ?? '' ?></p>
         </div>
-        <label class="terms"><input type="checkbox" name="cgu" required> J’accepte les CGU</label>
+        <label class="terms"><input type="checkbox" name="cgu" required> J'accepte les CGU</label>
         <button type="submit" class="btn primary full">Créer le compte</button>
       </form>
 
