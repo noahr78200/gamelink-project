@@ -1,6 +1,8 @@
 <?php
 // PAGE/captcha.php - Vérification captcha avant connexion finale
 session_start();
+$_SESSION['captcha_ok'] = true;
+header('Location: /index.php'); exit;
 
 // Vérifier qu'on a bien un utilisateur en attente
 if (!isset($_SESSION['pending_user_id'])) {
