@@ -1,4 +1,8 @@
 <?php
+// DEBUG TEMP — à retirer après
+error_reporting(E_ALL); ini_set('display_errors', 1);
+file_put_contents('/tmp/GL_trace.log', date('c')." HIT ".basename(__FILE__)." POST=".json_encode($_POST)."\n", FILE_APPEND);
+
 // INCLUDES/auth_login.php
 session_start();
 require_once __DIR__ . '/../DATA/DBConfig.php';
