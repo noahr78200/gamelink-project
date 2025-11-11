@@ -2,8 +2,8 @@
 // Configuration de la connexion à la base de données
 $host = "localhost";
 $dbname = "gamelink";
-$user = "root";
-$pass = ""; // À modifier avec votre mot de passe MySQL sur le serveur OVH
+$user = "gamelink_user";
+$pass = "toor"; // À modifier avec votre mot de passe MySQL sur le serveur OVH
 
 $dsn  = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
 
