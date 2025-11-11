@@ -1,100 +1,56 @@
 <?php
-// INCLUDES/auth_login.php - Traitement de la connexion
+// INCLUDES/auth_login.php
 session_start();
 require_once __DIR__ . '/../DATA/DBConfig.php';
 
-// Vérification CSRF
+// 1) Sécurité CSRF
 if (empty($_POST['csrf']) || $_POST['csrf'] !== ($_SESSION['csrf'] ?? '')) {
-    die('Erreur CSRF - Veuillez réessayer');
+  die('Erreur CSRF');
 }
 
-// Fonction de validation et nettoyage
-function validate_input($data) {
-    return htmlspecialchars(trim($data), ENT_QUOTES, 'UTF-8');
-}
-
-// Récupération des données
-$email = validate_input($_POST['email'] ?? '');
+// 2) Récupère et nettoie les données
+$email = trim($_POST['email'] ?? '');
 $password = $_POST['password'] ?? '';
 
 $errors = [];
 $old = ['email' => $email];
 
-// Validation de l'email
-if (empty($email)) {
-    $errors['loginEmail'] = 'L\'email est requis';
-} elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $errors['loginEmail'] = 'Format d\'email invalide';
+// 3) Validation “comme à 10 ans”
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+  $errors['loginEmail'] = 'Email invalide';
+}
+if (strlen($password) < 6) {
+  $errors['loginPassword'] = '6 caractères minimum';
+}
+if ($errors) {
+  $_SESSION['flash'] = ['errors' => $errors, 'old' => $old];
+  header('Location: ../PAGE/AUTH.php?tab=login');
+  exit;
 }
 
-// Validation du mot de passe
-if (empty($password)) {
-    $errors['loginPassword'] = 'Le mot de passe est requis';
-} elseif (strlen($password) < 6) {
-    $errors['loginPassword'] = 'Le mot de passe doit contenir au moins 6 caractères';
-}
+// 4) Vérifie l’utilisateur en BDD
+try {
+  $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+  $stmt = $pdo->prepare('SELECT id, password_hash, pseudo FROM joueur WHERE email = ?');
+  $stmt->execute([$email]);
+  $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Si erreurs de validation, retour au formulaire
-if (!empty($errors)) {
-    $_SESSION['flash'] = [
-        'errors' => $errors,
-        'old' => $old
-    ];
+  if (!$user || !password_verify($password, $user['password_hash'])) {
+    $_SESSION['flash'] = ['errors' => ['general' => 'Identifiants invalides'], 'old' => $old];
     header('Location: ../PAGE/AUTH.php?tab=login');
     exit;
-}
+  }
 
-try {
-    // Recherche de l'utilisateur par email
-    $stmt = $pdo->prepare("
-        SELECT id_joueur, pseudo, email, password_hash 
-        FROM joueur 
-        WHERE email = ?
-    ");
-    $stmt->execute([$email]);
-    $user = $stmt->fetch();
+  // 5) On ne connecte pas encore : on prépare le CAPTCHA
+  $_SESSION['pending_user_id'] = (int)$user['id'];
+  $_SESSION['pending_user_pseudo'] = $user['pseudo'];
 
-    // Vérification de l'existence de l'utilisateur et du mot de passe
-    if (!$user || !password_verify($password, $user['password_hash'])) {
-        // Message d'erreur générique pour la sécurité
-        $_SESSION['flash'] = [
-            'errors' => ['loginEmail' => 'Email ou mot de passe incorrect'],
-            'old' => $old
-        ];
-        header('Location: ../PAGE/AUTH.php?tab=login');
-        exit;
-    }
-
-    // Mise à jour du hash si nécessaire
-    if (password_needs_rehash($user['password_hash'], PASSWORD_DEFAULT)) {
-        $new_hash = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $pdo->prepare("UPDATE joueur SET password_hash = ? WHERE id_joueur = ?");
-        $stmt->execute([$new_hash, $user['id_joueur']]);
-    }
-
-    // Régénération de l'ID de session pour la sécurité
-    session_regenerate_id(true);
-
-    // Stocker l'utilisateur en attente de validation captcha
-    $_SESSION['pending_user_id'] = $user['id_joueur'];
-    $_SESSION['pending_user_pseudo'] = $user['pseudo'];
-    $_SESSION['pending_user_email'] = $user['email'];
-    
-    // Initialiser le compteur de tentatives captcha
-    $_SESSION['captcha_attempts'] = 0;
-
-    // Redirection vers le captcha
-    header('Location: ../PAGE/captcha.php');
-    exit;
+  header('Location: ../PAGE/captcha.php');
+  exit;
 
 } catch (PDOException $e) {
-    // Log de l'erreur
-    error_log("Erreur connexion : " . $e->getMessage());
-    
-    $_SESSION['flash'] = [
-        'errors' => ['general' => 'Une erreur est survenue lors de la connexion. Veuillez réessayer.'],
-        'old' => $old
-    ];
-    header('Location: ../PAGE/AUTH.php?tab=login');
-    exit;
+  error_log('LOGIN ERROR: '.$e->getMessage());
+  $_SESSION['flash'] = ['errors' => ['general' => 'Erreur serveur'], 'old' => $old];
+  header('Location: ../PAGE/AUTH.php?tab=login');
+  exit;
 }
