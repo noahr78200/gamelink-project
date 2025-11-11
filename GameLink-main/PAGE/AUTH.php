@@ -92,7 +92,6 @@ $csrf = $_SESSION['csrf'];
     </section>
   </main>
 
-  <!-- Script temporairement désactivé pour debug -->
-<!-- <script src="../JS/AUTH.js" defer></script> -->
+  <script src="../JS/AUTH.js" defer></script>
 </body>
 </html>
