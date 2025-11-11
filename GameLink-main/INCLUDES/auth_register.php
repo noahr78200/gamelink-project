@@ -59,7 +59,7 @@ try {
   $_SESSION['pending_user_id'] = $newId;
   $_SESSION['pending_user_pseudo'] = $pseudo;
 
-  header('Location: ../PAGE/captcha.php');
+  header('Location: ../PAGE/captcha.php',true,303);
   exit;
 
 } catch (PDOException $e) {
@@ -68,5 +68,3 @@ try {
   header('Location: ../PAGE/AUTH.php?tab=signup');
   exit;
 }
-header('Location: ../PAGE/captcha.php');
-exit;

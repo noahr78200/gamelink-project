@@ -1,7 +1,5 @@
 <?php
-// DEBUG TEMP — à retirer après
-error_reporting(E_ALL); ini_set('display_errors', 1);
-file_put_contents('/tmp/GL_trace.log', date('c')." HIT ".basename(__FILE__)." POST=".json_encode($_POST)."\n", FILE_APPEND);
+
 
 // INCLUDES/auth_login.php
 session_start();
@@ -49,7 +47,7 @@ try {
   $_SESSION['pending_user_id'] = (int)$user['id'];
   $_SESSION['pending_user_pseudo'] = $user['pseudo'];
 
-  header('Location: ../PAGE/captcha.php');
+  header('Location: ../PAGE/captcha.php',true,303);
   exit;
 
 } catch (PDOException $e) {
@@ -58,5 +56,3 @@ try {
   header('Location: ../PAGE/AUTH.php?tab=login');
   exit;
 }
-header('Location: ../PAGE/captcha.php');
-exit;

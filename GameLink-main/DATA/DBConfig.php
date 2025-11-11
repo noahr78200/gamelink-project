@@ -21,4 +21,3 @@ try {
   die("Erreur de connexion à la base de données");
 }
 
-file_put_contents('/tmp/GL_trace.log', date('c')." DB_OK\n", FILE_APPEND);
