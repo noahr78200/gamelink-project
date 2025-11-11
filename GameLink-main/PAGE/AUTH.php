@@ -2,6 +2,20 @@
 // PAGE/AUTH.php
 session_start();
 
+$flash = $_SESSION['flash'] ?? ['errors'=>[], 'old'=>[]];
+unset($_SESSION['flash']);
+
+if (empty($_SESSION['csrf'])) {
+  $_SESSION['csrf'] = bin2hex(random_bytes(16));
+}
+
+/* ► Détecte le chemin web du site (ex: /gamelink/GameLink-main) depuis /PAGE/AUTH.php */
+$script    = $_SERVER['SCRIPT_NAME'];               // ex: /gamelink/GameLink-main/PAGE/AUTH.php
+$pageDir   = rtrim(dirname($script), '/');          // ex: /gamelink/GameLink-main/PAGE
+$siteDir   = rtrim(dirname($pageDir), '/');         // ex: /gamelink/GameLink-main
+$loginURL  = $siteDir . '/INCLUDES/auth_login.php';
+$signupURL = $siteDir . '/INCLUDES/auth_register.php';
+
 /* ---------------- Flash (erreurs + anciens champs) ---------------- */
 $flash = $_SESSION['flash'] ?? ['errors' => [], 'old' => []];
 unset($_SESSION['flash']);
@@ -91,7 +105,7 @@ function old($key, $default = '') {
         <button class="auth-tab" data-target="#signupForm">Inscription</button>
       </div>
 
-      <form id="loginForm" class="auth-form is-active" action="../INCLUDES/auth_login.php" method="post" novalidate>
+      <form id="loginForm"  class="auth-form is-active" action="<?= htmlspecialchars($loginURL) ?>"  method="post" novalidate>
         <h2 class="title" style="margin-top:0;">Connexion</h2>
 
         <div class="field">
@@ -116,7 +130,7 @@ function old($key, $default = '') {
       </form>
 
       <!-- ==================== INSCRIPTION ==================== -->
-      <form id="signupForm" class="auth-form" action="../INCLUDES/auth_register.php" method="post" novalidate>
+      <form id="signupForm" class="auth-form"            action="<?= htmlspecialchars($signupURL) ?>" method="post" novalidate>
         <h2 class="title" style="margin-top:0;">Créer un compte</h2>
 
         <div class="field">

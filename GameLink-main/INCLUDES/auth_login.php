@@ -1,12 +1,6 @@
 <?php
 // INCLUDES/auth_login.php
 
-/*************** DEBUG TEMPORAIRE (retirer ensuite) ***************/
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-file_put_contents('/tmp/GL_login.log', date('c') . " HIT POST=" . json_encode($_POST) . "\n", FILE_APPEND);
-/******************************************************************/
-
 session_start();
 
 /* 1) Connexion BDD */
@@ -55,8 +49,14 @@ try {
 
   file_put_contents('/tmp/GL_login.log', date('c') . " OK uid=" . $_SESSION['pending_user_id'] . "\n", FILE_APPEND);
 
-  header('Location: /PAGE/captcha.php', true, 303);
-  exit;
+  /* Redirige vers /.../PAGE/captcha.php, calculé depuis le script INCLUDES */
+$script  = $_SERVER['SCRIPT_NAME'];                 // ex: /gamelink/GameLink-main/INCLUDES/auth_login.php
+$incDir  = rtrim(dirname($script), '/');            // ex: /gamelink/GameLink-main/INCLUDES
+$siteDir = rtrim(dirname($incDir), '/');            // ex: /gamelink/GameLink-main
+$captcha = $siteDir . '/PAGE/captcha.php';
+
+header('Location: ' . $captcha, true, 303);
+exit;
 
 } catch (Throwable $e) {
   error_log('LOGIN ERROR: '.$e->getMessage());

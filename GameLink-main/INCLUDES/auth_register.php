@@ -1,11 +1,6 @@
 <?php
 // INCLUDES/auth_register.php
 
-/*************** DEBUG TEMPORAIRE (retirer ensuite) ***************/
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-file_put_contents('/tmp/GL_register.log', date('c') . " HIT POST=" . json_encode($_POST) . "\n", FILE_APPEND);
-/******************************************************************/
 
 session_start();
 
@@ -65,8 +60,14 @@ try {
   $_SESSION['pending_user_id']     = $newId;
   $_SESSION['pending_user_pseudo'] = $pseudo;
 
-  header('Location: /PAGE/captcha.php', true, 303);
-  exit;
+ /* Redirige vers /.../PAGE/captcha.php, calculé depuis le script INCLUDES */
+$script  = $_SERVER['SCRIPT_NAME'];                 // ex: /gamelink/GameLink-main/INCLUDES/auth_login.php
+$incDir  = rtrim(dirname($script), '/');            // ex: /gamelink/GameLink-main/INCLUDES
+$siteDir = rtrim(dirname($incDir), '/');            // ex: /gamelink/GameLink-main
+$captcha = $siteDir . '/PAGE/captcha.php';
+
+header('Location: ' . $captcha, true, 303);
+exit;
 
 } catch (Throwable $e) {
   // Log l’exception exacte
