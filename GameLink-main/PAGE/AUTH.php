@@ -40,7 +40,7 @@ $csrf = $_SESSION['csrf'];
       </div>
 
       <!-- Connexion -->
-      <form id="login" class="auth-form <?= $tab==='login' ? 'is-active' : '' ?>" method="post" action="../INCLUDES/auth_login.php" novalidate>
+      <form id="login" class="auth-form <?= $tab==='login' ? 'is-active' : '' ?>" method="post" action="../PAGE/auth_login.php" novalidate>
         <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrf) ?>">
         <div class="field">
           <label for="loginEmail">Email</label>
@@ -59,7 +59,7 @@ $csrf = $_SESSION['csrf'];
       </form>
 
       <!-- Inscription -->
-      <form id="signup" class="auth-form <?= $tab==='signup' ? 'is-active' : '' ?>" method="post" action="../INCLUDES/auth_register.php" novalidate>
+      <form id="signup" class="auth-form <?= $tab==='signup' ? 'is-active' : '' ?>" method="post" action="../PAGE/auth_register.php" novalidate>
         <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrf) ?>">
         <div class="field">
           <label for="suName">Pseudo</label>
