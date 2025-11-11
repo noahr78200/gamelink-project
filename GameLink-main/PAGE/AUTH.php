@@ -80,7 +80,7 @@ $csrf = $_SESSION['csrf'];
         <div class="field">
           <label for="suConfirm">Confirmer le mot de passe</label>
           <div class="password-wrap">
-            <input id="suConfirm" name="password_confirm" type="password" required minlength="6" placeholder="Répétez le mot de passe">
+            <input id="suConfirm" name="confirm" type="password" required minlength="6" placeholder="Répétez le mot de passe">
             <button type="button" class="toggle-visibility" aria-label="Afficher/masquer le mot de passe">👁️</button>
           </div>
           <p class="error" data-for="suConfirm"><?= $flash['errors']['suConfirm'] ?? '' ?></p>
