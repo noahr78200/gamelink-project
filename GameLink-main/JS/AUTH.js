@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('login');
   if (loginForm){
     loginForm.addEventListener('submit', (e) => {
-      e.preventDefault();
+      //e.preventDefault(); // empêcher le submit classique
       const email = document.getElementById('loginEmail');
       const pass  = document.getElementById('loginPassword');
 
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const signupForm = document.getElementById('signup');
   if (signupForm){
     signupForm.addEventListener('submit', (e) => {
-      e.preventDefault();
+    //  e.preventDefault();
       const name = document.getElementById('suName');
       const email= document.getElementById('suEmail');
       const pass = document.getElementById('suPass');
