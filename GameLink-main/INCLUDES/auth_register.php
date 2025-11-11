@@ -68,3 +68,5 @@ try {
   header('Location: ../PAGE/AUTH.php?tab=signup');
   exit;
 }
+header('Location: ../PAGE/captcha.php');
+exit;

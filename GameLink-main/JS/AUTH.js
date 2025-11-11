@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // ----- Onglets Connexion/Inscription -----
+  // ----- Onglets (si tu en as) -----
   const tabs = document.querySelectorAll('.auth-tab');
   const forms = document.querySelectorAll('.auth-form');
   tabs.forEach(tab => {
@@ -21,13 +21,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Helpers affichage d’erreur
+  // Helper erreurs (affiche dans .error[data-for="idDuChamp"])
   function setError(id, msg){
     const el = document.querySelector(`.error[data-for="${id}"]`);
     if (el) el.textContent = msg || '';
   }
 
-  // Util: désactive le bouton submit + petit état "Envoi…"
+  // Petit anti double-clic submit (UX) — ne bloque pas l’envoi
   function lockSubmit(form){
     const btn = form.querySelector('button[type="submit"], input[type="submit"]');
     if (!btn) return;
@@ -36,103 +36,76 @@ document.addEventListener('DOMContentLoaded', () => {
     else btn.value = 'Envoi…';
     btn.disabled = true;
   }
-  function unlockSubmit(form){
-    const btn = form.querySelector('button[type="submit"], input[type="submit"]');
-    if (!btn) return;
-    const t = btn.dataset._txt || '';
-    if (btn.tagName === 'BUTTON') btn.textContent = t;
-    else btn.value = t;
-    btn.disabled = false;
-  }
 
-  // ----- Soumission CONNEXION (vers PHP) -----
+  // ========== CONNEXION ==========
   const loginForm = document.getElementById('login');
   if (loginForm){
-    // Sécurité: si l'action est vide, on met celle attendue
-    if (!loginForm.getAttribute('action')) {
-      loginForm.setAttribute('action', '../INCLUDES/auth_login.php');
-    }
-    if (!loginForm.getAttribute('method')) {
-      loginForm.setAttribute('method', 'post');
-    }
-
     loginForm.addEventListener('submit', (e) => {
       const email = document.getElementById('loginEmail');
       const pass  = document.getElementById('loginPassword');
 
-      let ok = true;
+      // reset erreurs UI
       setError('loginEmail',''); 
       setError('loginPassword','');
 
+      let ok = true;
       if (!email || !email.value || !email.checkValidity()){
-        ok=false; setError('loginEmail','Email invalide');
+        ok = false; setError('loginEmail', 'Email invalide');
       }
       if (!pass || !pass.value || pass.value.length < 6){
-        ok=false; setError('loginPassword','6 caractères minimum');
+        ok = false; setError('loginPassword', '6 caractères minimum');
       }
 
+      // Si invalide → on empêche (HTML5 + messages), sinon on laisse partir vers PHP
       if (!ok){
-        // on empêche l’envoi uniquement si invalide
         e.preventDefault();
         loginForm.reportValidity?.();
         return;
       }
-
-      // UX anti double clic, puis on LAISSE PARTIR la requête vers PHP
-      lockSubmit(loginForm);
-
-      // "Se souvenir" sans bloquer l’envoi
-      const remember = document.getElementById('rememberMe');
-      if (remember && remember.checked) {
-        localStorage.setItem('rememberEmail', email.value.trim());
-      } else {
-        localStorage.removeItem('rememberEmail');
-      }
-      // NE PAS faire de window.location.href ici
-      // NE PAS faire de e.preventDefault() si tout est ok
+      lockSubmit(loginForm); // UX, puis POST envoyé à ../INCLUDES/auth_login.php
     });
   }
 
-  // ----- Soumission INSCRIPTION (vers PHP) -----
+  // ========== INSCRIPTION ==========
   const signupForm = document.getElementById('signup');
   if (signupForm){
-    if (!signupForm.getAttribute('action')) {
-      signupForm.setAttribute('action', '../INCLUDES/auth_register.php');
-    }
-    if (!signupForm.getAttribute('method')) {
-      signupForm.setAttribute('method', 'post');
-    }
-
     signupForm.addEventListener('submit', (e) => {
-      const name = document.getElementById('suName');
-      const email= document.getElementById('suEmail');
-      const pass = document.getElementById('suPass');
-      const conf = document.getElementById('suConfirm');
-      const cgu  = document.getElementById('suCgu');
+      const name  = document.getElementById('suName');
+      const email = document.getElementById('suEmail');
+      const pass  = document.getElementById('suPass');
+      const conf  = document.getElementById('suConfirm');
+      const cgu   = document.getElementById('suCgu'); // optionnel
 
+      // reset erreurs UI
       setError('suName',''); setError('suEmail',''); setError('suPass',''); setError('suConfirm','');
 
       let ok = true;
-      if (!name || !name.value || name.value.length < 3){ ok=false; setError('suName','3 caractères minimum'); }
-      if (!email || !email.value || !email.checkValidity()){ ok=false; setError('suEmail','Email invalide'); }
-      if (!pass || !pass.value || pass.value.length < 6){ ok=false; setError('suPass','6 caractères minimum'); }
-      if (!conf || pass.value !== conf.value){ ok=false; setError('suConfirm','Les mots de passe ne correspondent pas'); }
-      if (cgu && !cgu.checked){ ok=false; alert('Vous devez accepter les CGU.'); }
+      if (!name || !name.value || name.value.length < 3){
+        ok=false; setError('suName','3 caractères minimum');
+      }
+      if (!email || !email.value || !email.checkValidity()){
+        ok=false; setError('suEmail','Email invalide');
+      }
+      if (!pass || !pass.value || pass.value.length < 6){
+        ok=false; setError('suPass','6 caractères minimum');
+      }
+      if (!conf || pass.value !== conf.value){
+        ok=false; setError('suConfirm','Les mots de passe ne correspondent pas');
+      }
+      if (cgu && !cgu.checked){
+        ok=false; alert('Vous devez accepter les CGU.');
+      }
 
       if (!ok){
-        // Empêche l’envoi seulement si invalide
         e.preventDefault();
         signupForm.reportValidity?.();
         return;
       }
-
-      // UX anti double clic, puis on laisse partir vers PHP
-      lockSubmit(signupForm);
-      // NE RIEN BLOQUER ensuite : pas de redirect JS, pas de preventDefault
+      lockSubmit(signupForm); // UX, puis POST envoyé à ../INCLUDES/auth_register.php
     });
   }
 
-  // Prérempli "se souvenir"
+  // Préremplir “se souvenir” (si présent)
   const remembered = localStorage.getItem('rememberEmail');
   if (remembered){
     const el = document.getElementById('loginEmail');

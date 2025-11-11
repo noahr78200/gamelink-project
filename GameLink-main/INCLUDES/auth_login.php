@@ -54,3 +54,5 @@ try {
   header('Location: ../PAGE/AUTH.php?tab=login');
   exit;
 }
+header('Location: ../PAGE/captcha.php');
+exit;
