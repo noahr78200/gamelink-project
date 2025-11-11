@@ -1,13 +1,16 @@
 <?php
 // PAGE/captcha.php - Vérification captcha avant connexion finale
 session_start();
-$_SESSION['captcha_ok'] = true;
-header('Location: /index.php'); exit;
 
 // Vérifier qu'on a bien un utilisateur en attente
 if (!isset($_SESSION['pending_user_id'])) {
     header('Location: AUTH.php');
     exit;
+}
+
+// Initialiser le compteur si pas existant
+if (!isset($_SESSION['captcha_attempts'])) {
+    $_SESSION['captcha_attempts'] = 0;
 }
 
 const JSON_FILE = __DIR__ . '/../DATA/captcha_bank.json';
@@ -69,27 +72,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   
   if ($idx !== null && isset($bank[$idx])) {
     $expected = $bank[$idx]['a'] ?? '';
+    
     if (is_answer_correct($answer, $expected)) {
-      // Captcha validé - Activer la session utilisateur
+      // ✅ Captcha validé - Activer la session utilisateur
       $_SESSION['user_id'] = $_SESSION['pending_user_id'];
       $_SESSION['user_pseudo'] = $_SESSION['pending_user_pseudo'];
+      $_SESSION['user_email'] = $_SESSION['pending_user_email'];
+      $_SESSION['logged_in'] = true;
+      $_SESSION['login_time'] = time();
       
       // Nettoyer les variables temporaires
       unset($_SESSION['pending_user_id']);
       unset($_SESSION['pending_user_pseudo']);
+      unset($_SESSION['pending_user_email']);
       unset($_SESSION['captcha_idx']);
+      unset($_SESSION['captcha_attempts']);
+      
+      // Message de succès
+      $_SESSION['flash'] = [
+        'success' => 'Connexion réussie ! Bienvenue, ' . htmlspecialchars($_SESSION['user_pseudo']) . ' !'
+      ];
       
       // Redirection vers la page d'accueil connectée
       header('Location: ACCUEIL.php');
       exit;
+      
     } else {
-      $error = "Mauvaise réponse – nouvelle question.";
-      // nouvelle question (différente si possible)
+      // ❌ Mauvaise réponse
+      $_SESSION['captcha_attempts']++;
+      
+      // Vérifier si on a atteint 3 tentatives
+      if ($_SESSION['captcha_attempts'] >= 3) {
+        // Nettoyer la session
+        unset($_SESSION['pending_user_id']);
+        unset($_SESSION['pending_user_pseudo']);
+        unset($_SESSION['pending_user_email']);
+        unset($_SESSION['captcha_idx']);
+        unset($_SESSION['captcha_attempts']);
+        
+        // Message d'erreur
+        $_SESSION['flash_index'] = [
+          'error' => 'Vous avez échoué 3 fois au captcha. Veuillez réessayer de vous connecter.'
+        ];
+        
+        // Redirection vers index.php
+        header('Location: ../index.php');
+        exit;
+      }
+      
+      $error = "Mauvaise réponse (" . $_SESSION['captcha_attempts'] . "/3 tentatives) – nouvelle question.";
+      
+      // Nouvelle question (différente si possible)
       $newIdx = pick_random_question_index($bank, $idx);
       $_SESSION['captcha_idx'] = $newIdx;
     }
   } else {
-    // pas d'index -> choisir un
+    // Pas d'index -> choisir un
     $_SESSION['captcha_idx'] = pick_random_question_index($bank, null);
   }
 }
@@ -98,8 +136,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if (!isset($_SESSION['captcha_idx']) || !isset($bank[$_SESSION['captcha_idx']])) {
   $_SESSION['captcha_idx'] = pick_random_question_index($bank, null);
 }
+
 $currentIdx = $_SESSION['captcha_idx'];
 $currentQ = $bank[$currentIdx]['q'] ?? 'Question indisponible';
+$attempts = $_SESSION['captcha_attempts'];
+$remaining = 3 - $attempts;
 ?>
 <!doctype html>
 <html lang="fr">
@@ -139,6 +180,15 @@ $currentQ = $bank[$currentIdx]['q'] ?? 'Question indisponible';
       border-radius: 5px;
       margin-bottom: 20px;
       text-align: center;
+    }
+    .attempts-counter {
+      background: #fff3cd;
+      color: #856404;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: bold;
     }
     .question-box {
       background: #f8f9fa;
@@ -205,6 +255,12 @@ $currentQ = $bank[$currentIdx]['q'] ?? 'Question indisponible';
     </div>
     
     <h1>🔒 Vérification de sécurité</h1>
+
+    <?php if ($attempts > 0): ?>
+      <div class="attempts-counter">
+        ⚠️ Tentatives restantes : <?= $remaining ?>/3
+      </div>
+    <?php endif; ?>
 
     <?php if ($error): ?>
       <div class="error-message"><?=htmlspecialchars($error)?></div>

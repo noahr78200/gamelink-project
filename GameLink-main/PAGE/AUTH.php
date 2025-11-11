@@ -3,71 +3,6 @@
 session_start();
 
 
-require __DIR__ . '/DATA/DBConfig.php';
-
-function redirect($url) { header("Location: $url"); exit; }
-
-try {
-    $pdo = new PDO($dsn, $user, $pass, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    ]);
-} catch (Throwable $e) {
-    die('DB error');
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $form = $_POST['form'] ?? '';
-
-    if ($form === 'register') {
-        $username = trim($_POST['username'] ?? '');
-        $email    = trim($_POST['email'] ?? '');
-        $password = $_POST['password'] ?? '';
-
-        // validations simples
-        if ($username === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($password) < 6) {
-            redirect('/auth.php?err=register_invalid');
-        }
-
-        // email/username uniques ?
-        $stmt = $pdo->prepare('SELECT id FROM users WHERE email = :email OR username = :username');
-        $stmt->execute([':email'=>$email, ':username'=>$username]);
-        if ($stmt->fetch()) {
-            redirect('/auth.php?err=already_exists');
-        }
-
-        $hash = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $pdo->prepare('INSERT INTO users (username,email,password_hash) VALUES (:u,:e,:h)');
-        $stmt->execute([':u'=>$username, ':e'=>$email, ':h'=>$hash]);
-
-        $_SESSION['user_id'] = (int)$pdo->lastInsertId();
-        $_SESSION['username'] = $username;
-
-        // ➜ enchaîne vers le captcha
-        redirect('/captcha.php');
-    }
-
-    if ($form === 'login') {
-        $email    = trim($_POST['email'] ?? '');
-        $password = $_POST['password'] ?? '';
-
-        $stmt = $pdo->prepare('SELECT id, username, password_hash FROM users WHERE email = :email');
-        $stmt->execute([':email'=>$email]);
-        $u = $stmt->fetch();
-
-        if (!$u || !password_verify($password, $u['password_hash'])) {
-            redirect('/auth.php?err=bad_credentials');
-        }
-
-        $_SESSION['user_id'] = (int)$u['id'];
-        $_SESSION['username'] = $u['username'];
-
-        // ➜ enchaîne vers le captcha
-        redirect('/captcha.php');
-    }
-}
-
-
 
 // Quel onglet afficher par défaut ? (ex: AUTH.php?tab=signup)
 $tab = $_GET['tab'] ?? 'login';
@@ -105,7 +40,7 @@ $csrf = $_SESSION['csrf'];
       </div>
 
       <!-- Connexion -->
-      <form id="login" class="auth-form <?= $tab==='login' ? 'is-active' : '' ?>" method="post" action="../PAGE/auth_login.php" novalidate>
+      <form id="login" class="auth-form <?= $tab==='login' ? 'is-active' : '' ?>" method="post" action="../INCLUDES/auth_login.php" novalidate>
         <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrf) ?>">
         <div class="field">
           <label for="loginEmail">Email</label>
@@ -124,7 +59,7 @@ $csrf = $_SESSION['csrf'];
       </form>
 
       <!-- Inscription -->
-      <form id="signup" class="auth-form <?= $tab==='signup' ? 'is-active' : '' ?>" method="post" action="../PAGE/auth_register.php" novalidate>
+      <form id="signup" class="auth-form <?= $tab==='signup' ? 'is-active' : '' ?>" method="post" action="../INCLUDES/auth_register.php" novalidate>
         <input type="hidden" name="csrf" value="<?= htmlspecialchars($csrf) ?>">
         <div class="field">
           <label for="suName">Pseudo</label>

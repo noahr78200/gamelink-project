@@ -1,5 +1,5 @@
 <?php
-// auth_register.php - Traitement de l'inscription
+// INCLUDES/auth_register.php - Traitement de l'inscription
 session_start();
 require_once __DIR__ . '/../DATA/DBConfig.php';
 
@@ -68,7 +68,7 @@ if (!empty($errors)) {
         'errors' => $errors,
         'old' => $old
     ];
-    header('Location: AUTH.php?tab=signup');
+    header('Location: ../PAGE/AUTH.php?tab=signup');
     exit;
 }
 
@@ -81,7 +81,7 @@ try {
             'errors' => ['suEmail' => 'Cet email est déjà utilisé'],
             'old' => $old
         ];
-        header('Location: AUTH.php?tab=signup');
+        header('Location: ../PAGE/AUTH.php?tab=signup');
         exit;
     }
 
@@ -93,7 +93,7 @@ try {
             'errors' => ['suName' => 'Ce pseudo est déjà utilisé'],
             'old' => $old
         ];
-        header('Location: AUTH.php?tab=signup');
+        header('Location: ../PAGE/AUTH.php?tab=signup');
         exit;
     }
 
@@ -109,29 +109,26 @@ try {
 
     $user_id = $pdo->lastInsertId();
 
-    // Création de la session utilisateur
-    $_SESSION['user_id'] = $user_id;
-    $_SESSION['user_pseudo'] = $pseudo;
-    $_SESSION['user_email'] = $email;
-    $_SESSION['logged_in'] = true;
-
-    // Message de succès
-    $_SESSION['flash'] = [
-        'success' => 'Compte créé avec succès ! Bienvenue sur GameLink, ' . htmlspecialchars($pseudo) . ' !'
-    ];
+    // Stocker l'utilisateur en attente de validation captcha
+    $_SESSION['pending_user_id'] = $user_id;
+    $_SESSION['pending_user_pseudo'] = $pseudo;
+    $_SESSION['pending_user_email'] = $email;
+    
+    // Initialiser le compteur de tentatives captcha
+    $_SESSION['captcha_attempts'] = 0;
 
     // Redirection vers le captcha
-    header('Location: /PAGE/captcha.php');
+    header('Location: ../PAGE/captcha.php');
     exit;
 
 } catch (PDOException $e) {
-    // Log de l'erreur (en production, utiliser un système de log approprié)
+    // Log de l'erreur
     error_log("Erreur inscription : " . $e->getMessage());
     
     $_SESSION['flash'] = [
         'errors' => ['general' => 'Une erreur est survenue lors de l\'inscription. Veuillez réessayer.'],
         'old' => $old
     ];
-    header('Location: AUTH.php?tab=signup');
+    header('Location: ../PAGE/AUTH.php?tab=signup');
     exit;
 }

@@ -1,6 +1,10 @@
 <?php
 // index.php - Page d'accueil publique
 session_start();
+
+// Récupérer le message flash si existant
+$flash_message = $_SESSION['flash_index'] ?? null;
+unset($_SESSION['flash_index']);
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -72,6 +76,28 @@ session_start();
             color: #667eea;
             margin-bottom: 15px;
         }
+        .error-message {
+            background: #ff6b6b;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px auto;
+            max-width: 600px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255,107,107,0.3);
+        }
+        .success-message {
+            background: #51cf66;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px auto;
+            max-width: 600px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(81,207,102,0.3);
+        }
         .protected-message {
             background: #fff3cd;
             border: 1px solid #ffeaa7;
@@ -108,6 +134,18 @@ session_start();
     </header>
     
     <main>
+        <?php if ($flash_message && isset($flash_message['error'])): ?>
+            <div class="error-message">
+                ❌ <?= htmlspecialchars($flash_message['error']) ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($flash_message && isset($flash_message['success'])): ?>
+            <div class="success-message">
+                ✅ <?= htmlspecialchars($flash_message['success']) ?>
+            </div>
+        <?php endif; ?>
+
         <section class="hero-section">
             <h1>🎮 Bienvenue sur GameLink</h1>
             <p>Découvrez, notez et partagez vos jeux vidéo préférés avec une communauté passionnée</p>
