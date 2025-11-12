@@ -53,7 +53,7 @@ try {
 $script  = $_SERVER['SCRIPT_NAME'];                 // ex: /gamelink/GameLink-main/INCLUDES/auth_login.php
 $incDir  = rtrim(dirname($script), '/');            // ex: /gamelink/GameLink-main/INCLUDES
 $siteDir = rtrim(dirname($incDir), '/');            // ex: /gamelink/GameLink-main
-$captcha = $siteDir . '/PAGE/captcha.php';
+$captcha = $siteDir . '/PAGE/ACCUEIL.php';
 
 header('Location: ' . $captcha, true, 303);
 exit;
