@@ -1,11 +1,13 @@
 <?php
 // INCLUDES/auth_register.php
+
+
 session_start();
 
-/* 1) Connexion BDD */
-require_once __DIR__ . '/../DATA/DBConfig.php';
+/* 1) Connexion BDD — attention à la casse du dossier */
+require_once __DIR__ . '/../DATA/DBConfig.php'; // si ton dossier est data en minuscules, adapte
 
-/* 2) CSRF */
+/* 2) (Optionnel) CSRF : commente si tu n’utilises pas le token dans le form */
 if (isset($_POST['csrf']) && $_POST['csrf'] !== ($_SESSION['csrf'] ?? '')) {
   file_put_contents('/tmp/GL_register.log', date('c') . " CSRF_FAIL\n", FILE_APPEND);
   http_response_code(400);
@@ -16,123 +18,63 @@ if (isset($_POST['csrf']) && $_POST['csrf'] !== ($_SESSION['csrf'] ?? '')) {
 $pseudo   = trim($_POST['name'] ?? '');
 $email    = trim($_POST['email'] ?? '');
 $password = $_POST['password'] ?? '';
-$password_confirm = $_POST['password_confirm'] ?? '';
-$cgu      = isset($_POST['cgu']);
+$confirm  = $_POST['confirm']  ?? $_POST['password_confirm'] ?? '';
 
-$errors   = [];
-$old      = ['name' => $pseudo, 'email' => $email];
+$errors = [];
+$old    = ['name'=>$pseudo, 'email'=>$email];
 
-// Validation du pseudo
-if (empty($pseudo)) {
-    $errors['suName'] = 'Le pseudo est requis';
-} elseif (strlen($pseudo) < 3) {
-    $errors['suName'] = 'Le pseudo doit contenir au moins 3 caractères';
-} elseif (strlen($pseudo) > 50) {
-    $errors['suName'] = 'Le pseudo ne peut pas dépasser 50 caractères';
-} elseif (!preg_match('/^[a-zA-Z0-9_-]+$/', $pseudo)) {
-    $errors['suName'] = 'Le pseudo ne peut contenir que des lettres, chiffres, tirets et underscores';
-}
+/* 4) Validation */
+if ($pseudo === '' || strlen($pseudo) < 3) $errors['suName'] = '3 caractères minimum';
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors['suEmail'] = 'Email invalide';
+if (strlen($password) < 6) $errors['suPass'] = '6 caractères minimum';
+if ($password !== $confirm) $errors['suConfirm'] = 'Les mots de passe ne correspondent pas';
 
-// Validation de l'email
-if (empty($email)) {
-    $errors['suEmail'] = 'L\'email est requis';
-} elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $errors['suEmail'] = 'Format d\'email invalide';
-} elseif (strlen($email) > 255) {
-    $errors['suEmail'] = 'L\'email est trop long';
-}
-
-// Validation du mot de passe
-if (empty($password)) {
-    $errors['suPass'] = 'Le mot de passe est requis';
-} elseif (strlen($password) < 6) {
-    $errors['suPass'] = 'Le mot de passe doit contenir au moins 6 caractères';
-} elseif (strlen($password) > 255) {
-    $errors['suPass'] = 'Le mot de passe est trop long';
-}
-
-// Vérification de la confirmation
-if ($password !== $password_confirm) {
-    $errors['suConfirm'] = 'Les mots de passe ne correspondent pas';
-}
-
-// Vérification CGU
-if (!$cgu) {
-    $errors['suCgu'] = 'Vous devez accepter les CGU';
-}
-
-// Si erreurs, retour au formulaire
 if ($errors) {
-  $_SESSION['flash'] = ['errors' => $errors, 'old' => $old];
+  $_SESSION['flash'] = ['errors'=>$errors, 'old'=>$old];
   file_put_contents('/tmp/GL_register.log', date('c') . " VALIDATION_ERR=" . json_encode($errors) . "\n", FILE_APPEND);
-  header('Location: ../PAGE/AUTH.php?tab=signup', true, 303);
+  header('Location: /PAGE/AUTH.php?tab=signup', true, 303);
   exit;
 }
 
-/* 4) Vérification et création du compte */
+/* 5) Insertion */
 try {
   $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-  // Vérifier si l'email existe déjà
-  $stmt = $pdo->prepare("SELECT id_joueur FROM joueur WHERE email = ?");
-  $stmt->execute([$email]);
-  if ($stmt->fetch()) {
-    $_SESSION['flash'] = [
-        'errors' => ['suEmail' => 'Cet email est déjà utilisé'],
-        'old' => $old
-    ];
-    file_put_contents('/tmp/GL_register.log', date('c') . " EMAIL_EXISTS email=$email\n", FILE_APPEND);
-    header('Location: ../PAGE/AUTH.php?tab=signup', true, 303);
+  // Email unique
+  $chk = $pdo->prepare('SELECT id_joueur FROM joueur WHERE email = ?');
+  $chk->execute([$email]);
+  if ($chk->fetch()) {
+    $_SESSION['flash'] = ['errors'=>['suEmail'=>'Email déjà utilisé'], 'old'=>$old];
+    file_put_contents('/tmp/GL_register.log', date('c') . " DUP_EMAIL\n", FILE_APPEND);
+    header('Location: /PAGE/AUTH.php?tab=signup', true, 303);
     exit;
   }
 
-  // Vérifier si le pseudo existe déjà
-  $stmt = $pdo->prepare("SELECT id_joueur FROM joueur WHERE pseudo = ?");
-  $stmt->execute([$pseudo]);
-  if ($stmt->fetch()) {
-    $_SESSION['flash'] = [
-        'errors' => ['suName' => 'Ce pseudo est déjà utilisé'],
-        'old' => $old
-    ];
-    file_put_contents('/tmp/GL_register.log', date('c') . " PSEUDO_EXISTS pseudo=$pseudo\n", FILE_APPEND);
-    header('Location: ../PAGE/AUTH.php?tab=signup', true, 303);
-    exit;
-  }
+  $hash = password_hash($password, PASSWORD_BCRYPT);
+  $ins  = $pdo->prepare('INSERT INTO joueur (pseudo, email, password_hash) VALUES (?, ?, ?)');
+  $ins->execute([$pseudo, $email, $hash]);
+  $newId = (int)$pdo->lastInsertId();
 
-  // Hashage du mot de passe
-  $password_hash = password_hash($password, PASSWORD_DEFAULT);
+  file_put_contents('/tmp/GL_register.log', date('c') . " INSERT_OK id=$newId\n", FILE_APPEND);
 
-  // Insertion dans la base de données
-  $stmt = $pdo->prepare("
-    INSERT INTO joueur (pseudo, email, password_hash, date_inscription) 
-    VALUES (?, ?, ?, NOW())
-  ");
-  $stmt->execute([$pseudo, $email, $password_hash]);
-
-  $user_id = $pdo->lastInsertId();
-
-  // ✅ Stocker l'utilisateur en attente de validation captcha
-  $_SESSION['pending_user_id']     = (int)$user_id;
+  $_SESSION['pending_user_id']     = $newId;
   $_SESSION['pending_user_pseudo'] = $pseudo;
-  $_SESSION['pending_user_email']  = $email;
-  
-  // ✅ IMPORTANT : Initialiser le compteur de tentatives captcha
-  $_SESSION['captcha_attempts'] = 0;
 
-  file_put_contents('/tmp/GL_register.log', date('c') . " OK uid=$user_id pseudo=$pseudo email=$email\n", FILE_APPEND);
+ /* Redirige vers /.../PAGE/captcha.php, calculé depuis le script INCLUDES */
+$script  = $_SERVER['SCRIPT_NAME'];                 // ex: /gamelink/GameLink-main/INCLUDES/auth_login.php
+$incDir  = rtrim(dirname($script), '/');            // ex: /gamelink/GameLink-main/INCLUDES
+$siteDir = rtrim(dirname($incDir), '/');            // ex: /gamelink/GameLink-main
+$captcha = $siteDir . '/PAGE/captcha.php';
 
-  // ✅ Redirection vers captcha (chemin relatif depuis INCLUDES/)
-  header('Location: ../PAGE/captcha.php', true, 303);
-  exit;
+header('Location: ' . $captcha, true, 303);
+exit;
 
 } catch (Throwable $e) {
-  error_log('REGISTER ERROR: ' . $e->getMessage());
+  // Log l’exception exacte
+  error_log('REGISTER ERROR: '.$e->getMessage());
   file_put_contents('/tmp/GL_register.log', date('c') . " EXC=" . $e->getMessage() . "\n", FILE_APPEND);
-  
-  $_SESSION['flash'] = [
-      'errors' => ['general' => 'Une erreur est survenue. Veuillez réessayer.'],
-      'old' => $old
-  ];
-  header('Location: ../PAGE/AUTH.php?tab=signup', true, 303);
+
+  $_SESSION['flash'] = ['errors'=>['general'=>"Erreur d'inscription"], 'old'=>$old];
+  header('Location: /PAGE/AUTH.php?tab=signup', true, 303);
   exit;
 }
