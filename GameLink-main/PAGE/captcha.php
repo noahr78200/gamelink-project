@@ -4,7 +4,7 @@ session_start();
 
 // Vérifier qu'on a bien un utilisateur en attente
 if (!isset($_SESSION['pending_user_id'])) {
-    header('Location: AUTH.php');
+    header('Location: ../PAGE/AUTH.php');
     exit;
 }
 
@@ -61,23 +61,8 @@ function pick_random_question_index($bank, $avoidIndex = null) {
 $bank = load_bank();
 if (empty($bank)) {
   echo "Aucune question disponible. Contactez l'administrateur.";
-  $_SESSION['user_id'] = $_SESSION['pending_user_id'];
-      $_SESSION['user_pseudo'] = $_SESSION['pending_user_pseudo'];
-      $_SESSION['user_email'] = $_SESSION['pending_user_email'];
-      $_SESSION['logged_in'] = true;
-      $_SESSION['login_time'] = time();
-
-      $_SESSION['flash'] = [
-        'success' => 'Connexion réussie ! Bienvenue, ' . htmlspecialchars($_SESSION['user_pseudo']) . ' !'
-      ];
-
-      unset($_SESSION['pending_user_id']);
-      unset($_SESSION['pending_user_pseudo']);
-      unset($_SESSION['pending_user_email']);
-      unset($_SESSION['captcha_idx']);
-      unset($_SESSION['captcha_attempts']);
-
-      header('Location: ACCUEIL.php');
+ 
+   
   exit;
 }
 
