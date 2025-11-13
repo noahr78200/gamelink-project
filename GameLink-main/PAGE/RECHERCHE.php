@@ -10,9 +10,7 @@
         <link rel="icon" type="image/png" sizes="32x32" href="../ICON/LogoSimple.svg">
     </head>
     <body>
-        <?php
-    require_once __DIR__ . '/../INCLUDES/check_admin.php';
-?>
+  
 <?php 
     // Inclure le header (qui affichera ou non le lien ADMIN)
     include __DIR__ . '/../INCLUDES/header.php'; 
