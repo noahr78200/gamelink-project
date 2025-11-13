@@ -47,8 +47,8 @@ function listNames($arr){ return $arr ? implode(', ', array_map(fn($x)=>$x['name
   <meta charset="utf-8">
   <title><?= htmlspecialchars($g['name'] ?? 'Jeu') ?></title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/GameLink/CSS/STYLE_GAME.css">
-  <link rel="icon" type="image/png" sizes="32x32" href="/GameLink/ICON/LogoSimple.svg">
+  <link rel="stylesheet" href="../CSS/STYLE_GAME.css">
+  <link rel="icon" type="image/png" sizes="32x32" href="../ICON/LogoSimple.svg">
 </head>
   <body class="game">
     <main class="game-wrap">
@@ -79,14 +79,14 @@ function listNames($arr){ return $arr ? implode(', ', array_map(fn($x)=>$x['name
       </section>
     </main>
 
-    <a class="back" href="/GameLink/PAGE/RECHERCHE.php">←</a>
+    <a class="back" href="../PAGE/RECHERCHE.php">←</a>
     
     <button class="fab-fav" aria-label="Favori">
-      <img class="star" src="/GameLink/ICON/SVG/STAR_GREY.svg" alt="STAR" width="">
+      <img class="star" src="../ICON/SVG/STAR_GREY.svg" alt="STAR" width="">
     </button>
     
     <button class="fab-fav" aria-label="Add">
-      <img class="star" src="/GameLink/ICON/SVG/ADD_LOGO.svg" alt="Add btn" width="">
+      <img class="star" src="../ICON/SVG/ADD_LOGO.svg" alt="Add btn" width="">
     </button>
     
   </body>

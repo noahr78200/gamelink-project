@@ -9,7 +9,7 @@
 
 async function LoadGame() {
   // URL de l'API
-  const url = '/GameLink/API/igdb.php';
+  const url = '../API/igdb.php';
   
   // Options pour la requête
   const options = {
@@ -108,7 +108,7 @@ function ShowError(message) {
 
 async function searchItems(query) {
   // URL de l'API
-  const url = '/GameLink/API/igdb.php';
+  const url = '../API/igdb.php';
   
   // Échapper les guillemets dans la requête
   const q = query.replace(/"/g, '\\"');
