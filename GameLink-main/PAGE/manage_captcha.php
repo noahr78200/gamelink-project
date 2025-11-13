@@ -4,362 +4,461 @@
 // BUT : Gérer les questions du captcha (pour les admins)
 // ==========================================
 
-// Démarrer la session
-session_start();
+// Protection admin (même logique que ADMIN.php)
+require_once __DIR__ . '/../INCLUDES/check_admin.php';
+require_admin();
 
-// ÉTAPE 1 : Vérifier que l'utilisateur est connecté
-// --------------------------------------------------
-if (!isset($_SESSION['user_id'])) {
-  // Si pas connecté, retour à la page de connexion
-  header('Location: AUTH.php');
-  exit;
+// Même chemin que dans captcha.php
+// (très important pour que les deux utilisent le MÊME fichier)
+define('CAPTCHA_JSON', __DIR__ . '/../DATA/captcha_bank.json');
+
+// --------- Petites fonctions simples ---------
+
+// Charger les questions depuis le JSON
+function load_captcha_bank() {
+    if (!file_exists(CAPTCHA_JSON)) {
+        // Si le fichier n’existe pas, on renvoie un tableau vide
+        return [];
+    }
+
+    $txt = file_get_contents(CAPTCHA_JSON);
+    $data = json_decode($txt, true);
+
+    if (!is_array($data)) {
+        return [];
+    }
+
+    return $data;
 }
 
-// Définir où se trouve le fichier JSON
-const JSON_FILE = __DIR__ . '/../PAGE/captcha_bank.json';
-
-// ====================
-// FONCTIONS UTILES
-// ====================
-
-// Fonction pour charger les questions
-function load_bank() {
-  // Si le fichier n'existe pas, retourner un tableau vide
-  if (!file_exists(JSON_FILE)) {
-    return [];
-  }
-  
-  // Lire le fichier
-  $txt = file_get_contents(JSON_FILE);
-  
-  // Convertir en tableau PHP
-  $arr = json_decode($txt, true);
-  
-  // Vérifier que c'est bien un tableau
-  return is_array($arr) ? $arr : [];
+// Sauvegarder les questions dans le JSON
+function save_captcha_bank(array $bank) {
+    // JSON_PRETTY_PRINT = joli JSON
+    // JSON_UNESCAPED_UNICODE = accents OK
+    file_put_contents(
+        CAPTCHA_JSON,
+        json_encode($bank, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+    );
 }
 
-// Fonction pour sauvegarder les questions
-function save_bank($arr) {
-  // Convertir le tableau en JSON et sauvegarder
-  file_put_contents(JSON_FILE, json_encode($arr, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-}
+// --------- Variables de base ---------
+$bank    = load_captcha_bank(); // liste des questions
+$message = '';                  // message d’info pour l’utilisateur
 
-// ÉTAPE 2 : Charger les questions existantes
-// -------------------------------------------
-$bank = load_bank();
-$msg = '';
-
-// ÉTAPE 3 : Traiter les actions (ajouter, supprimer, activer/désactiver)
-// -----------------------------------------------------------------------
+// --------- Gestion du formulaire ---------
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $action = $_POST['action'] ?? '';
-  
-  // ACTION : Ajouter une question
-  if ($action === 'add') {
-    $q = trim($_POST['q'] ?? '');
-    $a = trim($_POST['a'] ?? '');
-    
-    // Vérifier que les champs ne sont pas vides
-    if ($q !== '' && $a !== '') {
-      // Ajouter la nouvelle question
-      $bank[] = ['q' => $q, 'a' => $a, 'enabled' => true];
-      save_bank($bank);
-      $msg = "Question ajoutée avec succès !";
-    } else {
-      $msg = "Merci de remplir la question ET la réponse.";
+    $action = $_POST['action'] ?? '';
+
+    // On recharge à chaque action pour être sûr
+    $bank = load_captcha_bank();
+
+    // 1) Ajouter une nouvelle question
+    if ($action === 'add') {
+        $question = trim($_POST['question'] ?? '');
+        $answer   = trim($_POST['answer'] ?? '');
+
+        if ($question === '' || $answer === '') {
+            $message = "Merci de remplir la question ET la réponse 😊";
+        } else {
+            // On ajoute une nouvelle entrée
+            $bank[] = [
+                'q'       => $question,
+                'a'       => $answer,
+                'enabled' => true  // active par défaut
+            ];
+            save_captcha_bank($bank);
+            $message = "✅ Question ajoutée avec succès !";
+        }
     }
-  } 
-  // ACTION : Supprimer une question
-  elseif ($action === 'delete') {
-    $i = (int)($_POST['idx'] ?? -1);
-    
-    // Vérifier que l'index existe
-    if (isset($bank[$i])) {
-      // Supprimer la question
-      array_splice($bank, $i, 1);
-      save_bank($bank);
-      $msg = "Question supprimée.";
+
+    // 2) Supprimer une question
+    if ($action === 'delete') {
+        $index = isset($_POST['index']) ? (int) $_POST['index'] : -1;
+
+        if (isset($bank[$index])) {
+            // On supprime l’élément à l’index donné
+            array_splice($bank, $index, 1);
+            save_captcha_bank($bank);
+            $message = "🗑️ Question supprimée.";
+        }
     }
-  } 
-  // ACTION : Activer/désactiver une question
-  elseif ($action === 'toggle') {
-    $i = (int)($_POST['idx'] ?? -1);
-    
-    // Vérifier que l'index existe
-    if (isset($bank[$i])) {
-      // Inverser le statut (actif <-> désactivé)
-      $bank[$i]['enabled'] = !$bank[$i]['enabled'];
-      save_bank($bank);
-      $msg = "Statut modifié.";
+
+    // 3) Activer / désactiver une question
+    if ($action === 'toggle') {
+        $index = isset($_POST['index']) ? (int) $_POST['index'] : -1;
+
+        if (isset($bank[$index])) {
+            // On inverse le booléen enabled
+            $bank[$index]['enabled'] = !($bank[$index]['enabled'] ?? false);
+            save_captcha_bank($bank);
+            $message = "🔁 Statut de la question mis à jour.";
+        }
     }
-  }
-  
-  // Recharger les questions après modification
-  $bank = load_bank();
+
+    // On recharge la liste après modification
+    $bank = load_captcha_bank();
 }
 ?>
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gérer Captcha | GameLink</title>
-  <link rel="stylesheet" href="../CSS/HEADER.css">
-  <style>
-    /* Styles de base */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: 'Roboto', sans-serif;
-      background: #f5f6fa;
-      padding: 20px;
-    }
-    
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      background: white;
-      padding: 40px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    
-    h1 {
-      color: #667eea;
-      margin-bottom: 30px;
-      text-align: center;
-    }
-    
-    h2 {
-      color: #333;
-      margin-top: 40px;
-      margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid #667eea;
-    }
-    
-    /* Message de succès */
-    .success-message {
-      background: #51cf66;
-      color: white;
-      padding: 15px;
-      border-radius: 5px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    
-    /* Boîte d'information */
-    .info-box {
-      background: #e7f5ff;
-      border-left: 4px solid #667eea;
-      padding: 15px;
-      margin-bottom: 20px;
-    }
-    
-    /* Formulaire */
-    .form-group {
-      margin-bottom: 20px;
-    }
-    
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: bold;
-      color: #333;
-    }
-    
-    input[type="text"] {
-      width: 100%;
-      padding: 12px;
-      border: 2px solid #ddd;
-      border-radius: 5px;
-      font-size: 1em;
-    }
-    
-    input[type="text"]:focus {
-      outline: none;
-      border-color: #667eea;
-    }
-    
-    /* Boutons */
-    button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-    
-    button[type="submit"] {
-      background: #667eea;
-      color: white;
-    }
-    
-    button[type="submit"]:hover {
-      background: #5568d3;
-    }
-    
-    .btn-toggle {
-      background: #ffa500;
-      color: white;
-      padding: 8px 15px;
-      margin-right: 5px;
-    }
-    
-    .btn-delete {
-      background: #ff6b6b;
-      color: white;
-      padding: 8px 15px;
-    }
-    
-    .btn-toggle:hover {
-      background: #ff8c00;
-    }
-    
-    .btn-delete:hover {
-      background: #ff5252;
-    }
-    
-    /* Tableau */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    
-    th, td {
-      padding: 15px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-    }
-    
-    th {
-      background: #667eea;
-      color: white;
-      font-weight: bold;
-    }
-    
-    tr:hover {
-      background: #f8f9fa;
-    }
-    
-    /* Statuts */
-    .status-active {
-      color: #51cf66;
-      font-weight: bold;
-    }
-    
-    .status-inactive {
-      color: #ff6b6b;
-      font-weight: bold;
-    }
-    
-    /* Lien de retour */
-    .back-link {
-      display: inline-block;
-      margin-top: 30px;
-      color: #667eea;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    
-    .back-link:hover {
-      text-decoration: underline;
-    }
-  </style>
+    <meta charset="utf-8">
+    <title>Gestion du Captcha - Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Petit style qui colle à l’admin (fond sombre, cartes, etc.) -->
+    <style>
+        body.admin {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                         sans-serif;
+            background: #0f172a;
+            color: #e5e7eb;
+        }
+
+        header {
+            background: #020617;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .Menu {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding: 12px 32px;
+        }
+
+        .Menu a {
+            color: #e5e7eb;
+            text-decoration: none;
+            font-size: 15px;
+            letter-spacing: 0.03em;
+        }
+
+        .Menu a:hover {
+            color: #93c5fd;
+        }
+
+        .logo {
+            height: 32px;
+        }
+
+        main {
+            padding: 32px 16px 48px;
+        }
+
+        .captcha-wrapper {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .captcha-card {
+            background: #111827;
+            border-radius: 16px;
+            padding: 24px 24px 28px;
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+        }
+
+        .captcha-title {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+
+        .captcha-sub {
+            font-size: 14px;
+            color: #9ca3af;
+            margin-bottom: 20px;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            background: rgba(22, 163, 74, 0.1);
+            border: 1px solid rgba(22, 163, 74, 0.6);
+            color: #bbf7d0;
+        }
+
+        .info-box {
+            margin-bottom: 20px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            background: rgba(37, 99, 235, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.5);
+            color: #dbeafe;
+        }
+
+        .info-box code {
+            background: rgba(15, 23, 42, 0.7);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 4px;
+            color: #9ca3af;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(75, 85, 99, 0.8);
+            background: #020617;
+            color: #e5e7eb;
+            font-size: 14px;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.7);
+        }
+
+        .btn-primary {
+            padding: 10px 16px;
+            border-radius: 999px;
+            border: none;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.1);
+        }
+
+        .questions-title {
+            margin-top: 24px;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .captcha-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 6px;
+            font-size: 14px;
+        }
+
+        .captcha-table th,
+        .captcha-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid rgba(31, 41, 55, 0.9);
+            vertical-align: top;
+        }
+
+        .captcha-table th {
+            text-align: left;
+            font-size: 13px;
+            color: #9ca3af;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+        }
+
+        .badge-on {
+            background: rgba(22, 163, 74, 0.2);
+            color: #bbf7d0;
+        }
+
+        .badge-off {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fecaca;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-small {
+            border-radius: 999px;
+            border: none;
+            font-size: 12px;
+            padding: 6px 10px;
+            cursor: pointer;
+        }
+
+        .btn-toggle {
+            background: rgba(234, 179, 8, 0.15);
+            color: #facc15;
+            border: 1px solid rgba(234, 179, 8, 0.6);
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fecaca;
+            border: 1px solid rgba(239, 68, 68, 0.6);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 18px;
+            font-size: 14px;
+            color: #93c5fd;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 640px) {
+            .captcha-card {
+                padding: 18px 14px 20px;
+            }
+
+            .captcha-title {
+                font-size: 19px;
+            }
+        }
+    </style>
 </head>
-<body>
-  <div class="container">
-    <h1>🔒 Gestion des questions Captcha</h1>
+<body class="admin">
 
-    <!-- Afficher le message de succès/erreur -->
-    <?php if ($msg): ?>
-      <div class="success-message"><?= htmlspecialchars($msg) ?></div>
-    <?php endif; ?>
+<header>
+    <nav class="Menu">
+        <a href="">
+            <img class="logo" src="../ICON/LogoComplet.svg" alt="Logo GameLink">
+        </a>
+        <a href="ACCUEIL.php">ACCUEIL</a>
+        <a href="RECHERCHE.php">RECHERCHE</a>
+        <a href="COMMUNAUTE.php">COMMUNAUTÉ</a>
+        <?php if (is_admin()): ?>
+            <a href="ADMIN.php">ADMIN</a>
+        <?php endif; ?>
+    </nav>
+</header>
 
-    <!-- Boîte d'information -->
-    <div class="info-box">
-      <strong>ℹ️ Information :</strong> Pour accepter plusieurs réponses valides, séparez-les par le caractère <code>|</code><br>
-      Exemple : <code>paris|Paris|PARIS</code>
+<main>
+    <div class="captcha-wrapper">
+        <div class="captcha-card">
+            <h1 class="captcha-title">🔒 Gestion des questions Captcha</h1>
+            <p class="captcha-sub">
+                Ajoute, active/désactive ou supprime les questions utilisées pour vérifier que l’utilisateur est humain.
+            </p>
+
+            <?php if ($message): ?>
+                <div class="message">
+                    <?= htmlspecialchars($message) ?>
+                </div>
+            <?php endif; ?>
+
+            <div class="info-box">
+                <strong>Astuce :</strong> pour accepter plusieurs réponses valides,
+                sépare-les avec le caractère <code>|</code>.<br>
+                Exemple : <code>paris|Paris|PARIS</code>
+            </div>
+
+            <!-- Formulaire d’ajout -->
+            <form method="post">
+                <input type="hidden" name="action" value="add">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="question">Question</label>
+                        <input type="text" id="question" name="question"
+                               placeholder="Ex : Quelle est la capitale de la France ?">
+                    </div>
+                    <div class="form-group">
+                        <label for="answer">Réponse(s) attendue(s)</label>
+                        <input type="text" id="answer" name="answer"
+                               placeholder="Ex : paris|Paris|PARIS">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary">➕ Ajouter la question</button>
+            </form>
+
+            <!-- Liste des questions -->
+            <h2 class="questions-title">📋 Questions existantes</h2>
+
+            <?php if (empty($bank)): ?>
+                <p style="font-size: 14px; color: #9ca3af;">Aucune question définie pour le moment.</p>
+            <?php else: ?>
+                <table class="captcha-table">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Question</th>
+                        <th>Réponse(s)</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($bank as $i => $item): ?>
+                        <tr>
+                            <td><?= $i ?></td>
+                            <td><?= htmlspecialchars($item['q'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($item['a'] ?? '') ?></td>
+                            <td>
+                                <?php
+                                $enabled = $item['enabled'] ?? false;
+                                if ($enabled):
+                                    ?>
+                                    <span class="badge badge-on">Activée</span>
+                                <?php else: ?>
+                                    <span class="badge badge-off">Désactivée</span>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <!-- Bouton activer/désactiver -->
+                                    <form method="post" style="margin:0;">
+                                        <input type="hidden" name="action" value="toggle">
+                                        <input type="hidden" name="index" value="<?= $i ?>">
+                                        <button type="submit" class="btn-small btn-toggle">
+                                            <?= $enabled ? 'Désactiver' : 'Activer' ?>
+                                        </button>
+                                    </form>
+
+                                    <!-- Bouton supprimer -->
+                                    <form method="post" style="margin:0;"
+                                          onsubmit="return confirm('Supprimer cette question ?');">
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="index" value="<?= $i ?>">
+                                        <button type="submit" class="btn-small btn-delete">
+                                            Supprimer
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
+
+            <a href="ADMIN.php" class="back-link">← Retour à l’administration</a>
+        </div>
     </div>
+</main>
 
-    <!-- Formulaire pour ajouter une question -->
-    <h2>➕ Ajouter une question</h2>
-    <form method="post">
-      <input type="hidden" name="action" value="add">
-      
-      <div class="form-group">
-        <label for="question">Question</label>
-        <input type="text" id="question" name="q" placeholder="Ex: Quelle est la capitale de la France ?" required>
-      </div>
-      
-      <div class="form-group">
-        <label for="answer">Réponse(s) acceptée(s)</label>
-        <input type="text" id="answer" name="a" placeholder="Ex: paris (ou paris|Paris pour plusieurs variantes)" required>
-      </div>
-      
-      <button type="submit">Ajouter la question</button>
-    </form>
-
-    <!-- Liste des questions existantes -->
-    <h2>📋 Questions existantes (<?= count($bank) ?>)</h2>
-    
-    <?php if (empty($bank)): ?>
-      <p style="text-align: center; color: #999; margin: 40px 0;">Aucune question enregistrée pour le moment.</p>
-    <?php else: ?>
-      <table>
-        <thead>
-          <tr>
-            <th style="width: 50px;">#</th>
-            <th>Question</th>
-            <th style="width: 200px;">Réponse(s)</th>
-            <th style="width: 100px;">Statut</th>
-            <th style="width: 200px;">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php foreach ($bank as $i => $row): ?>
-            <tr>
-              <td><?= $i + 1 ?></td>
-              <td><?= htmlspecialchars($row['q']) ?></td>
-              <td><code><?= htmlspecialchars($row['a']) ?></code></td>
-              <td>
-                <?php if (!empty($row['enabled'])): ?>
-                  <span class="status-active">✓ Active</span>
-                <?php else: ?>
-                  <span class="status-inactive">✗ Désactivée</span>
-                <?php endif; ?>
-              </td>
-              <td>
-                <!-- Bouton Activer/Désactiver -->
-                <form method="post" style="display:inline;">
-                  <input type="hidden" name="action" value="toggle">
-                  <input type="hidden" name="idx" value="<?= $i ?>">
-                  <button type="submit" class="btn-toggle">
-                    <?= !empty($row['enabled']) ? 'Désactiver' : 'Activer' ?>
-                  </button>
-                </form>
-                
-                <!-- Bouton Supprimer -->
-                <form method="post" style="display:inline;" onsubmit="return confirm('Supprimer cette question ?')">
-                  <input type="hidden" name="action" value="delete">
-                  <input type="hidden" name="idx" value="<?= $i ?>">
-                  <button type="submit" class="btn-delete">Supprimer</button>
-                </form>
-              </td>
-            </tr>
-          <?php endforeach; ?>
-        </tbody>
-      </table>
-    <?php endif; ?>
-
-    <a href="ADMIN.php" class="back-link">← Retour à l'administration</a>
-  </div>
 </body>
 </html>
