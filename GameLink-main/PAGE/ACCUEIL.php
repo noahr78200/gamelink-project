@@ -16,6 +16,9 @@ $user_pseudo = $_SESSION['user_pseudo'];
 
 // TODO: Récupérer les jeux de l'utilisateur depuis la BDD
 // Pour l'instant, on affiche juste un message de bienvenue
+
+
+   
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -104,28 +107,12 @@ $user_pseudo = $_SESSION['user_pseudo'];
     </style>
 </head>
 <body>
-<?php
-    require_once __DIR__ . '/../INCLUDES/check_admin.php';
-?>
-<header>
-    <nav class="Menu">
-        <a href="">
-            <img class="logo" src="../ICON/LogoComplet.svg" alt="Logo GameLink" width="">
-        </a>
-        <a href="ACCUEIL.php">ACCUEIL</a>
-        <a href="RECHERCHE.php">RECHERCHE</a>
-        <a href="COMMUNAUTE.php">COMMUNAUTÉ</a>
-        
-        <?php if (is_admin()): ?>
-            <!-- Ce lien ne s'affiche QUE pour l'ID joueur 7 -->
-            <a href="ADMIN.php">ADMIN</a>
-        <?php endif; ?>
-    </nav>
-    <a href="">
-        <img src="../ICON/iconProfil.svg" alt="Logo Profil" width="">
-    </a>
-</header>
 
+<?php 
+    // Inclure le header (qui affichera ou non le lien ADMIN)
+    include __DIR__ . '/../INCLUDES/header.php'; 
+    ?>
+    
     <main>
         <div class="welcome-banner">
             <h1>👋 Bienvenue, <?= htmlspecialchars($user_pseudo) ?> !</h1>

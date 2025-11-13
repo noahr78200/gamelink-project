@@ -27,7 +27,10 @@ require_admin();
                 <a href="ACCUEIL.php">ACCUEIL</a>
                 <a href="RECHERCHE.php">RECHERCHE</a>
                 <a href="COMMUNAUTE.php">COMMUNAUTÉ</a>
-                <a href="ADMIN.php">ADMIN</a>
+                <?php if (is_admin()): ?>
+        <!-- Le lien ADMIN s'affiche seulement si c'est l'ID 7 -->
+        <a href="ADMIN.php">ADMIN</a>
+      <?php endif; ?>
             </nav>
             <a href="">
                 <img src="../ICON/iconProfil.svg" alt="Logo Profil" width="">
