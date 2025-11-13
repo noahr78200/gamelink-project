@@ -264,7 +264,7 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
 
     <!-- ONGLET 2 : GESTION CAPTCHA -->
     <div class="tab-content <?= $current_tab === 'captcha' ? 'active' : '' ?>" id="captcha-tab">
-      <?php include __DIR__ . '/../PAGE/manager_captcha.php'; ?>
+      <?php include __DIR__ . '../PAGE/manage_captcha.php'; ?>
     </div>
 
     <!-- ONGLET 3 : UTILISATEURS (à développer) -->
