@@ -104,24 +104,28 @@ $user_pseudo = $_SESSION['user_pseudo'];
     </style>
 </head>
 <body>
-    <header>
-        <nav class="Menu">
-            <a href="../index.php">
-                <img class="logo" src="../ICON/LogoComplet.svg" alt="Logo GameLink">
-            </a>
-            <a href="ACCUEIL.php">MON ESPACE</a>
-            <a href="RECHERCHE.php">RECHERCHE</a>
-            <a href="COMMUNAUTE.php">COMMUNAUTÉ</a>
+<?php
+    require_once __DIR__ . '/../INCLUDES/check_admin.php';
+?>
+<header>
+    <nav class="Menu">
+        <a href="">
+            <img class="logo" src="../ICON/LogoComplet.svg" alt="Logo GameLink" width="">
+        </a>
+        <a href="ACCUEIL.php">ACCUEIL</a>
+        <a href="RECHERCHE.php">RECHERCHE</a>
+        <a href="COMMUNAUTE.php">COMMUNAUTÉ</a>
+        
+        <?php if (is_admin()): ?>
+            <!-- Ce lien ne s'affiche QUE pour l'ID joueur 7 -->
             <a href="ADMIN.php">ADMIN</a>
-        </nav>
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <span style="color: white; font-weight: bold;"><?= htmlspecialchars($user_pseudo) ?></span>
-            <a href="../INCLUDES/logout.php" title="Se déconnecter">
-                <img src="../ICON/iconProfil.svg" alt="Logo Profil" width="40">
-            </a>
-        </div>
-    </header>
-    
+        <?php endif; ?>
+    </nav>
+    <a href="">
+        <img src="../ICON/iconProfil.svg" alt="Logo Profil" width="">
+    </a>
+</header>
+
     <main>
         <div class="welcome-banner">
             <h1>👋 Bienvenue, <?= htmlspecialchars($user_pseudo) ?> !</h1>

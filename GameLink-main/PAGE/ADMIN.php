@@ -1,4 +1,13 @@
+// ÉTAPE 1 : Inclure le fichier de vérification admin
+// ---------------------------------------------------
+<?php 
+require_once __DIR__ . '/../INCLUDES/check_admin.php';
 
+// ÉTAPE 2 : Bloquer l'accès si pas admin
+// ---------------------------------------
+// Cette ligne arrête tout si l'utilisateur n'est pas l'ID 7
+require_admin();
+?>
 <!doctype html>
 <html lang="fr">
 <head>
