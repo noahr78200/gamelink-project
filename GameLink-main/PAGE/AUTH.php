@@ -20,8 +20,8 @@ if (empty($_SESSION['csrf'])) {
 $chemin_script = $_SERVER['SCRIPT_NAME'];
 $dossier_page = dirname($chemin_script);
 $dossier_site = dirname($dossier_page);
-$url_login = $dossier_site . '/INCLUDES/auth_login.php';
-$url_signup = $dossier_site . '/INCLUDES/auth_register.php';
+$url_login = $dossier_site . '../INCLUDES/auth_login.php';
+$url_signup = $dossier_site . '../INCLUDES/auth_register.php';
 
 // FONCTION : Récupérer une ancienne valeur du formulaire
 function ancienne_valeur($nom_champ, $valeur_par_defaut = '') {
