@@ -1,5 +1,4 @@
-// ÉTAPE 1 : Inclure le fichier de vérification admin
-// ---------------------------------------------------
+
 <?php 
 require_once __DIR__ . '/../INCLUDES/check_admin.php';
 
