@@ -1,158 +1,296 @@
 <?php
-// PAGE/captcha.php
+// ==========================================
+// FICHIER : captcha.php
+// BUT : Vérifier que l'utilisateur est humain
+// ==========================================
+
+// Démarrer la session
 session_start();
 
-// ==== DEBUG MINIMAL (à retirer en prod) ====
-// ini_set('display_errors', 1);
-// error_reporting(E_ALL);
-
-// 1) Vérifier l'utilisateur en attente
+// ÉTAPE 1 : Vérifier qu'un utilisateur essaie de se connecter
+// ------------------------------------------------------------
 if (!isset($_SESSION['pending_user_id'])) {
-    header('Location: /PAGE/AUTH.php');
-    exit;
+  // Si personne n'essaie de se connecter, retour à la page de connexion
+  header('Location: /PAGE/AUTH.php');
+  exit;
 }
 
-// 2) Init compteur
+// ÉTAPE 2 : Initialiser le compteur de tentatives
+// ------------------------------------------------
 if (!isset($_SESSION['captcha_attempts'])) {
-    $_SESSION['captcha_attempts'] = 0;
+  $_SESSION['captcha_attempts'] = 0;
 }
 
+// Définir où se trouve le fichier des questions
 define('CAPTCHA_JSON', __DIR__ . '/../DATA/captcha_bank.json');
 
-// --- Helpers sûrs ---
-function load_bank(): array {
-    if (!file_exists(CAPTCHA_JSON)) return [];
-    $txt = @file_get_contents(CAPTCHA_JSON);
-    if ($txt === false) return [];
-    $arr = @json_decode($txt, true);
-    return is_array($arr) ? $arr : [];
+// ====================
+// FONCTIONS UTILES
+// ====================
+
+// Fonction pour charger les questions depuis le fichier JSON
+function load_bank() {
+  // Si le fichier n'existe pas, retourner un tableau vide
+  if (!file_exists(CAPTCHA_JSON)) {
+    return [];
+  }
+  
+  // Lire le contenu du fichier
+  $txt = @file_get_contents(CAPTCHA_JSON);
+  if ($txt === false) {
+    return [];
+  }
+  
+  // Convertir le JSON en tableau PHP
+  $arr = @json_decode($txt, true);
+  return is_array($arr) ? $arr : [];
 }
 
-function normalize_text($s): string {
-    $s = trim((string)$s);
+// Fonction pour normaliser le texte (enlever accents, majuscules, etc.)
+function normalize_text($texte) {
+  // Enlever les espaces au début et à la fin
+  $texte = trim((string)$texte);
 
-    // mb_strtolower peut ne pas être dispo → fallback
-    if (function_exists('mb_strtolower')) {
-        $s = mb_strtolower($s, 'UTF-8');
-    } else {
-        $s = strtolower($s);
+  // Convertir en minuscules
+  if (function_exists('mb_strtolower')) {
+    $texte = mb_strtolower($texte, 'UTF-8');
+  } else {
+    $texte = strtolower($texte);
+  }
+
+  // Enlever les accents
+  if (function_exists('iconv')) {
+    $trans = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $texte);
+    if ($trans !== false) {
+      $texte = $trans;
     }
+  }
 
-    // iconv peut ne pas être dispo → fallback
-    if (function_exists('iconv')) {
-        $trans = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $s);
-        if ($trans !== false) $s = $trans;
-    }
-
-    $s = preg_replace('/[^a-z0-9]+/i', ' ', $s);
-    $s = preg_replace('/\s+/', ' ', $s);
-    return trim($s);
+  // Garder seulement les lettres et chiffres
+  $texte = preg_replace('/[^a-z0-9]+/i', ' ', $texte);
+  $texte = preg_replace('/\s+/', ' ', $texte);
+  return trim($texte);
 }
 
-function is_answer_correct($userInput, $expectedRaw): bool {
-    $u = normalize_text($userInput);
-    $candidates = array_map('trim', explode('|', (string)$expectedRaw));
-    foreach ($candidates as $c) {
-        if ($u === normalize_text($c)) return true;
+// Fonction pour vérifier si la réponse est correcte
+function is_answer_correct($reponse_utilisateur, $reponse_attendue) {
+  // Normaliser la réponse de l'utilisateur
+  $u = normalize_text($reponse_utilisateur);
+  
+  // Séparer les réponses possibles (séparées par |)
+  $candidates = array_map('trim', explode('|', (string)$reponse_attendue));
+  
+  // Vérifier si une des réponses correspond
+  foreach ($candidates as $c) {
+    if ($u === normalize_text($c)) {
+      return true;
     }
-    return false;
+  }
+  return false;
 }
 
-function pick_random_question_index(array $bank, $avoidIndex = null) {
-    $active = [];
-    foreach ($bank as $i => $row) {
-        if (!empty($row['enabled'])) $active[] = $i;
+// Fonction pour choisir une question au hasard
+function pick_random_question_index($bank, $avoidIndex = null) {
+  // Trouver toutes les questions actives
+  $active = [];
+  foreach ($bank as $i => $row) {
+    if (!empty($row['enabled'])) {
+      $active[] = $i;
     }
-    if (empty($active)) return null;
-    if ($avoidIndex !== null && count($active) > 1) {
-        $active = array_values(array_filter($active, function($x) use ($avoidIndex){ return $x !== $avoidIndex; }));
-    }
-    return $active[array_rand($active)];
+  }
+  
+  // Si aucune question active, retourner null
+  if (empty($active)) {
+    return null;
+  }
+  
+  // Éviter de reposer la même question
+  if ($avoidIndex !== null && count($active) > 1) {
+    $active = array_values(array_filter($active, function($x) use ($avoidIndex) {
+      return $x !== $avoidIndex;
+    }));
+  }
+  
+  // Choisir une question au hasard
+  return $active[array_rand($active)];
 }
 
+// Fonction pour connecter l'utilisateur et aller à l'accueil
 function connect_and_finish_then_redirect_home() {
-    // Active la session utilisateur
-    $_SESSION['user_id']     = $_SESSION['pending_user_id'];
-    $_SESSION['user_pseudo'] = $_SESSION['pending_user_pseudo'] ?? '';
-    $_SESSION['user_email']  = $_SESSION['pending_user_email']  ?? '';
-    $_SESSION['logged_in']   = true;
-    $_SESSION['login_time']  = time();
+  // Activer la session utilisateur
+  $_SESSION['user_id'] = $_SESSION['pending_user_id'];
+  $_SESSION['user_pseudo'] = $_SESSION['pending_user_pseudo'] ?? '';
+  $_SESSION['user_email'] = $_SESSION['pending_user_email'] ?? '';
+  $_SESSION['logged_in'] = true;
+  $_SESSION['login_time'] = time();
 
-    // Nettoyage
-    unset($_SESSION['pending_user_id'], $_SESSION['pending_user_pseudo'], $_SESSION['pending_user_email']);
-    unset($_SESSION['captcha_idx'], $_SESSION['captcha_attempts']);
+  // Nettoyer les variables temporaires
+  unset($_SESSION['pending_user_id'], $_SESSION['pending_user_pseudo'], $_SESSION['pending_user_email']);
+  unset($_SESSION['captcha_idx'], $_SESSION['captcha_attempts']);
 
-    $_SESSION['flash'] = [
-        'success' => 'Connexion réussie ! Bienvenue, ' . htmlspecialchars($_SESSION['user_pseudo']) . ' !'
-    ];
+  // Message de bienvenue
+  $_SESSION['flash'] = [
+    'success' => 'Connexion réussie ! Bienvenue, ' . htmlspecialchars($_SESSION['user_pseudo']) . ' !'
+  ];
 
-    // IMPORTANT : chemin absolu
-    header('Location: /PAGE/ACCUEIL.php');
-    exit;
+  // Rediriger vers l'accueil
+  header('Location: /PAGE/ACCUEIL.php');
+  exit;
 }
 
-// 3) Charger la banque
+// ÉTAPE 3 : Charger les questions
+// --------------------------------
 $bank = load_bank();
 
-// Si aucune question active → connecter direct (pas d'echo AVANT header)
+// Si aucune question, connecter directement
 if (empty($bank)) {
-    connect_and_finish_then_redirect_home();
+  connect_and_finish_then_redirect_home();
 }
 
-// 4) POST : vérification de la réponse
+// ÉTAPE 4 : Vérifier la réponse (si le formulaire a été envoyé)
+// --------------------------------------------------------------
 $error = '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $idx    = isset($_SESSION['captcha_idx']) ? (int)$_SESSION['captcha_idx'] : null;
-    $answer = trim($_POST['captcha_answer'] ?? '');
+  // Récupérer l'index de la question et la réponse
+  $idx = isset($_SESSION['captcha_idx']) ? (int)$_SESSION['captcha_idx'] : null;
+  $answer = trim($_POST['captcha_answer'] ?? '');
 
-    if ($idx !== null && isset($bank[$idx])) {
-        $expected = $bank[$idx]['a'] ?? '';
+  // Si la question existe
+  if ($idx !== null && isset($bank[$idx])) {
+    $expected = $bank[$idx]['a'] ?? '';
 
-        if (is_answer_correct($answer, $expected)) {
-            connect_and_finish_then_redirect_home();
-        } else {
-            $_SESSION['captcha_attempts']++;
-
-            if ($_SESSION['captcha_attempts'] >= 3) {
-                // Reset & retour index
-                unset($_SESSION['pending_user_id'], $_SESSION['pending_user_pseudo'], $_SESSION['pending_user_email']);
-                unset($_SESSION['captcha_idx'], $_SESSION['captcha_attempts']);
-
-                $_SESSION['flash_index'] = [
-                    'error' => 'Vous avez échoué 3 fois au captcha. Veuillez vous reconnecter.'
-                ];
-                header('Location: /index.php');
-                exit;
-            }
-
-            $error = "Mauvaise réponse (" . $_SESSION['captcha_attempts'] . "/3) – nouvelle question.";
-            $newIdx = pick_random_question_index($bank, $idx);
-            $_SESSION['captcha_idx'] = $newIdx;
-        }
+    // Vérifier si la réponse est correcte
+    if (is_answer_correct($answer, $expected)) {
+      // Réponse correcte ! Connexion réussie
+      connect_and_finish_then_redirect_home();
     } else {
-        $_SESSION['captcha_idx'] = pick_random_question_index($bank, null);
+      // Réponse incorrecte
+      $_SESSION['captcha_attempts']++;
+
+      // Si 3 échecs, retour à l'accueil
+      if ($_SESSION['captcha_attempts'] >= 3) {
+        unset($_SESSION['pending_user_id'], $_SESSION['pending_user_pseudo'], $_SESSION['pending_user_email']);
+        unset($_SESSION['captcha_idx'], $_SESSION['captcha_attempts']);
+
+        $_SESSION['flash_index'] = [
+          'error' => 'Vous avez échoué 3 fois au captcha. Veuillez vous reconnecter.'
+        ];
+        header('Location: /index.php');
+        exit;
+      }
+
+      // Afficher l'erreur et choisir une nouvelle question
+      $error = "Mauvaise réponse (" . $_SESSION['captcha_attempts'] . "/3) — nouvelle question.";
+      $newIdx = pick_random_question_index($bank, $idx);
+      $_SESSION['captcha_idx'] = $newIdx;
     }
-}
-
-// 5) Choisir une question si besoin
-if (!isset($_SESSION['captcha_idx']) || !isset($bank[$_SESSION['captcha_idx']])) {
+  } else {
     $_SESSION['captcha_idx'] = pick_random_question_index($bank, null);
+  }
 }
 
+// ÉTAPE 5 : Choisir une question si besoin
+// -----------------------------------------
+if (!isset($_SESSION['captcha_idx']) || !isset($bank[$_SESSION['captcha_idx']])) {
+  $_SESSION['captcha_idx'] = pick_random_question_index($bank, null);
+}
+
+// Récupérer la question actuelle
 $currentIdx = $_SESSION['captcha_idx'];
-$currentQ   = $bank[$currentIdx]['q'] ?? 'Question indisponible';
-$attempts   = $_SESSION['captcha_attempts'];
-$remaining  = 3 - $attempts;
+$currentQ = $bank[$currentIdx]['q'] ?? 'Question indisponible';
+$attempts = $_SESSION['captcha_attempts'];
+$remaining = 3 - $attempts;
 ?>
 <!doctype html>
 <html lang="fr">
 <head>
   <meta charset="utf-8">
   <title>Connexion - Captcha | GameLink</title>
-  <link rel="stylesheet" href="/CSS/HEADER.css">
-  <link rel="stylesheet" href="/CSS/AUTH.css">
   <style>
-    /* ... (garde ton CSS inline si tu veux) ... */
+    /* Style simple pour la page */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .captcha-container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      max-width: 500px;
+      width: 100%;
+    }
+    .logo-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .logo-container img {
+      max-width: 200px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+      font-size: 24px;
+    }
+    .attempts-counter {
+      background: #fff3cd;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 15px 0;
+      text-align: center;
+      color: #856404;
+    }
+    .error-message {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 15px 0;
+    }
+    .question-box {
+      background: #e7f3ff;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 20px 0;
+    }
+    .question-text {
+      font-size: 18px;
+      margin-top: 10px;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: bold;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
   </style>
 </head>
 <body>

@@ -1,10 +1,22 @@
-// JS/administration de la page ADMIN (modal des signalements)
+// ==========================================
+// FICHIER : ADMIN.js
+// BUT : Gérer la page d'administration
+// ==========================================
+
+// Attendre que la page soit complètement chargée
 document.addEventListener('DOMContentLoaded', () => {
+  
+  // ========================
+  // GESTION DE LA MODALE
+  // ========================
+  
   const modal = document.getElementById('reportModal');
-  if (!modal) return; // Sécurité si la modale n'est pas présente
+  if (!modal) return;
+  
   const btnCloseAll = modal.querySelectorAll('.modal-close');
   const badge = document.getElementById('m-badge');
 
+  // Formater une date
   function fmtDate(iso) {
     try {
       const d = new Date(iso);
@@ -14,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Ouvrir la modale
   function openModal() {
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
@@ -22,25 +35,27 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('keydown', onEsc);
   }
 
+  // Fermer la modale
   function closeModal() {
     modal.classList.remove('open');
     modal.setAttribute('aria-hidden', 'true');
     document.removeEventListener('keydown', onEsc);
   }
 
+  // Fermer avec la touche Échap
   function onEsc(e) {
     if (e.key === 'Escape') closeModal();
   }
 
-  // Fermer via boutons
+  // Fermer via les boutons
   btnCloseAll.forEach(b => b.addEventListener('click', closeModal));
 
-  // Fermer via clic sur overlay
+  // Fermer en cliquant sur l'overlay
   modal.addEventListener('click', (e) => {
     if (e.target === modal) closeModal();
   });
 
-  // Clic sur une ligne du tableau -> remplir + ouvrir
+  // Gérer les clics sur les lignes du tableau
   const rows = document.querySelectorAll('.report-table tbody tr.report-row');
   rows.forEach(row => {
     row.addEventListener('click', () => {
@@ -48,18 +63,19 @@ document.addEventListener('DOMContentLoaded', () => {
       row.classList.add('is-selected');
 
       const d = row.dataset;
-      // Remplissage des champs de la modale
+      
+      // Fonction pour changer le texte d'un élément
       const setText = (id, value) => {
         const el = document.getElementById(id);
         if (el) el.textContent = value ?? '—';
       };
 
       setText('m-offender', d.offender);
-      setText('m-message',  d.message);
-      setText('m-reason',   d.reason);
-      setText('m-date',     d.date ? fmtDate(d.date) : '—');
-      setText('m-game',     d.game);
-      setText('m-chat',     d.chat);
+      setText('m-message', d.message);
+      setText('m-reason', d.reason);
+      setText('m-date', d.date ? fmtDate(d.date) : '—');
+      setText('m-game', d.game);
+      setText('m-chat', d.chat);
       setText('m-reporter', d.reporter);
 
       const strikes = Number(d.strikes2025 || 0);
@@ -67,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (badge) {
         badge.hidden = false;
-        badge.className = 'badge'; // reset classes
+        badge.className = 'badge';
         if (strikes >= 5) {
           badge.textContent = 'Risque élevé';
           badge.classList.add('badge-bad');
@@ -84,24 +100,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+
 // =====================
-// CHARTS (Chart.js v4)
+// GRAPHIQUES (Chart.js)
 // =====================
 (function initCharts(){
-  if (typeof Chart === 'undefined') return; // CDN non chargé
+  // Vérifier si Chart.js est chargé
+  if (typeof Chart === 'undefined') return;
 
-  // Récupération des couleurs depuis les variables CSS
+  // Récupérer les couleurs depuis le CSS
   const css = getComputedStyle(document.documentElement);
-  const cText   = (css.getPropertyValue('--text')   || '#e6e9f2').trim();
-  const cMuted  = (css.getPropertyValue('--muted')  || '#aab2c0').trim();
+  const cText = (css.getPropertyValue('--text') || '#e6e9f2').trim();
+  const cMuted = (css.getPropertyValue('--muted') || '#aab2c0').trim();
   const cBorder = (css.getPropertyValue('--border') || 'rgba(255,255,255,.2)').trim();
   const cAccent = (css.getPropertyValue('--accent') || '#8fb6ff').trim();
-  const cAccent2= (css.getPropertyValue('--accent-2') || '#c2ccff').trim();
-  const cUp     = (css.getPropertyValue('--up') || '#34d399').trim();
+  const cAccent2 = (css.getPropertyValue('--accent-2') || '#c2ccff').trim();
+  const cUp = (css.getPropertyValue('--up') || '#34d399').trim();
 
-  // Helpers
+  // Convertir une couleur hexa en rgba
   function hexToRgba(hex, alpha){
-    // hex: "#RRGGBB" or "#RGB"
     let c = hex.replace('#','');
     if (c.length === 3){
       c = c.split('').map(x => x + x).join('');
@@ -111,13 +128,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const b = parseInt(c.slice(4,6),16);
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   }
+  
+  // Créer un dégradé pour les graphiques
   function makeAreaGradient(ctx, colorHex){
     const g = ctx.createLinearGradient(0, 0, 0, ctx.canvas.height);
-    g.addColorStop(0, hexToRgba(colorHex, 0.30));  // haut ~30%
-    g.addColorStop(1, hexToRgba(colorHex, 0.00));  // bas transparent
+    g.addColorStop(0, hexToRgba(colorHex, 0.30));
+    g.addColorStop(1, hexToRgba(colorHex, 0.00));
     return g;
   }
 
+  // Options communes pour tous les graphiques
   const commonOpts = {
     responsive: true,
     maintainAspectRatio: false,
@@ -145,12 +165,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // ====================================
+  // GRAPHIQUE 1 : Signalements journaliers
+  // ====================================
   const elReports = document.getElementById('chartReports');
   if (elReports){
     const ctxR = elReports.getContext('2d');
+    
+    // Données : jours de la semaine
     const labelsR = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
-    const dataR   = [120, 96, 142, 131, 171, 138, 127];
+    
+    // Données : nombre de signalements par jour
+    const dataR = [120, 96, 142, 131, 171, 138, 127];
 
+    // Créer le graphique
     new Chart(ctxR, {
       type: 'line',
       data: {
@@ -171,21 +199,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 2) Utilisateurs actifs temps réel — Line + simulation
+  // ====================================
+  // GRAPHIQUE 2 : Utilisateurs actifs en temps réel
+  // ====================================
   const elActive = document.getElementById('chartActive');
   if (elActive){
     const ctxA = elActive.getContext('2d');
 
     const MAX_POINTS = 30;
     const labelsA = Array.from({length: MAX_POINTS}, (_,i) => `t-${MAX_POINTS - i}s`);
-    const dataA   = [];
+    const dataA = [];
 
+    // Générer des données aléatoires
     let last = 2700;
-    for (let i=0;i<MAX_POINTS;i++){
+    for (let i=0; i<MAX_POINTS; i++){
       last += Math.round((Math.random() - 0.5) * 40);
       dataA.push(Math.max(0, last));
     }
 
+    // Créer le graphique
     const chartActive = new Chart(ctxA, {
       type: 'line',
       data: {
@@ -211,19 +243,29 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Ajoute un point toutes les secondes (simulation)
+    // Mettre à jour le graphique toutes les secondes
     setInterval(() => {
+      // Ajouter une nouvelle valeur
       last += Math.round((Math.random() - 0.5) * 60);
       last = Math.max(0, last);
-      const nowLabel = new Date().toLocaleTimeString('fr-FR', { minute:'2-digit', second:'2-digit' });
+      
+      // Créer un label avec l'heure actuelle
+      const nowLabel = new Date().toLocaleTimeString('fr-FR', { 
+        minute:'2-digit', 
+        second:'2-digit' 
+      });
 
+      // Ajouter le nouveau point
       chartActive.data.labels.push(nowLabel);
       chartActive.data.datasets[0].data.push(last);
 
+      // Supprimer le point le plus ancien si on dépasse MAX_POINTS
       if (chartActive.data.labels.length > MAX_POINTS) {
         chartActive.data.labels.shift();
         chartActive.data.datasets[0].data.shift();
       }
+      
+      // Mettre à jour le graphique
       chartActive.update('none');
     }, 1000);
   }

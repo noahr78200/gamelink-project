@@ -1,116 +1,244 @@
-document.addEventListener('DOMContentLoaded', () => {
-  // ----- Onglets (si tu en as) -----
-  const tabs = document.querySelectorAll('.auth-tab');
-  const forms = document.querySelectorAll('.auth-form');
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('is-active'));
-      forms.forEach(f => f.classList.remove('is-active'));
-      tab.classList.add('is-active');
-      const target = document.querySelector(tab.dataset.target);
-      if (target) target.classList.add('is-active');
+// =========================================
+// FICHIER : AUTH.js (VERSION DÉBUTANT)
+// Gère les formulaires de connexion et inscription
+// =========================================
+
+// Attendre que la page soit complètement chargée
+document.addEventListener('DOMContentLoaded', function() {
+  
+  // ===== PARTIE 1 : GESTION DES ONGLETS =====
+  
+  // Récupérer tous les onglets (boutons "Connexion" et "Inscription")
+  var onglets = document.querySelectorAll('.auth-tab');
+  
+  // Récupérer tous les formulaires
+  var formulaires = document.querySelectorAll('.auth-form');
+  
+  // Ajouter un écouteur de clic sur chaque onglet
+  onglets.forEach(function(onglet) {
+    onglet.addEventListener('click', function() {
+      
+      // Enlever la classe "is-active" de tous les onglets
+      onglets.forEach(function(autreOnglet) {
+        autreOnglet.classList.remove('is-active');
+      });
+      
+      // Enlever la classe "is-active" de tous les formulaires
+      formulaires.forEach(function(formulaire) {
+        formulaire.classList.remove('is-active');
+      });
+      
+      // Ajouter la classe "is-active" à l'onglet cliqué
+      onglet.classList.add('is-active');
+      
+      // Trouver le formulaire correspondant et l'afficher
+      var cible = document.querySelector(onglet.dataset.target);
+      if (cible) {
+        cible.classList.add('is-active');
+      }
     });
   });
-
-  // ----- Afficher / masquer les mots de passe -----
-  document.querySelectorAll('.toggle-visibility').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const input = btn.previousElementSibling;
-      if (!input) return;
-      input.type = input.type === 'password' ? 'text' : 'password';
+  
+  
+  // ===== PARTIE 2 : AFFICHER/MASQUER LES MOTS DE PASSE =====
+  
+  // Récupérer tous les boutons "œil" (toggle-visibility)
+  var boutonsVisibilite = document.querySelectorAll('.toggle-visibility');
+  
+  // Ajouter un écouteur de clic sur chaque bouton
+  boutonsVisibilite.forEach(function(bouton) {
+    bouton.addEventListener('click', function() {
+      
+      // Trouver le champ de mot de passe juste avant le bouton
+      var champMotDePasse = bouton.previousElementSibling;
+      
+      if (champMotDePasse) {
+        // Si le champ est de type "password", le changer en "text"
+        // Sinon, le remettre en "password"
+        if (champMotDePasse.type === 'password') {
+          champMotDePasse.type = 'text';
+        } else {
+          champMotDePasse.type = 'password';
+        }
+      }
     });
   });
-
-  // Helper erreurs (affiche dans .error[data-for="idDuChamp"])
-  function setError(id, msg){
-    const el = document.querySelector(`.error[data-for="${id}"]`);
-    if (el) el.textContent = msg || '';
+  
+  
+  // ===== PARTIE 3 : FONCTIONS UTILITAIRES =====
+  
+  // === FONCTION : Afficher un message d'erreur ===
+  function afficherErreur(idChamp, message) {
+    // Trouver l'élément qui affiche l'erreur pour ce champ
+    var elementErreur = document.querySelector('.error[data-for="' + idChamp + '"]');
+    
+    if (elementErreur) {
+      elementErreur.textContent = message || '';
+    }
   }
-
-  // Petit anti double-clic submit (UX) — ne bloque pas l’envoi
-  function lockSubmit(form){
-    const btn = form.querySelector('button[type="submit"], input[type="submit"]');
-    if (!btn) return;
-    btn.dataset._txt = btn.textContent || btn.value || '';
-    if (btn.tagName === 'BUTTON') btn.textContent = 'Envoi…';
-    else btn.value = 'Envoi…';
-    btn.disabled = true;
+  
+  // === FONCTION : Bloquer le bouton pendant l'envoi ===
+  function bloquerBouton(formulaire) {
+    // Trouver le bouton de soumission du formulaire
+    var bouton = formulaire.querySelector('button[type="submit"], input[type="submit"]');
+    
+    if (!bouton) {
+      return;
+    }
+    
+    // Sauvegarder le texte original du bouton
+    bouton.dataset.texteOriginal = bouton.textContent || bouton.value || '';
+    
+    // Changer le texte et désactiver le bouton
+    if (bouton.tagName === 'BUTTON') {
+      bouton.textContent = 'Envoi…';
+    } else {
+      bouton.value = 'Envoi…';
+    }
+    
+    bouton.disabled = true;
   }
-
-  // ========== CONNEXION ==========
-  const loginForm = document.getElementById('login');
-  if (loginForm){
-    loginForm.addEventListener('submit', (e) => {
-      const email = document.getElementById('loginEmail');
-      const pass  = document.getElementById('loginPassword');
-
-      // reset erreurs UI
-      setError('loginEmail',''); 
-      setError('loginPassword','');
-
-      let ok = true;
-      if (!email || !email.value || !email.checkValidity()){
-        ok = false; setError('loginEmail', 'Email invalide');
+  
+  
+  // ===== PARTIE 4 : VALIDATION DU FORMULAIRE DE CONNEXION =====
+  
+  var formulaireConnexion = document.getElementById('loginForm');
+  
+  if (formulaireConnexion) {
+    formulaireConnexion.addEventListener('submit', function(evenement) {
+      
+      // Récupérer les champs du formulaire
+      var champEmail = document.getElementById('loginEmail');
+      var champPassword = document.getElementById('loginPassword');
+      
+      // Effacer les anciennes erreurs
+      afficherErreur('loginEmail', '');
+      afficherErreur('loginPassword', '');
+      
+      // Variable pour savoir si le formulaire est valide
+      var formulaireValide = true;
+      
+      // Vérifier l'email
+      if (!champEmail || !champEmail.value || !champEmail.checkValidity()) {
+        formulaireValide = false;
+        afficherErreur('loginEmail', 'Email invalide');
       }
-      if (!pass || !pass.value || pass.value.length < 6){
-        ok = false; setError('loginPassword', '6 caractères minimum');
+      
+      // Vérifier le mot de passe (minimum 6 caractères)
+      if (!champPassword || !champPassword.value || champPassword.value.length < 6) {
+        formulaireValide = false;
+        afficherErreur('loginPassword', '6 caractères minimum');
       }
-
-      // Si invalide → on empêche (HTML5 + messages), sinon on laisse partir vers PHP
-      if (!ok){
-        e.preventDefault();
-        loginForm.reportValidity?.();
+      
+      // Si le formulaire n'est pas valide, empêcher l'envoi
+      if (!formulaireValide) {
+        evenement.preventDefault();
+        
+        // Afficher les messages d'erreur HTML5 (si disponibles)
+        if (formulaireConnexion.reportValidity) {
+          formulaireConnexion.reportValidity();
+        }
+        
         return;
       }
-      lockSubmit(loginForm); // UX, puis POST envoyé à ../INCLUDES/auth_login.php
+      
+      // Si tout est OK, bloquer le bouton pour éviter les doubles clics
+      bloquerBouton(formulaireConnexion);
+      
+      // Le formulaire sera envoyé vers auth_login.php
     });
   }
-
-  // ========== INSCRIPTION ==========
-  const signupForm = document.getElementById('signup');
-  if (signupForm){
-    signupForm.addEventListener('submit', (e) => {
-      const name  = document.getElementById('suName');
-      const email = document.getElementById('suEmail');
-      const pass  = document.getElementById('suPass');
-      const conf  = document.getElementById('suConfirm');
-      const cgu   = document.getElementById('suCgu'); // optionnel
-
-      // reset erreurs UI
-      setError('suName',''); setError('suEmail',''); setError('suPass',''); setError('suConfirm','');
-
-      let ok = true;
-      if (!name || !name.value || name.value.length < 3){
-        ok=false; setError('suName','3 caractères minimum');
+  
+  
+  // ===== PARTIE 5 : VALIDATION DU FORMULAIRE D'INSCRIPTION =====
+  
+  var formulaireInscription = document.getElementById('signupForm');
+  
+  if (formulaireInscription) {
+    formulaireInscription.addEventListener('submit', function(evenement) {
+      
+      // Récupérer les champs du formulaire
+      var champNom = document.getElementById('suName');
+      var champEmail = document.getElementById('suEmail');
+      var champPassword = document.getElementById('suPass');
+      var champConfirmation = document.getElementById('suConfirm');
+      var caseACocherCGU = document.getElementById('suCgu');
+      
+      // Effacer les anciennes erreurs
+      afficherErreur('suName', '');
+      afficherErreur('suEmail', '');
+      afficherErreur('suPass', '');
+      afficherErreur('suConfirm', '');
+      
+      // Variable pour savoir si le formulaire est valide
+      var formulaireValide = true;
+      
+      // Vérifier le pseudo (minimum 3 caractères)
+      if (!champNom || !champNom.value || champNom.value.length < 3) {
+        formulaireValide = false;
+        afficherErreur('suName', '3 caractères minimum');
       }
-      if (!email || !email.value || !email.checkValidity()){
-        ok=false; setError('suEmail','Email invalide');
+      
+      // Vérifier l'email
+      if (!champEmail || !champEmail.value || !champEmail.checkValidity()) {
+        formulaireValide = false;
+        afficherErreur('suEmail', 'Email invalide');
       }
-      if (!pass || !pass.value || pass.value.length < 6){
-        ok=false; setError('suPass','6 caractères minimum');
+      
+      // Vérifier le mot de passe (minimum 6 caractères)
+      if (!champPassword || !champPassword.value || champPassword.value.length < 6) {
+        formulaireValide = false;
+        afficherErreur('suPass', '6 caractères minimum');
       }
-      if (!conf || pass.value !== conf.value){
-        ok=false; setError('suConfirm','Les mots de passe ne correspondent pas');
+      
+      // Vérifier que les mots de passe correspondent
+      if (!champConfirmation || champPassword.value !== champConfirmation.value) {
+        formulaireValide = false;
+        afficherErreur('suConfirm', 'Les mots de passe ne correspondent pas');
       }
-      if (cgu && !cgu.checked){
-        ok=false; alert('Vous devez accepter les CGU.');
+      
+      // Vérifier que la case CGU est cochée
+      if (caseACocherCGU && !caseACocherCGU.checked) {
+        formulaireValide = false;
+        alert('Vous devez accepter les CGU.');
       }
-
-      if (!ok){
-        e.preventDefault();
-        signupForm.reportValidity?.();
+      
+      // Si le formulaire n'est pas valide, empêcher l'envoi
+      if (!formulaireValide) {
+        evenement.preventDefault();
+        
+        // Afficher les messages d'erreur HTML5 (si disponibles)
+        if (formulaireInscription.reportValidity) {
+          formulaireInscription.reportValidity();
+        }
+        
         return;
       }
-      lockSubmit(signupForm); // UX, puis POST envoyé à ../INCLUDES/auth_register.php
+      
+      // Si tout est OK, bloquer le bouton pour éviter les doubles clics
+      bloquerBouton(formulaireInscription);
+      
+      // Le formulaire sera envoyé vers auth_register.php
     });
   }
-
-  // Préremplir “se souvenir” (si présent)
-  const remembered = localStorage.getItem('rememberEmail');
-  if (remembered){
-    const el = document.getElementById('loginEmail');
-    const cb = document.getElementById('rememberMe');
-    if (el) el.value = remembered;
-    if (cb) cb.checked = true;
+  
+  
+  // ===== PARTIE 6 : SE SOUVENIR DE L'EMAIL (facultatif) =====
+  
+  // Vérifier si un email est sauvegardé dans le navigateur
+  var emailSauvegarde = localStorage.getItem('rememberEmail');
+  
+  if (emailSauvegarde) {
+    // Pré-remplir le champ email
+    var champEmailConnexion = document.getElementById('loginEmail');
+    if (champEmailConnexion) {
+      champEmailConnexion.value = emailSauvegarde;
+    }
+    
+    // Cocher la case "Se souvenir"
+    var caseSeSouvenir = document.getElementById('rememberMe');
+    if (caseSeSouvenir) {
+      caseSeSouvenir.checked = true;
+    }
   }
 });
