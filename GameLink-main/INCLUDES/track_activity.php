@@ -12,25 +12,8 @@
 // ==========================================
 
 // Si tu n'as pas encore de connexion, on la fait maintenant
-if (!isset($pdo)) {
-    try {
-        // 👇 CHANGE CES INFORMATIONS SI BESOIN
-        $host = 'localhost';      // L'adresse de ta base de données
-        $dbname = 'gamelink';     // Le nom de ta base de données
-        $username = 'root';       // Ton nom d'utilisateur (souvent "root")
-        $password = '';           // Ton mot de passe (souvent vide sur ton ordi)
-        
-        // On crée la connexion (comme ouvrir la porte de la base de données)
-        $pdo = new PDO(
-            "mysql:host=$host;dbname=$dbname;charset=utf8mb4",
-            $username,
-            $password
-        );
-    } catch (Exception $e) {
-        // Si ça marche pas, on fait rien (pour pas casser le site)
-        $pdo = null;
-    }
-}
+session_start();
+require_once __DIR__ . '/../DATA/DBConfig.php';
 
 // Si on n'a pas réussi à se connecter, on arrête ici
 if (!$pdo) {

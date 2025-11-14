@@ -10,23 +10,10 @@
 // ==========================================
 // CONNEXION À LA BASE DE DONNÉES
 // ==========================================
+session_start();
+require_once __DIR__ . '/../DATA/DBConfig.php';
 
-try {
-    // 👇 CHANGE CES INFORMATIONS SI BESOIN
-    $host = 'localhost';
-    $dbname = 'gamelink';
-    $username = 'root';
-    $password = '';
-    
-    $pdo = new PDO(
-        "mysql:host=$host;dbname=$dbname;charset=utf8mb4",
-        $username,
-        $password
-    );
-} catch (Exception $e) {
-    // Si ça marche pas, on met des valeurs à 0
-    die("Erreur de connexion");
-}
+
 
 // ==========================================
 // COMPTEUR 1 : Combien de personnes sont connectées MAINTENANT ?
