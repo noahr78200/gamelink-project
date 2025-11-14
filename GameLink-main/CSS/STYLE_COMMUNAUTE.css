@@ -1,0 +1,149 @@
+
+/* ============================
+   STYLE_COMMUNAUTE.css
+   Page communauté thème ADMIN
+   ============================ */
+
+:root{
+  --bg: #0f1115;
+  --bg-grad1: #11151c;
+  --bg-grad2: #0c0f14;
+
+  --panel:   #1a1e27;
+  --panel-2: #171b23;
+  --panel-3: #141820;
+
+  --border: #2a3140;
+  --hoverBorder:#3a4559;
+
+  --text:#E7E9ED;
+  --muted:#8c95a3;
+  --accent:#6ea8ff;
+  --altRow:#1b2130;
+
+  --g:16px;
+  --radius:14px;
+}
+
+/* Décalage pour le header */
+body > main{
+  margin-top: 6rem;
+  margin-left: 1%;
+  margin-right: 1%;
+  padding: 16px 0 40px;
+  max-width: 1400px;
+  margin-inline: auto;
+  font-size: clamp(14px, .9vw + 12px, 16px);
+}
+
+/* Titre principal */
+.community-title{
+  font-size: 1.3rem;
+  letter-spacing: .10em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 18px;
+}
+
+/* Layout de la communauté (feed + side) */
+.community-layout{
+  display: grid;
+  grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
+  gap: var(--g);
+}
+
+@media (max-width: 900px){
+  .community-layout{
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Cartes générales */
+.community-card{
+  background: linear-gradient(180deg, var(--panel), var(--panel-3));
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 14px;
+  box-shadow: 0 8px 18px rgba(0,0,0,.35);
+}
+
+/* Exemple : bloc "Activité récente" */
+.community-feed-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.community-feed-header h2{
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.community-feed-header span{
+  font-size: .8rem;
+  color: var(--muted);
+}
+
+/* Liste d’éléments (posts / activités) */
+.community-list{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.community-list li{
+  padding: 10px 8px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  transition: background .15s ease, transform .15s ease;
+}
+
+.community-list li:nth-child(odd){
+  background: var(--altRow);
+}
+
+.community-list li:hover{
+  background: linear-gradient(90deg, rgba(110,168,255,.08), transparent 60%);
+  transform: translateX(2px);
+}
+
+.community-list .title{
+  color: var(--text);
+  font-weight: 500;
+  font-size: .9rem;
+}
+
+.community-list .meta{
+  color: var(--muted);
+  font-size: .8rem;
+  text-align: right;
+}
+
+/* Carte latérale : par ex. "Top joueurs" ou "Stats" */
+.community-side-card{
+  background: linear-gradient(180deg, var(--panel-2), var(--panel-3));
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 14px;
+}
+
+.community-side-card h3{
+  margin: 0 0 10px;
+  font-size: .95rem;
+  color: var(--text);
+}
+
+/* État vide pour l’instant */
+.community-empty{
+  margin-top: 20px;
+  padding: 28px 16px;
+  border-radius: var(--radius);
+  border: 1px dashed var(--border);
+  text-align: center;
+  color: var(--muted);
+  background: rgba(0,0,0,.4);
+}

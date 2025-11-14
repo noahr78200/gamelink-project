@@ -1,75 +1,119 @@
+/* ============================
+   STYLE_RECHERCHE.css
+   Recherche avec thème ADMIN
+   ============================ */
+
+/* On reprend la même palette */
 :root{
-    --text-color: rgb(255, 255, 255);
-    --text-secondary-color: #d8d8d8 ;
-    --background-color: radial-gradient(circle at top right, #0f1011 10%, #737689 100%);
+  --bg: #0f1115;
+  --bg-grad1: #11151c;
+  --bg-grad2: #0c0f14;
+
+  --panel:   #1a1e27;
+  --panel-2: #171b23;
+  --panel-3: #141820;
+
+  --border: #2a3140;
+  --hoverBorder:#3a4559;
+
+  --text:#E7E9ED;
+  --muted:#8c95a3;
+  --accent:#6ea8ff;
+  --placeholder:#606774;
+
+  --g:16px;
+  --radius:14px;
 }
 
-@font-face {
-    font-family: 'Roboto';
-    src:url("../FONTS/Roboto-Regular.ttf");
-    font-weight: 400;
-    font-style: normal;
+/* Décalage pour le header */
+body > main{
+  margin-top: 6rem;
+  margin-left: 1%;
+  margin-right: 1%;
+  padding: 16px 0 32px;
+  max-width: 1400px;
+  margin-inline: auto;
+  font-size: clamp(14px, .9vw + 12px, 16px);
 }
 
-@font-face {
-    font-family: 'Roboto';
-    src:url("../FONTS/Roboto-Bold.ttf");
-    font-weight: 700;
-    font-style: normal;
-}
-
+/* Zone globale de recherche */
 .search-area{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: .75rem;
-    margin: calc(5rem + 1rem) auto 0;
-    padding: 0 1.25rem;
+  margin-bottom: 20px;
 }
 
+/* Barre de recherche */
 .search{
-    position: relative;
-    display: flex; align-items: center;
-    background: rgba(255,255,255,.08);
-    border: 1px solid rgba(255,255,255,.18);
-    border-radius: 999rem;
-    padding: .70em 2.6em .70em 1em;
-    box-shadow: 0 .25rem .75rem rgba(0,0,0,.25),
-        inset 0 1px rgba(255,255,255,.06);
-    width: clamp(24rem, 70vw, 68rem);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(180deg, var(--panel), var(--panel-3));
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  padding: 8px 14px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.35);
 }
 
-.search{ 
-    width: clamp(24rem, 70vw, 68rem) !important; 
+.search input{
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font-size: .95rem;
 }
 
-.search > img{
-    position: absolute; right: .8em; top: 50%;
-    transform: translateY(-50%);
-    width: 23px; height: 23px;
-    opacity: .9; pointer-events: none;
+.search input::placeholder{
+  color: var(--placeholder);
 }
 
-.search-area input{
-    flex: 1;
-    border: 0; outline: none; background: transparent;
-    color: var(--text-color); font: 500 1.05rem 'Roboto', system-ui, sans-serif;
+.search img{
+  width: 22px;
+  height: 22px;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.5));
 }
-  
 
-.search-area input::placeholder { color: var(--text-color); opacity: .9; }
-.search-area input::-webkit-input-placeholder { color: var(--text-color); opacity: .9; }
-
+/* Filtres type "chips" */
 .filters{
-    display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem;
-    width: clamp(24rem, 70vw, 68rem);
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .chip{
-    background: rgba(255,255,255,.08);
-    border: 1px solid rgba(255,255,255,.18);
-    color: var(--text-secondary-color);
-    padding: .45em .9em;
-    border-radius: 999rem;
-    font: 600 .95rem 'Roboto', system-ui, sans-serif;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04)),
+    var(--panel-2);
+  color: var(--muted);
+  font-size: .8rem;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background .12s ease, border-color .12s ease, transform .12s ease;
+}
+
+.chip:hover{
+  transform: translateY(-1px);
+  border-color: var(--hoverBorder);
+  color: var(--text);
+}
+
+/* Liste des jeux trouvés */
+#Game-list{
+  list-style: none;
+  padding: 0;
+  margin: 20px 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--g);
+}
+
+/* Si jamais le JS ajoute <li> autour des cartes,
+   on donne un fond léger compatible avec GAME_CARD.css */
+#Game-list li{
+  background: linear-gradient(180deg, var(--panel-2), var(--panel-3));
+  border-radius: var(--radius);
+  border: 1px solid rgba(255,255,255,.02);
+  padding: 6px;
 }
