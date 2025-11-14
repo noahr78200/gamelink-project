@@ -302,18 +302,3 @@ CREATE TABLE IF NOT EXISTS page_views (
 -- ==========================================
 -- Cette table stocke un résumé des statistiques quotidiennes
 
-CREATE TABLE IF NOT EXISTS daily_stats (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    stat_date DATE NOT NULL UNIQUE,
-    dau INT DEFAULT 0,
-    new_users INT DEFAULT 0,
-    total_page_views INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_stat_date (stat_date)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ==========================================
--- C'EST FINI ! 🎉
--- ==========================================
--- Les 3 tables sont créées et reliées à ta table joueur existante
-
