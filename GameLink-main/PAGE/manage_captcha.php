@@ -10,7 +10,7 @@ require_admin();
 
 // ⚠️ IMPORTANT : Vérifie que ce chemin correspond à ton dossier DATA
 // Le dossier DATA doit exister à la racine de ton projet !
-define('CAPTCHA_JSON', __DIR__ . '/../PAGE/captcha_bank.json');
+define('CAPTCHA_JSON', __DIR__ . '/../DATA/captcha_bank.json');
 
 // --------- Petites fonctions simples ---------
 
