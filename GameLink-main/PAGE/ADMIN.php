@@ -1,14 +1,17 @@
 <?php
 // ==========================================
-// FICHIER : ADMIN.php
-// BUT : Page d'administration avec onglets
+// 🎮 PAGE ADMIN - Version Simple
 // ==========================================
+// Cette page montre les statistiques de ton site
 
-// PROTECTION : Seul l'ID 7 peut accéder
+// PROTECTION : Seuls les admins peuvent voir cette page
 require_once __DIR__ . '/../INCLUDES/check_admin.php';
 require_admin();
 
-// Récupérer l'onglet actif (par défaut : dashboard)
+// On récupère les statistiques
+include __DIR__ . '/../INCLUDES/3_get_stats.php';
+
+// On récupère l'onglet actif
 $current_tab = $_GET['tab'] ?? 'dashboard';
 ?>
 <!doctype html>
@@ -53,7 +56,6 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
       border-bottom-color: #6ea8fe;
     }
     
-    /* Contenu des onglets */
     .tab-content {
       display: none;
     }
@@ -62,7 +64,6 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
       display: block;
     }
     
-    /* Message de bienvenue */
     .admin-welcome {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
@@ -89,7 +90,7 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
   <header>
     <nav class="Menu">
       <a href="">
-        <img class="logo" src="../ICON/LogoComplet.svg" alt="Logo GameLink" width="">
+        <img class="logo" src="../ICON/LogoComplet.svg" alt="Logo GameLink">
       </a>
       <a href="ACCUEIL.php">ACCUEIL</a>
       <a href="RECHERCHE.php">RECHERCHE</a>
@@ -100,7 +101,7 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
       <?php endif; ?>
     </nav>
     <a href="">
-      <img src="../ICON/iconProfil.svg" alt="Logo Profil" width="">
+      <img src="../ICON/iconProfil.svg" alt="Logo Profil">
     </a>
   </header>
   
@@ -108,58 +109,79 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
     <!-- Message de bienvenue -->
     <div class="admin-welcome">
       <h2>👋 Bienvenue Admin !</h2>
-      <p>Vous êtes connecté avec l'ID joueur : <strong><?= htmlspecialchars($_SESSION['user_id']) ?></strong></p>
+      <p>Tu es connecté avec l'ID : <strong><?= htmlspecialchars($_SESSION['user_id']) ?></strong></p>
     </div>
 
-    <!-- Onglets de navigation -->
+    <!-- Menu avec les onglets -->
     <div class="admin-tabs">
       <a href="?tab=dashboard" class="admin-tab <?= $current_tab === 'dashboard' ? 'active' : '' ?>">
-        📊 Dashboard
+        📊 Statistiques
       </a>
       <a href="?tab=captcha" class="admin-tab <?= $current_tab === 'captcha' ? 'active' : '' ?>">
-        🔒 Gestion Captcha
+        🔒 Captcha
       </a>
       <a href="?tab=users" class="admin-tab <?= $current_tab === 'users' ? 'active' : '' ?>">
         👥 Utilisateurs
       </a>
     </div>
 
-    <!-- ONGLET 1 : DASHBOARD -->
-    <div class="tab-content <?= $current_tab === 'dashboard' ? 'active' : '' ?>" id="dashboard-tab">
+    <!-- ONGLET STATISTIQUES -->
+    <div class="tab-content <?= $current_tab === 'dashboard' ? 'active' : '' ?>">
       <section class="admin-surface">
-        <!-- KPI Row -->
+        
+        <!-- Les 4 compteurs principaux -->
         <div class="kpi-row">
+          
+          <!-- COMPTEUR 1 : Visiteurs aujourd'hui -->
           <div class="kpi-card">
-            <div class="kpi-label">DAU :</div>
+            <div class="kpi-label">Visiteurs aujourd'hui :</div>
             <div class="kpi-main">
-              <span class="kpi-value">1,785</span>
-              <span class="delta up">▲ +1,4%</span>
+              <span class="kpi-value"><?= $stats['dau']['value'] ?></span>
+              <span class="delta <?= $stats['dau']['trend'] ?>">
+                <?= $stats['dau']['trend'] === 'up' ? '▲' : '▼' ?> 
+                <?= abs($stats['dau']['delta']) ?>%
+              </span>
             </div>
           </div>
+
+          <!-- COMPTEUR 2 : Connectés maintenant -->
           <div class="kpi-card">
-            <div class="kpi-label">Connexions (temps réel) :</div>
+            <div class="kpi-label">Connectés maintenant :</div>
             <div class="kpi-main">
-              <span class="kpi-value">2,762</span>
-              <span class="delta down">▼ −9,2%</span>
+              <span class="kpi-value"><?= $stats['online_users']['value'] ?></span>
+              <span class="delta <?= $stats['online_users']['trend'] ?>">
+                <?= $stats['online_users']['trend'] === 'up' ? '▲' : '▼' ?> 
+                <?= abs($stats['online_users']['delta']) ?>%
+              </span>
             </div>
           </div>
+
+          <!-- COMPTEUR 3 : Nouvelles inscriptions -->
           <div class="kpi-card">
-            <div class="kpi-label">Nouvelles inscriptions :</div>
+            <div class="kpi-label">Inscriptions aujourd'hui :</div>
             <div class="kpi-main">
-              <span class="kpi-value">2,762</span>
-              <span class="delta up">▲ +6,02%</span>
+              <span class="kpi-value"><?= $stats['new_registrations']['value'] ?></span>
+              <span class="delta <?= $stats['new_registrations']['trend'] ?>">
+                <?= $stats['new_registrations']['trend'] === 'up' ? '▲' : '▼' ?> 
+                <?= abs($stats['new_registrations']['delta']) ?>%
+              </span>
             </div>
           </div>
+
+          <!-- COMPTEUR 4 : Pages vues -->
           <div class="kpi-card">
-            <div class="kpi-label">Signalements (jours) :</div>
+            <div class="kpi-label">Pages vues aujourd'hui :</div>
             <div class="kpi-main">
-              <span class="kpi-value">171</span>
-              <span class="delta up">▲ +71,0%</span>
+              <span class="kpi-value"><?= $stats['page_views']['value'] ?></span>
+              <span class="delta <?= $stats['page_views']['trend'] ?>">
+                <?= $stats['page_views']['trend'] === 'up' ? '▲' : '▼' ?> 
+                <?= abs($stats['page_views']['delta']) ?>%
+              </span>
             </div>
           </div>
         </div>
 
-        <!-- Admin Grid -->
+        <!-- Grille avec les graphiques -->
         <div class="admin-grid">
           <div class="stack">
             <div class="card chart">
@@ -167,31 +189,38 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
               <canvas id="chartReports"></canvas>
             </div>
             <div class="card chart">
-              <div class="card-title">Utilisateurs actifs en temps réel</div>
+              <div class="card-title">Utilisateurs actifs</div>
               <canvas id="chartActive"></canvas>
             </div>
           </div>
 
           <div class="card chart big">
-            <div class="card-title">—</div>
+            <div class="card-title">Évolution du trafic</div>
             <canvas id="chartBig"></canvas>
           </div>
 
+          <!-- Liste des pages les plus visitées -->
           <aside class="card sidecard">
-            <div class="card-title">TOP jeux joués actuellement</div>
+            <div class="card-title">📄 Pages les plus visitées</div>
             <ul class="toplist">
-              <li><span>League of Legends</span><b>1250</b></li>
-              <li><span>CS:GO</span><b>1077</b></li>
-              <li><span>FIFA</span><b>977</b></li>
-              <li><span>Valorant</span><b>905</b></li>
-              <li><span>Minecraft</span><b>859</b></li>
-              <li><span>Fortnite</span><b>623</b></li>
-              <li><span>Roblox</span><b>567</b></li>
+              <?php if (empty($stats['page_views']['top_pages'])): ?>
+                <li style="text-align: center; color: #99a1b3; padding: 20px;">
+                  Pas encore de données 📊<br>
+                  <small>Navigue sur le site pour voir des stats !</small>
+                </li>
+              <?php else: ?>
+                <?php foreach ($stats['page_views']['top_pages'] as $page): ?>
+                  <li>
+                    <span><?= htmlspecialchars($page['page_url']) ?></span>
+                    <b><?= $page['views'] ?></b>
+                  </li>
+                <?php endforeach; ?>
+              <?php endif; ?>
             </ul>
           </aside>
         </div>
 
-        <!-- Reports Grid -->
+        <!-- Tableau des signalements -->
         <div class="reports-grid">
           <section class="card">
             <div class="card-title">Contenu signalé</div>
@@ -205,50 +234,11 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
                 </tr>
               </thead>
               <tbody>
-                <tr class="report-row"
-                    data-id="rep_1001"
-                    data-offender="Zepkenio77"
-                    data-message="salopard mid diff"
-                    data-reason="Inapproprié"
-                    data-date="2025-10-06T14:12:00+02:00"
-                    data-game="League of Legends"
-                    data-chat="Chat d'équipe"
-                    data-reporter="ModArno"
-                    data-strikes2025="1">
-                  <td><span class="avatar"></span>Zepkenio77</td>
-                  <td>« salopard mid diff »</td>
+                <tr>
+                  <td><span class="avatar"></span>Exemple1</td>
+                  <td>« message inapproprié »</td>
                   <td>Inapproprié</td>
-                  <td>OCT 6</td>
-                </tr>
-                <tr class="report-row"
-                    data-id="rep_1002"
-                    data-offender="YUIAuber"
-                    data-message="report noob botlane"
-                    data-reason="Inapproprié"
-                    data-date="2025-10-06T12:40:00+02:00"
-                    data-game="League of Legends"
-                    data-chat="Chat général"
-                    data-reporter="Kara"
-                    data-strikes2025="0">
-                  <td><span class="avatar"></span>YUIAuber</td>
-                  <td>« report noob botlane »</td>
-                  <td>Inapproprié</td>
-                  <td>OCT 6</td>
-                </tr>
-                <tr class="report-row"
-                    data-id="rep_1003"
-                    data-offender="SamsiLaFrappe"
-                    data-message="esp3ce de retard"
-                    data-reason="Inapproprié"
-                    data-date="2025-10-06T11:05:00+02:00"
-                    data-game="CS:GO"
-                    data-chat="Message privé"
-                    data-reporter="Rakun"
-                    data-strikes2025="4">
-                  <td><span class="avatar"></span>SamsiLaFrappe</td>
-                  <td>« esp3ce de retard »</td>
-                  <td>Inapproprié</td>
-                  <td>OCT 6</td>
+                  <td>AUJOURD'HUI</td>
                 </tr>
               </tbody>
             </table>
@@ -256,89 +246,30 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
 
           <aside class="card alert-card">
             <div class="alert-icon">⚠️</div>
-            <div class="alert-text">Surveillez la hausse des signalements.</div>
+            <div class="alert-text">Surveillez les signalements</div>
           </aside>
         </div>
       </section>
     </div>
 
-    <!-- ONGLET 2 : GESTION CAPTCHA -->
-    <div class="tab-content <?= $current_tab === 'captcha' ? 'active' : '' ?>" id="captcha-tab">
-      <?php include __DIR__ . '/../PAGE/manage_captcha.php'; ?>
+    <!-- ONGLET CAPTCHA -->
+    <div class="tab-content <?= $current_tab === 'captcha' ? 'active' : '' ?>">
+      <?php include __DIR__ . '/manage_captcha.php'; ?>
     </div>
 
-    <!-- ONGLET 3 : UTILISATEURS (à développer) -->
-    <div class="tab-content <?= $current_tab === 'users' ? 'active' : '' ?>" id="users-tab">
+    <!-- ONGLET UTILISATEURS -->
+    <div class="tab-content <?= $current_tab === 'users' ? 'active' : '' ?>">
       <section class="admin-surface">
         <div class="card">
           <div class="card-title">Gestion des utilisateurs</div>
           <p style="padding: 20px; text-align: center; color: #99a1b3;">
-            🚧 Cette section est en cours de développement
+            🚧 En construction
           </p>
         </div>
       </section>
     </div>
 
   </main>
-
-  <!-- Modal détaillé : Signalement -->
-  <div class="modal-overlay" id="reportModal" aria-hidden="true">
-    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <header class="modal-header">
-        <h3 id="modalTitle">Détail du signalement</h3>
-        <button class="modal-close" type="button" aria-label="Fermer">&times;</button>
-      </header>
-
-      <section class="modal-body">
-        <div class="modal-grid">
-          <div class="modal-block">
-            <div class="modal-label">Auteur (utilisateur signalé)</div>
-            <div class="modal-value" id="m-offender">—</div>
-          </div>
-          <div class="modal-block">
-            <div class="modal-label">Message signalé</div>
-            <div class="modal-value mono" id="m-message">—</div>
-          </div>
-          <div class="modal-block">
-            <div class="modal-label">Raison</div>
-            <div class="modal-value" id="m-reason">—</div>
-          </div>
-          <div class="modal-block">
-            <div class="modal-label">Date</div>
-            <div class="modal-value" id="m-date">—</div>
-          </div>
-          <div class="modal-block">
-            <div class="modal-label">Jeu</div>
-            <div class="modal-value" id="m-game">—</div>
-          </div>
-          <div class="modal-block">
-            <div class="modal-label">Type de chat</div>
-            <div class="modal-value" id="m-chat">—</div>
-          </div>
-          <div class="modal-block">
-            <div class="modal-label">Plaignant</div>
-            <div class="modal-value" id="m-reporter">—</div>
-          </div>
-          <div class="modal-block">
-            <div class="modal-label">Pédigrée (2025)</div>
-            <div class="modal-value">
-              <span id="m-strikes">0 signalement</span>
-              <span class="badge badge-ok" id="m-badge" hidden>Historique propre</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <footer class="modal-footer">
-        <button type="button" class="btn ghost modal-close">Fermer</button>
-        <div class="right-actions">
-          <button type="button" class="btn warn">Avertir</button>
-          <button type="button" class="btn danger">Sanction</button>
-          <button type="button" class="btn primary">Marquer traité</button>
-        </div>
-      </footer>
-    </div>
-  </div>
 
   <script src="../JS/ADMIN.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6"></script>

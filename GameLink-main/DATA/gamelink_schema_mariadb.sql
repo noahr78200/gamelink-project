@@ -258,3 +258,54 @@ CREATE TABLE joueur_badge (
     FOREIGN KEY (id_joueur) REFERENCES joueur(id_joueur) ON DELETE CASCADE,
     FOREIGN KEY (id_badge) REFERENCES badge(id_badge) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+
+-- ==========================================
+-- BOÎTE 1 : Qui est connecté ?
+-- ==========================================
+-- Cette boîte note quand quelqu'un visite ton site
+
+CREATE TABLE IF NOT EXISTS user_activity (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    last_activity DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    page_url VARCHAR(255),
+    INDEX idx_user_id (user_id),
+    INDEX idx_last_activity (last_activity)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ==========================================
+-- BOÎTE 2 : Quelle page est visitée ?
+-- ==========================================
+-- Cette boîte note chaque fois que quelqu'un regarde une page
+
+CREATE TABLE IF NOT EXISTS page_views (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    page_url VARCHAR(255) NOT NULL,
+    viewed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_user_id (user_id),
+    INDEX idx_viewed_at (viewed_at),
+    INDEX idx_page_url (page_url)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ==========================================
+-- BOÎTE 3 : Résumé de chaque jour
+-- ==========================================
+-- Cette boîte fait le résumé de la journée
+
+CREATE TABLE IF NOT EXISTS daily_stats (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    stat_date DATE NOT NULL UNIQUE,
+    dau INT DEFAULT 0,
+    new_users INT DEFAULT 0,
+    total_page_views INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_stat_date (stat_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ==========================================
+-- C'EST FINI ! 🎉
+-- ==========================================
+-- Maintenant tu as 3 boîtes pour ranger les informations
