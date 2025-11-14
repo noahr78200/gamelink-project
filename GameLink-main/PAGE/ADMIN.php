@@ -9,7 +9,7 @@ require_once __DIR__ . '/../INCLUDES/check_admin.php';
 require_admin();
 
 // On récupère les statistiques
-include __DIR__ . '/../INCLUDES/3_get_stats.php';
+include __DIR__ . '/../INCLUDES/get_stats.php';
 
 // On récupère l'onglet actif
 $current_tab = $_GET['tab'] ?? 'dashboard';
