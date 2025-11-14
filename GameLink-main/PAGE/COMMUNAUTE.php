@@ -8,12 +8,13 @@
         <link rel="stylesheet" href="../CSS/COMMUNAUTE.css" type="text/css"/>
         <link rel="icon" type="image/png" sizes="32x32" href="../ICON/LogoSimple.svg">
     </head>
-    <body>
-   
-<?php 
+    <?php 
     // Inclure le header (qui affichera ou non le lien ADMIN)
     include __DIR__ . '/../INCLUDES/header.php'; 
     ?>
+    <body>
+   
+
         
          <main>
   <h1 class="community-title">Communauté</h1>
@@ -34,6 +35,8 @@
   </section>
 </main>
 
-        <
+        
+
+
          
     </body>
