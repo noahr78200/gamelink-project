@@ -1,8 +1,7 @@
 <?php
 // ==========================================
-// 🎮 PAGE ADMIN - Version Simple
+// 🎮 PAGE ADMIN - Adaptée pour GameLink
 // ==========================================
-// Cette page montre les statistiques de ton site
 
 // PROTECTION : Seuls les admins peuvent voir cette page
 require_once __DIR__ . '/../INCLUDES/check_admin.php';
@@ -23,7 +22,6 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
   <link rel="stylesheet" href="../CSS/STYLE_ADMIN.css" type="text/css"/>
   <link rel="icon" type="image/png" sizes="32x32" href="../ICON/LogoSimple.svg">
   <style>
-    /* Styles pour les onglets */
     .admin-tabs {
       display: flex;
       gap: 10px;
@@ -83,6 +81,14 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
       margin: 0;
       opacity: 0.9;
     }
+
+    .stats-info {
+      background: rgba(255,255,255,0.1);
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 10px;
+      font-size: 13px;
+    }
   </style>
 </head>
 
@@ -109,7 +115,10 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
     <!-- Message de bienvenue -->
     <div class="admin-welcome">
       <h2>👋 Bienvenue Admin !</h2>
-      <p>Tu es connecté avec l'ID : <strong><?= htmlspecialchars($_SESSION['user_id']) ?></strong></p>
+      <p>Tu es connecté avec l'ID : <strong><?= htmlspecialchars($_SESSION['id_joueur'] ?? 'N/A') ?></strong></p>
+      <div class="stats-info">
+        📊 Total de joueurs inscrits : <strong><?= number_format($stats['total_joueurs']) ?></strong>
+      </div>
     </div>
 
     <!-- Menu avec les onglets -->
@@ -132,11 +141,11 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
         <!-- Les 4 compteurs principaux -->
         <div class="kpi-row">
           
-          <!-- COMPTEUR 1 : Visiteurs aujourd'hui -->
+          <!-- COMPTEUR 1 : Joueurs actifs aujourd'hui -->
           <div class="kpi-card">
-            <div class="kpi-label">Visiteurs aujourd'hui :</div>
+            <div class="kpi-label">Joueurs actifs aujourd'hui :</div>
             <div class="kpi-main">
-              <span class="kpi-value"><?= $stats['dau']['value'] ?></span>
+              <span class="kpi-value"><?= number_format($stats['dau']['value']) ?></span>
               <span class="delta <?= $stats['dau']['trend'] ?>">
                 <?= $stats['dau']['trend'] === 'up' ? '▲' : '▼' ?> 
                 <?= abs($stats['dau']['delta']) ?>%
@@ -148,7 +157,7 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
           <div class="kpi-card">
             <div class="kpi-label">Connectés maintenant :</div>
             <div class="kpi-main">
-              <span class="kpi-value"><?= $stats['online_users']['value'] ?></span>
+              <span class="kpi-value"><?= number_format($stats['online_users']['value']) ?></span>
               <span class="delta <?= $stats['online_users']['trend'] ?>">
                 <?= $stats['online_users']['trend'] === 'up' ? '▲' : '▼' ?> 
                 <?= abs($stats['online_users']['delta']) ?>%
@@ -160,7 +169,7 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
           <div class="kpi-card">
             <div class="kpi-label">Inscriptions aujourd'hui :</div>
             <div class="kpi-main">
-              <span class="kpi-value"><?= $stats['new_registrations']['value'] ?></span>
+              <span class="kpi-value"><?= number_format($stats['new_registrations']['value']) ?></span>
               <span class="delta <?= $stats['new_registrations']['trend'] ?>">
                 <?= $stats['new_registrations']['trend'] === 'up' ? '▲' : '▼' ?> 
                 <?= abs($stats['new_registrations']['delta']) ?>%
@@ -172,7 +181,7 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
           <div class="kpi-card">
             <div class="kpi-label">Pages vues aujourd'hui :</div>
             <div class="kpi-main">
-              <span class="kpi-value"><?= $stats['page_views']['value'] ?></span>
+              <span class="kpi-value"><?= number_format($stats['page_views']['value']) ?></span>
               <span class="delta <?= $stats['page_views']['trend'] ?>">
                 <?= $stats['page_views']['trend'] === 'up' ? '▲' : '▼' ?> 
                 <?= abs($stats['page_views']['delta']) ?>%
@@ -201,7 +210,7 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
 
           <!-- Liste des pages les plus visitées -->
           <aside class="card sidecard">
-            <div class="card-title">📄 Pages les plus visitées</div>
+            <div class="card-title">📄 Pages les plus visitées aujourd'hui</div>
             <ul class="toplist">
               <?php if (empty($stats['page_views']['top_pages'])): ?>
                 <li style="text-align: center; color: #99a1b3; padding: 20px;">
@@ -212,7 +221,7 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
                 <?php foreach ($stats['page_views']['top_pages'] as $page): ?>
                   <li>
                     <span><?= htmlspecialchars($page['page_url']) ?></span>
-                    <b><?= $page['views'] ?></b>
+                    <b><?= number_format($page['views']) ?></b>
                   </li>
                 <?php endforeach; ?>
               <?php endif; ?>
@@ -227,16 +236,16 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
             <table class="report-table">
               <thead>
                 <tr>
-                  <th>Users</th>
+                  <th>Joueurs</th>
                   <th>Contenu</th>
                   <th>Raison</th>
                   <th>Date</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td><span class="avatar"></span>Exemple1</td>
-                  <td>« message inapproprié »</td>
+                <tr class="report-row">
+                  <td><span class="avatar"></span>Exemple</td>
+                  <td>« Message test »</td>
                   <td>Inapproprié</td>
                   <td>AUJOURD'HUI</td>
                 </tr>
@@ -270,6 +279,46 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
     </div>
 
   </main>
+
+  <!-- Modal détaillé : Signalement -->
+  <div class="modal-overlay" id="reportModal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <header class="modal-header">
+        <h3 id="modalTitle">Détail du signalement</h3>
+        <button class="modal-close" type="button" aria-label="Fermer">&times;</button>
+      </header>
+
+      <section class="modal-body">
+        <div class="modal-grid">
+          <div class="modal-block">
+            <div class="modal-label">Auteur</div>
+            <div class="modal-value" id="m-offender">—</div>
+          </div>
+          <div class="modal-block">
+            <div class="modal-label">Message</div>
+            <div class="modal-value mono" id="m-message">—</div>
+          </div>
+          <div class="modal-block">
+            <div class="modal-label">Raison</div>
+            <div class="modal-value" id="m-reason">—</div>
+          </div>
+          <div class="modal-block">
+            <div class="modal-label">Date</div>
+            <div class="modal-value" id="m-date">—</div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="modal-footer">
+        <button type="button" class="btn ghost modal-close">Fermer</button>
+        <div class="right-actions">
+          <button type="button" class="btn warn">Avertir</button>
+          <button type="button" class="btn danger">Sanction</button>
+          <button type="button" class="btn primary">Marquer traité</button>
+        </div>
+      </footer>
+    </div>
+  </div>
 
   <script src="../JS/ADMIN.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6"></script>

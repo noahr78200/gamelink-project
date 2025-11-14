@@ -309,3 +309,5 @@ CREATE TABLE IF NOT EXISTS daily_stats (
 -- C'EST FINI ! 🎉
 -- ==========================================
 -- Maintenant tu as 3 boîtes pour ranger les informations
+
+

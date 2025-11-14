@@ -16,28 +16,28 @@ require_once __DIR__ . '/../DATA/DBConfig.php';
 
 
 // ==========================================
-// COMPTEUR 1 : Combien de personnes sont connectées MAINTENANT ?
+// COMPTEUR 1 : Combien de joueurs sont connectés MAINTENANT ?
 // ==========================================
 
-// On compte les personnes actives dans les 5 dernières minutes
 try {
+    // On compte les joueurs actifs dans les 5 dernières minutes
     $stmt = $pdo->query("
-        SELECT COUNT(DISTINCT user_id) as count 
+        SELECT COUNT(DISTINCT id_joueur) as count 
         FROM user_activity 
         WHERE last_activity >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)
     ");
     $online_now = $stmt->fetch()['count'] ?? 0;
     
-    // On compte aussi combien il y en avait hier à la même heure
+    // Combien il y en avait hier à la même heure
     $stmt = $pdo->query("
-        SELECT COUNT(DISTINCT user_id) as count 
+        SELECT COUNT(DISTINCT id_joueur) as count 
         FROM user_activity 
         WHERE last_activity >= DATE_SUB(NOW(), INTERVAL 1 DAY + INTERVAL 5 MINUTE)
         AND last_activity < DATE_SUB(NOW(), INTERVAL 1 DAY)
     ");
     $online_yesterday = $stmt->fetch()['count'] ?? 0;
     
-    // On calcule si c'est plus ou moins qu'hier (en %)
+    // On calcule la différence en %
     if ($online_yesterday > 0) {
         $online_delta = round((($online_now - $online_yesterday) / $online_yesterday) * 100, 1);
     } else {
@@ -49,27 +49,27 @@ try {
 }
 
 // ==========================================
-// COMPTEUR 2 : Combien de nouvelles inscriptions AUJOURD'HUI ?
+// COMPTEUR 2 : Nouvelles inscriptions aujourd'hui
 // ==========================================
 
 try {
     // Inscriptions aujourd'hui
     $stmt = $pdo->query("
         SELECT COUNT(*) as count 
-        FROM users 
-        WHERE DATE(created_at) = CURDATE()
+        FROM joueur 
+        WHERE DATE(date_inscription) = CURDATE()
     ");
     $new_users_today = $stmt->fetch()['count'] ?? 0;
     
     // Inscriptions hier
     $stmt = $pdo->query("
         SELECT COUNT(*) as count 
-        FROM users 
-        WHERE DATE(created_at) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+        FROM joueur 
+        WHERE DATE(date_inscription) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)
     ");
     $new_users_yesterday = $stmt->fetch()['count'] ?? 0;
     
-    // On calcule la différence en %
+    // Calcul du delta
     if ($new_users_yesterday > 0) {
         $new_users_delta = round((($new_users_today - $new_users_yesterday) / $new_users_yesterday) * 100, 1);
     } else {
@@ -81,11 +81,11 @@ try {
 }
 
 // ==========================================
-// COMPTEUR 3 : Quelles pages sont les plus visitées ?
+// COMPTEUR 3 : Pages les plus visitées
 // ==========================================
 
 try {
-    // On cherche les 5 pages les plus visitées aujourd'hui
+    // Top 5 des pages aujourd'hui
     $stmt = $pdo->query("
         SELECT 
             page_url,
@@ -98,7 +98,7 @@ try {
     ");
     $top_pages = $stmt->fetchAll();
     
-    // On compte aussi le total de vues aujourd'hui
+    // Total de vues aujourd'hui
     $stmt = $pdo->query("
         SELECT COUNT(*) as count 
         FROM page_views 
@@ -106,7 +106,7 @@ try {
     ");
     $total_views_today = $stmt->fetch()['count'] ?? 0;
     
-    // On compte le total de vues hier
+    // Total de vues hier
     $stmt = $pdo->query("
         SELECT COUNT(*) as count 
         FROM page_views 
@@ -114,7 +114,7 @@ try {
     ");
     $total_views_yesterday = $stmt->fetch()['count'] ?? 0;
     
-    // On calcule la différence en %
+    // Calcul du delta
     if ($total_views_yesterday > 0) {
         $page_views_delta = round((($total_views_today - $total_views_yesterday) / $total_views_yesterday) * 100, 1);
     } else {
@@ -127,27 +127,27 @@ try {
 }
 
 // ==========================================
-// COMPTEUR 4 : Combien de personnes ont visité le site aujourd'hui ?
+// COMPTEUR 4 : Joueurs actifs aujourd'hui (DAU)
 // ==========================================
 
 try {
-    // Nombre de visiteurs aujourd'hui
+    // Joueurs actifs aujourd'hui
     $stmt = $pdo->query("
-        SELECT COUNT(DISTINCT user_id) as count 
+        SELECT COUNT(DISTINCT id_joueur) as count 
         FROM user_activity 
         WHERE DATE(last_activity) = CURDATE()
     ");
     $dau_today = $stmt->fetch()['count'] ?? 0;
     
-    // Nombre de visiteurs hier
+    // Joueurs actifs hier
     $stmt = $pdo->query("
-        SELECT COUNT(DISTINCT user_id) as count 
+        SELECT COUNT(DISTINCT id_joueur) as count 
         FROM user_activity 
         WHERE DATE(last_activity) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)
     ");
     $dau_yesterday = $stmt->fetch()['count'] ?? 0;
     
-    // On calcule la différence en %
+    // Calcul du delta
     if ($dau_yesterday > 0) {
         $dau_delta = round((($dau_today - $dau_yesterday) / $dau_yesterday) * 100, 1);
     } else {
@@ -156,6 +156,17 @@ try {
 } catch (Exception $e) {
     $dau_today = 0;
     $dau_delta = 0;
+}
+
+// ==========================================
+// BONUS : Total de joueurs inscrits
+// ==========================================
+
+try {
+    $stmt = $pdo->query("SELECT COUNT(*) as count FROM joueur");
+    $total_joueurs = $stmt->fetch()['count'] ?? 0;
+} catch (Exception $e) {
+    $total_joueurs = 0;
 }
 
 // ==========================================
@@ -183,10 +194,23 @@ $stats = [
         'value' => $dau_today,
         'delta' => $dau_delta,
         'trend' => $dau_delta >= 0 ? 'up' : 'down'
-    ]
+    ],
+    'total_joueurs' => $total_joueurs
 ];
 
 // ==========================================
 // C'EST FINI ! 🎉
 // ==========================================
-// Maintenant $stats contient toutes les informations !
+
+
+
+
+
+
+
+
+
+
+
+
+?>
