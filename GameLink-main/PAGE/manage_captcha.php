@@ -1,6 +1,6 @@
 <?php
 // ==========================================
-// FICHIER : manage_captcha.php (VERSION 100% CORRIGÉE)
+// FICHIER : manage_captcha.php (VERSION FINALE PROPRE)
 // BUT : Gérer les questions du captcha (pour les admins)
 // ==========================================
 
@@ -11,19 +11,30 @@ require_admin();
 // Chemin du fichier JSON
 define('CAPTCHA_JSON', __DIR__ . '/../DATA/captcha_bank.json');
 
-// --------- Fonctions améliorées ---------
+// --------- Fonctions ---------
+
+// Forcer les permissions à chaque fois
+function ensure_permissions() {
+    $dir = dirname(CAPTCHA_JSON);
+    
+    // Créer le dossier s'il n'existe pas
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0777, true);
+    }
+    
+    // FORCER les permissions 777 à chaque chargement
+    @chmod($dir, 0777);
+    
+    // Si le fichier existe, forcer ses permissions aussi
+    if (file_exists(CAPTCHA_JSON)) {
+        @chmod(CAPTCHA_JSON, 0666);
+    }
+}
 
 // Charger les questions depuis le JSON
 function load_captcha_bank() {
-    // Vérifier si le dossier DATA existe
-    $dir = dirname(CAPTCHA_JSON);
-    if (!is_dir($dir)) {
-        // Créer le dossier avec les bonnes permissions
-        if (!@mkdir($dir, 0777, true)) {
-            return ['error' => 'Impossible de créer le dossier DATA'];
-        }
-        @chmod($dir, 0777);
-    }
+    // Forcer les permissions d'abord
+    ensure_permissions();
     
     // Si le fichier n'existe pas, créer un fichier avec une question par défaut
     if (!file_exists(CAPTCHA_JSON)) {
@@ -34,23 +45,17 @@ function load_captcha_bank() {
                 'enabled' => true
             ]
         ];
-        $result = @file_put_contents(
+        @file_put_contents(
             CAPTCHA_JSON,
             json_encode($defaultBank, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
         );
-        
-        if ($result === false) {
-            return ['error' => 'Impossible de créer le fichier captcha_bank.json'];
-        }
-        
         @chmod(CAPTCHA_JSON, 0666);
         return $defaultBank;
     }
 
-    // Lire le fichier
     $txt = @file_get_contents(CAPTCHA_JSON);
     if ($txt === false) {
-        return ['error' => 'Impossible de lire le fichier captcha_bank.json'];
+        return [];
     }
     
     $data = @json_decode($txt, true);
@@ -62,32 +67,24 @@ function load_captcha_bank() {
     return $data;
 }
 
-// Sauvegarder les questions dans le JSON (avec gestion d'erreur)
+// Sauvegarder les questions dans le JSON
 function save_captcha_bank(array $bank) {
-    // Vérifier que le dossier existe
-    $dir = dirname(CAPTCHA_JSON);
-    if (!is_dir($dir)) {
-        if (!@mkdir($dir, 0777, true)) {
-            return false;
-        }
-        @chmod($dir, 0777);
-    }
+    // Forcer les permissions avant de sauvegarder
+    ensure_permissions();
     
-    // Préparer le contenu JSON
     $jsonContent = json_encode($bank, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     
     if ($jsonContent === false) {
         return false;
     }
     
-    // Écrire dans le fichier
     $result = @file_put_contents(CAPTCHA_JSON, $jsonContent);
     
     if ($result === false) {
         return false;
     }
     
-    // Changer les permissions du fichier pour qu'il soit accessible
+    // Forcer les permissions après sauvegarde
     @chmod(CAPTCHA_JSON, 0666);
     
     return true;
@@ -98,28 +95,12 @@ $bank    = load_captcha_bank();
 $message = '';
 $error   = '';
 
-// Vérifier s'il y a une erreur de chargement
-if (is_array($bank) && isset($bank['error'])) {
-    $error = $bank['error'];
-    $bank = [];
-}
-
-// Informations de débogage
-$fileExists = file_exists(CAPTCHA_JSON);
-$dirExists = is_dir(dirname(CAPTCHA_JSON));
-$dirWritable = is_writable(dirname(CAPTCHA_JSON));
-$fileWritable = $fileExists ? is_writable(CAPTCHA_JSON) : false;
-
 // --------- Gestion du formulaire ---------
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
-    // On recharge à chaque action pour être sûr
+    // On recharge à chaque action
     $bank = load_captcha_bank();
-    if (is_array($bank) && isset($bank['error'])) {
-        $error = $bank['error'];
-        $bank = [];
-    }
 
     // 1) Ajouter une nouvelle question
     if ($action === 'add') {
@@ -129,19 +110,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($question === '' || $answer === '') {
             $error = "Merci de remplir la question ET la réponse 😊";
         } else {
-            // On ajoute une nouvelle entrée
             $bank[] = [
                 'q'       => $question,
                 'a'       => $answer,
                 'enabled' => true
             ];
             
-            // Sauvegarder avec gestion d'erreur
             if (save_captcha_bank($bank)) {
                 $message = "✅ Question ajoutée avec succès !";
                 $bank = load_captcha_bank();
             } else {
-                $error = "❌ Erreur lors de l'ajout : impossible d'écrire dans le fichier. Vérifie les permissions du dossier DATA (doit être en 777).";
+                $error = "❌ Erreur lors de l'ajout. Contacte l'administrateur système.";
             }
         }
     }
@@ -157,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $message = "🗑️ Question supprimée avec succès !";
                 $bank = load_captcha_bank();
             } else {
-                $error = "❌ Erreur lors de la suppression : impossible d'écrire dans le fichier. Vérifie les permissions du dossier DATA (doit être en 777).";
+                $error = "❌ Erreur lors de la suppression. Contacte l'administrateur système.";
             }
         }
     }
@@ -173,7 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $message = "🔄 Statut de la question mis à jour !";
                 $bank = load_captcha_bank();
             } else {
-                $error = "❌ Erreur lors de la mise à jour : impossible d'écrire dans le fichier. Vérifie les permissions du dossier DATA (doit être en 777).";
+                $error = "❌ Erreur lors de la mise à jour. Contacte l'administrateur système.";
             }
         }
     }
@@ -267,41 +246,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background: rgba(239, 68, 68, 0.1);
             border: 1px solid rgba(239, 68, 68, 0.6);
             color: #fecaca;
-        }
-
-        .debug-box {
-            margin-bottom: 20px;
-            padding: 10px 14px;
-            border-radius: 8px;
-            font-size: 13px;
-            background: rgba(168, 85, 247, 0.1);
-            border: 1px solid rgba(168, 85, 247, 0.5);
-            color: #e9d5ff;
-        }
-
-        .debug-box code {
-            background: rgba(15, 23, 42, 0.7);
-            padding: 2px 4px;
-            border-radius: 4px;
-            font-size: 12px;
-        }
-
-        .fix-button {
-            margin-top: 10px;
-            padding: 8px 16px;
-            border-radius: 999px;
-            border: none;
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: white;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .fix-button:hover {
-            filter: brightness(1.1);
         }
 
         .info-box {
@@ -464,6 +408,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="admin">
 
 
+
 <main>
     <div class="captcha-wrapper">
         <div class="captcha-card">
@@ -471,24 +416,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p class="captcha-sub">
                 Ajoute, active/désactive ou supprime les questions utilisées pour vérifier que l'utilisateur est humain.
             </p>
-
-            <!-- Boîte de débogage -->
-            <div class="debug-box">
-                <strong>🔍 Diagnostic du système :</strong><br>
-                📁 Dossier DATA : <?= $dirExists ? '✅ Existe' : '❌ N\'existe pas' ?><br>
-                📝 Dossier accessible en écriture : <?= $dirWritable ? '✅ Oui' : '❌ Non' ?><br>
-                📄 Fichier captcha_bank.json : <?= $fileExists ? '✅ Existe' : '❌ N\'existe pas' ?><br>
-                ✏️ Fichier accessible en écriture : <?= $fileWritable ? '✅ Oui' : '❌ Non' ?><br>
-                📊 Questions chargées : <strong><?= count($bank) ?></strong><br>
-                <code><?= htmlspecialchars(CAPTCHA_JSON) ?></code>
-                
-                <?php if (!$dirWritable || !$fileWritable): ?>
-                    <br><br>
-                    <strong>⚠️ Action requise :</strong> Le dossier ou le fichier n'est pas accessible en écriture !<br>
-                    <strong>Solution rapide :</strong> Dans ton Terminal, tape :
-                    <code style="display: block; margin-top: 8px;">chmod -R 777 <?= htmlspecialchars(dirname(CAPTCHA_JSON)) ?></code>
-                <?php endif; ?>
-            </div>
 
             <?php if ($message): ?>
                 <div class="message">
@@ -590,7 +517,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </table>
             <?php endif; ?>
 
-            <a href="ADMIN.php" class="back-link">← Retour à l'administration</a>
+            
         </div>
     </div>
 </main>
