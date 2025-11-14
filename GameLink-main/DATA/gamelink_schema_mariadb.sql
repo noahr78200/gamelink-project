@@ -262,38 +262,45 @@ CREATE TABLE joueur_badge (
 
 
 -- ==========================================
+-- 📋 TABLES POUR LES STATISTIQUES
+-- Adapté pour ta base de données GameLink existante
+-- ==========================================
+
+-- ==========================================
 -- BOÎTE 1 : Qui est connecté ?
 -- ==========================================
--- Cette boîte note quand quelqu'un visite ton site
+-- Cette table note quand un joueur visite ton site
 
 CREATE TABLE IF NOT EXISTS user_activity (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
+    id_joueur INT NOT NULL,
     last_activity DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     page_url VARCHAR(255),
-    INDEX idx_user_id (user_id),
-    INDEX idx_last_activity (last_activity)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    INDEX idx_id_joueur (id_joueur),
+    INDEX idx_last_activity (last_activity),
+    FOREIGN KEY (id_joueur) REFERENCES joueur(id_joueur) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ==========================================
 -- BOÎTE 2 : Quelle page est visitée ?
 -- ==========================================
--- Cette boîte note chaque fois que quelqu'un regarde une page
+-- Cette table note chaque visite de page
 
 CREATE TABLE IF NOT EXISTS page_views (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
+    id_joueur INT,
     page_url VARCHAR(255) NOT NULL,
     viewed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_user_id (user_id),
+    INDEX idx_id_joueur (id_joueur),
     INDEX idx_viewed_at (viewed_at),
-    INDEX idx_page_url (page_url)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    INDEX idx_page_url (page_url),
+    FOREIGN KEY (id_joueur) REFERENCES joueur(id_joueur) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ==========================================
 -- BOÎTE 3 : Résumé de chaque jour
 -- ==========================================
--- Cette boîte fait le résumé de la journée
+-- Cette table stocke un résumé des statistiques quotidiennes
 
 CREATE TABLE IF NOT EXISTS daily_stats (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -303,11 +310,10 @@ CREATE TABLE IF NOT EXISTS daily_stats (
     total_page_views INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_stat_date (stat_date)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ==========================================
 -- C'EST FINI ! 🎉
 -- ==========================================
--- Maintenant tu as 3 boîtes pour ranger les informations
-
+-- Les 3 tables sont créées et reliées à ta table joueur existante
 
