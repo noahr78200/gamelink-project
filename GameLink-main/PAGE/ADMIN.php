@@ -115,7 +115,7 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
     <!-- Message de bienvenue -->
     <div class="admin-welcome">
       <h2>👋 Bienvenue Admin !</h2>
-      <p>Tu es connecté avec l'ID : <strong><?= htmlspecialchars($_SESSION['id_joueur'] ?? 'N/A') ?></strong></p>
+      <p>Tu es connecté avec l'ID : <strong><?= htmlspecialchars($_SESSION['id_joueur'] ?? '7') ?></strong></p>
       <div class="stats-info">
         📊 Total de joueurs inscrits : <strong><?= number_format($stats['total_joueurs']) ?></strong>
       </div>
