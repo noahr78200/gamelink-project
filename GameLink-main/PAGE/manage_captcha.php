@@ -1,24 +1,39 @@
 <?php
 // ==========================================
-// FICHIER : manage_captcha.php
+// FICHIER : manage_captcha.php (VERSION CORRIGÉE)
 // BUT : Gérer les questions du captcha (pour les admins)
 // ==========================================
 
-// Protection admin (même logique que ADMIN.php)
+// Protection admin
 require_once __DIR__ . '/../INCLUDES/check_admin.php';
 require_admin();
 
-// Même chemin que dans captcha.php
-// (très important pour que les deux utilisent le MÊME fichier)
-define('CAPTCHA_JSON', __DIR__ . '/../DATA/captcha_bank.json');
+// ⚠️ IMPORTANT : Vérifie que ce chemin correspond à ton dossier DATA
+// Le dossier DATA doit exister à la racine de ton projet !
+define('CAPTCHA_JSON', __DIR__ . '/../PAGE/captcha_bank.json');
 
 // --------- Petites fonctions simples ---------
 
 // Charger les questions depuis le JSON
 function load_captcha_bank() {
+    // 🔍 Vérification améliorée avec message d'erreur
     if (!file_exists(CAPTCHA_JSON)) {
-        // Si le fichier n’existe pas, on renvoie un tableau vide
-        return [];
+        // Créer le dossier DATA s'il n'existe pas
+        $dir = dirname(CAPTCHA_JSON);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+        
+        // Créer un fichier vide avec une question par défaut
+        $defaultBank = [
+            [
+                'q' => 'Quelle est la capitale de la France ?',
+                'a' => 'paris|Paris|PARIS',
+                'enabled' => true
+            ]
+        ];
+        file_put_contents(CAPTCHA_JSON, json_encode($defaultBank, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        return $defaultBank;
     }
 
     $txt = file_get_contents(CAPTCHA_JSON);
@@ -33,17 +48,25 @@ function load_captcha_bank() {
 
 // Sauvegarder les questions dans le JSON
 function save_captcha_bank(array $bank) {
-    // JSON_PRETTY_PRINT = joli JSON
-    // JSON_UNESCAPED_UNICODE = accents OK
-    file_put_contents(
+    // 🔍 Vérification que le dossier existe
+    $dir = dirname(CAPTCHA_JSON);
+    if (!is_dir($dir)) {
+        mkdir($dir, 0755, true);
+    }
+    
+    // Sauvegarder avec gestion d'erreur
+    $result = file_put_contents(
         CAPTCHA_JSON,
         json_encode($bank, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
     );
+    
+    return $result !== false;
 }
 
 // --------- Variables de base ---------
 $bank    = load_captcha_bank(); // liste des questions
-$message = '';                  // message d’info pour l’utilisateur
+$message = '';                  // message d'info pour l'utilisateur
+$error   = '';                  // message d'erreur
 
 // --------- Gestion du formulaire ---------
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -58,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $answer   = trim($_POST['answer'] ?? '');
 
         if ($question === '' || $answer === '') {
-            $message = "Merci de remplir la question ET la réponse 😊";
+            $error = "Merci de remplir la question ET la réponse 😊";
         } else {
             // On ajoute une nouvelle entrée
             $bank[] = [
@@ -66,8 +89,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'a'       => $answer,
                 'enabled' => true  // active par défaut
             ];
-            save_captcha_bank($bank);
-            $message = "✅ Question ajoutée avec succès !";
+            
+            if (save_captcha_bank($bank)) {
+                $message = "✅ Question ajoutée avec succès !";
+                // Recharger pour afficher la nouvelle question
+                $bank = load_captcha_bank();
+            } else {
+                $error = "❌ Erreur lors de la sauvegarde. Vérifie les permissions du dossier DATA.";
+            }
         }
     }
 
@@ -76,10 +105,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $index = isset($_POST['index']) ? (int) $_POST['index'] : -1;
 
         if (isset($bank[$index])) {
-            // On supprime l’élément à l’index donné
+            // On supprime l'élément à l'index donné
             array_splice($bank, $index, 1);
-            save_captcha_bank($bank);
-            $message = "🗑️ Question supprimée.";
+            
+            if (save_captcha_bank($bank)) {
+                $message = "🗑️ Question supprimée.";
+                $bank = load_captcha_bank();
+            } else {
+                $error = "❌ Erreur lors de la suppression.";
+            }
         }
     }
 
@@ -90,14 +124,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($bank[$index])) {
             // On inverse le booléen enabled
             $bank[$index]['enabled'] = !($bank[$index]['enabled'] ?? false);
-            save_captcha_bank($bank);
-            $message = "🔁 Statut de la question mis à jour.";
+            
+            if (save_captcha_bank($bank)) {
+                $message = "🔄 Statut de la question mis à jour.";
+                $bank = load_captcha_bank();
+            } else {
+                $error = "❌ Erreur lors de la mise à jour.";
+            }
         }
     }
-
-    // On recharge la liste après modification
-    $bank = load_captcha_bank();
 }
+
+// 🔍 Débogage : afficher le chemin du fichier
+$fileExists = file_exists(CAPTCHA_JSON);
+$fileWritable = is_writable(dirname(CAPTCHA_JSON));
 ?>
 <!doctype html>
 <html lang="fr">
@@ -106,12 +146,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Gestion du Captcha - Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Petit style qui colle à l’admin (fond sombre, cartes, etc.) -->
     <style>
         body.admin {
             margin: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-                         sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             background: #0f172a;
             color: #e5e7eb;
         }
@@ -179,6 +217,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background: rgba(22, 163, 74, 0.1);
             border: 1px solid rgba(22, 163, 74, 0.6);
             color: #bbf7d0;
+        }
+
+        .error {
+            margin-bottom: 20px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.6);
+            color: #fecaca;
+        }
+
+        .debug-box {
+            margin-bottom: 20px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            background: rgba(168, 85, 247, 0.1);
+            border: 1px solid rgba(168, 85, 247, 0.5);
+            color: #e9d5ff;
+        }
+
+        .debug-box code {
+            background: rgba(15, 23, 42, 0.7);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-size: 12px;
         }
 
         .info-box {
@@ -360,12 +425,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="captcha-card">
             <h1 class="captcha-title">🔒 Gestion des questions Captcha</h1>
             <p class="captcha-sub">
-                Ajoute, active/désactive ou supprime les questions utilisées pour vérifier que l’utilisateur est humain.
+                Ajoute, active/désactive ou supprime les questions utilisées pour vérifier que l'utilisateur est humain.
             </p>
+
+            <!-- 🔍 Informations de débogage -->
+            <div class="debug-box">
+                <strong>🔍 Informations de débogage :</strong><br>
+                📁 Chemin du fichier : <code><?= htmlspecialchars(CAPTCHA_JSON) ?></code><br>
+                <?php if ($fileExists): ?>
+                    ✅ Le fichier existe<br>
+                <?php else: ?>
+                    ❌ Le fichier n'existe pas (il sera créé automatiquement)<br>
+                <?php endif; ?>
+                <?php if ($fileWritable): ?>
+                    ✅ Le dossier est accessible en écriture<br>
+                <?php else: ?>
+                    ❌ Le dossier n'est pas accessible en écriture (vérifie les permissions)<br>
+                <?php endif; ?>
+                📊 Nombre de questions chargées : <strong><?= count($bank) ?></strong>
+            </div>
 
             <?php if ($message): ?>
                 <div class="message">
                     <?= htmlspecialchars($message) ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($error): ?>
+                <div class="error">
+                    <?= htmlspecialchars($error) ?>
                 </div>
             <?php endif; ?>
 
@@ -375,7 +463,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 Exemple : <code>paris|Paris|PARIS</code>
             </div>
 
-            <!-- Formulaire d’ajout -->
+            <!-- Formulaire d'ajout -->
             <form method="post">
                 <input type="hidden" name="action" value="add">
 
@@ -383,12 +471,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="form-group">
                         <label for="question">Question</label>
                         <input type="text" id="question" name="question"
-                               placeholder="Ex : Quelle est la capitale de la France ?">
+                               placeholder="Ex : Quelle est la capitale de la France ?"
+                               required>
                     </div>
                     <div class="form-group">
                         <label for="answer">Réponse(s) attendue(s)</label>
                         <input type="text" id="answer" name="answer"
-                               placeholder="Ex : paris|Paris|PARIS">
+                               placeholder="Ex : paris|Paris|PARIS"
+                               required>
                     </div>
                 </div>
 
@@ -396,7 +486,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
 
             <!-- Liste des questions -->
-            <h2 class="questions-title">📋 Questions existantes</h2>
+            <h2 class="questions-title">📋 Questions existantes (<?= count($bank) ?>)</h2>
 
             <?php if (empty($bank)): ?>
                 <p style="font-size: 14px; color: #9ca3af;">Aucune question définie pour le moment.</p>
@@ -455,7 +545,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </table>
             <?php endif; ?>
 
-            <a href="ADMIN.php" class="back-link">← Retour à l’administration</a>
+            <a href="ADMIN.php" class="back-link">← Retour à l'administration</a>
         </div>
     </div>
 </main>
