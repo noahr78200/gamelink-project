@@ -1,172 +1,303 @@
-// RECHERCHE.js
-// VERSION ULTRA SIMPLE
-// - Affiche des jeux par défaut (A -> Z)
-// - Permet de chercher par NOM (Zelda, FIFA...)
-// - Les filtres HTML ne sont pas utilisés pour l'instant
+// JS/RECHERCHE.js
+// Version basée sur TON code qui marchait + filtres simples.
 
-const API_URL = '/API/igdb.php';
+// URL de ton fichier PHP qui appelle IGDB
+const API_URL = '../API/igdb.php';
 
-// On récupère les éléments HTML
-const gameList     = document.getElementById('Game-list');
-const searchInput  = document.getElementById('search-input');
-const searchButton = document.getElementById('search-button');
-const errorBox     = document.getElementById('error-message');
-const gamesCountEl = document.getElementById('games-count');
+// Sélecteurs utiles
+const gameList    = document.getElementById('Game-list');
+const searchInput = document.getElementById('search-input');
+const searchBtn   = document.getElementById('search-button');
+const errorBox    = document.getElementById('error-message');
+const gamesCount  = document.getElementById('games-count');
 
-// ---------------------------
-// 1) Appeler l'API PHP IGDB
-// ---------------------------
-function chargerJeux(texteRecherche) {
-  const formData = new FormData();
-  formData.append('search', texteRecherche || '');
+// Pour les filtres
+const resetBtn = document.getElementById('filters-reset');
+const chips    = document.querySelectorAll('.chip');
 
-  if (errorBox) errorBox.textContent = '';
+// On stocke tous les jeux reçus pour pouvoir filtrer côté client
+let allGames = [];
 
-  fetch(API_URL, {
-    method: 'POST',
-    body: formData
-  })
-    .then(function (response) {
-      if (!response.ok) {
-        throw new Error('Erreur HTTP : ' + response.status);
-      }
-      return response.json();
-    })
-    .then(function (data) {
-      console.log('Données reçues depuis IGDB :', data);
-      if (!Array.isArray(data)) {
-        afficherJeux([]);
-      } else {
-        afficherJeux(data);
-      }
-    })
-    .catch(function (err) {
-      console.error(err);
-      if (errorBox) {
-        errorBox.textContent = 'Erreur lors du chargement des jeux.';
-      }
-      afficherJeux([]);
-    });
-}
+// Filtres actifs
+let activePlatform = ''; // ex: "pc"
+let activeGenre    = ''; // ex: "role-playing"
+let activeEditor   = ''; // ex: "nintendo"
 
-// ---------------------------
-// 2) Afficher les jeux
-// ---------------------------
-function afficherJeux(liste) {
-  if (!gameList) return;
-  gameList.innerHTML = '';
-
-  if (!Array.isArray(liste) || liste.length === 0) {
-    if (gamesCountEl) {
-      gamesCountEl.textContent = '0 jeu trouvé';
-    }
-    if (errorBox) {
-      errorBox.textContent = 'Aucun jeu trouvé.';
-    }
-    return;
-  }
-
-  // Tri alphabétique
-  liste.sort(function (a, b) {
-    const na = (a.name || '').toLowerCase();
-    const nb = (b.name || '').toLowerCase();
-    return na.localeCompare(nb, 'fr');
-  });
-
-  if (gamesCountEl) {
-    gamesCountEl.textContent =
-      liste.length + (liste.length > 1 ? ' jeux trouvés' : ' jeu trouvé');
-  }
-
-  // Création des cartes
-  liste.forEach(function (jeu) {
+// ----------- FONCTION UTILITAIRE POUR CRÉER UNE CARTE JEU ----------
+function createGameCard(game) {
     const li = document.createElement('li');
     li.className = 'game-card';
 
-    const lien = document.createElement('a');
-    lien.className = 'game-link';
-    lien.href = 'game.php?id=' + jeu.id;
+    const link = document.createElement('a');
+    link.href = 'game.php?id=' + game.id;
+    link.className = 'game-link';
 
+    // Image de couverture
     const img = document.createElement('img');
     img.className = 'game-cover';
-    img.alt = jeu.name || 'Jeu';
+    img.alt = game.name || 'Jeu';
 
-    if (jeu.cover && jeu.cover.image_id) {
-      img.src =
-        'https://images.igdb.com/igdb/image/upload/t_cover_big/' +
-        jeu.cover.image_id +
-        '.jpg';
+    if (game.cover && game.cover.image_id) {
+        img.src = 'https://images.igdb.com/igdb/image/upload/t_cover_big/' +
+                  game.cover.image_id + '.jpg';
     } else {
-      img.src =
-        'https://placehold.co/264x352?text=' +
-        encodeURIComponent(jeu.name || 'Jeu');
+        img.src = 'https://placehold.co/264x352?text=' +
+                  encodeURIComponent(game.name || 'Jeu');
     }
 
-    const body = document.createElement('div');
-    body.className = 'game-card-body';
+    // Titre
+    const title = document.createElement('h2');
+    title.className = 'game-title';
+    title.textContent = game.name || 'Sans nom';
 
-    const titre = document.createElement('h2');
-    titre.className = 'game-title';
-    titre.textContent = jeu.name || 'Sans nom';
-
+    // Infos simples (note + date)
     const info = document.createElement('p');
     info.className = 'game-info';
 
-    const morceaux = [];
+    let parts = [];
 
-    if (typeof jeu.rating === 'number') {
-      morceaux.push('Note : ' + Math.round(jeu.rating) + '/100');
+    if (typeof game.rating === 'number') {
+        parts.push('Note : ' + game.rating.toFixed(0) + '/100');
     }
 
-    if (typeof jeu.first_release_date === 'number') {
-      const d = new Date(jeu.first_release_date * 1000);
-      morceaux.push('Sortie : ' + d.toLocaleDateString('fr-FR'));
+    if (typeof game.first_release_date === 'number') {
+        const date = new Date(game.first_release_date * 1000);
+        parts.push('Sortie : ' + date.toLocaleDateString('fr-FR'));
     }
 
-    info.textContent = morceaux.join(' · ');
+    info.textContent = parts.join(' · ');
 
-    body.appendChild(titre);
-    body.appendChild(info);
+    // On assemble la carte
+    link.appendChild(img);
+    link.appendChild(title);
+    link.appendChild(info);
 
-    lien.appendChild(img);
-    lien.appendChild(body);
-    li.appendChild(lien);
-    gameList.appendChild(li);
-  });
+    li.appendChild(link);
+
+    return li;
 }
 
-// ---------------------------
-// 3) Lancer une recherche
-// ---------------------------
-function lancerRecherche() {
-  const texte = searchInput ? searchInput.value.trim() : '';
-  console.log('Recherche lancée pour :', texte);
-  chargerJeux(texte);
-}
+// ------------- AFFICHER UNE LISTE DE JEUX (après tri) ----------------
+function showGames(games) {
+    gameList.innerHTML = '';
+    errorBox.textContent = '';
 
-// ---------------------------
-// 4) Initialisation
-// ---------------------------
-function initRecherche() {
-  if (searchButton) {
-    searchButton.addEventListener('click', lancerRecherche);
-  }
-
-  if (searchInput) {
-    searchInput.addEventListener('keydown', function (event) {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        lancerRecherche();
-      }
+    // Tri alphabétique A → Z
+    games.sort(function (a, b) {
+        const na = (a.name || '').toLowerCase();
+        const nb = (b.name || '').toLowerCase();
+        return na.localeCompare(nb, 'fr');
     });
-  }
 
-  // Au chargement : on affiche des jeux par défaut
-  chargerJeux('');
+    if (!Array.isArray(games) || games.length === 0) {
+        if (gamesCount) gamesCount.textContent = '0 jeu trouvé';
+        errorBox.textContent = 'Aucun jeu trouvé avec ces critères.';
+        return;
+    }
+
+    if (gamesCount) {
+        gamesCount.textContent =
+            games.length + (games.length > 1 ? ' jeux trouvés' : ' jeu trouvé');
+    }
+
+    games.forEach(function (game) {
+        const card = createGameCard(game);
+        gameList.appendChild(card);
+    });
 }
 
+// ------------- APPLIQUER LES FILTRES SUR allGames ----------------
+function applyFilters() {
+    let filtered = allGames.slice();
+
+    // On bosse en minuscule pour comparer
+    filtered = filtered.filter(function (game) {
+        let ok = true;
+
+        // Plateformes
+        if (activePlatform !== '') {
+            const key = activePlatform.toLowerCase();
+            let plats = [];
+            if (Array.isArray(game.platforms)) {
+                plats = game.platforms
+                    .filter(p => p && p.name)
+                    .map(p => p.name.toLowerCase());
+            }
+            if (!plats.some(p => p.includes(key))) {
+                ok = false;
+            }
+        }
+
+        // Genres
+        if (ok && activeGenre !== '') {
+            const key = activeGenre.toLowerCase();
+            let gens = [];
+            if (Array.isArray(game.genres)) {
+                gens = game.genres
+                    .filter(g => g && g.name)
+                    .map(g => g.name.toLowerCase());
+            }
+            if (!gens.some(g => g.includes(key))) {
+                ok = false;
+            }
+        }
+
+        // Éditeurs
+        if (ok && activeEditor !== '') {
+            const key = activeEditor.toLowerCase();
+            let editors = [];
+            if (Array.isArray(game.involved_companies)) {
+                editors = game.involved_companies
+                    .filter(ic => ic && ic.company && ic.company.name)
+                    .map(ic => ic.company.name.toLowerCase());
+            }
+            if (!editors.some(e => e.includes(key))) {
+                ok = false;
+            }
+        }
+
+        return ok;
+    });
+
+    showGames(filtered);
+}
+
+// ------------- CHARGER LES JEUX POPULAIRES ----------------
+function loadPopularGames() {
+    const formData = new FormData();
+    formData.append('mode', 'popular');
+
+    fetch(API_URL, {
+        method: 'POST',
+        body: formData
+    })
+    .then(function (response) {
+        if (!response.ok) {
+            throw new Error('Erreur serveur : ' + response.status);
+        }
+        return response.json();
+    })
+    .then(function (data) {
+        allGames = Array.isArray(data) ? data : [];
+        applyFilters(); // applique filtres (au début = aucun)
+    })
+    .catch(function (error) {
+        errorBox.textContent = 'Erreur de chargement des jeux.';
+        console.error(error);
+    });
+}
+
+// ------------- RECHERCHER DES JEUX ----------------
+function searchGames() {
+    const query = searchInput.value.trim();
+
+    // Si la barre est vide → on recharge la liste populaire
+    if (query === '') {
+        loadPopularGames();
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('mode', 'search');
+    formData.append('search', query);
+
+    fetch(API_URL, {
+        method: 'POST',
+        body: formData
+    })
+    .then(function (response) {
+        if (!response.ok) {
+            throw new Error('Erreur serveur : ' + response.status);
+        }
+        return response.json();
+    })
+    .then(function (data) {
+        allGames = Array.isArray(data) ? data : [];
+        applyFilters();
+    })
+    .catch(function (error) {
+        errorBox.textContent = 'Erreur lors de la recherche.';
+        console.error(error);
+    });
+}
+
+// ------------- GESTION DES FILTRES (chips) ----------------
+function initFilters() {
+    chips.forEach(function (chip) {
+        chip.addEventListener('click', function () {
+            const type  = chip.getAttribute('data-type');
+            const value = chip.getAttribute('data-value') || '';
+
+            // Enlever chip--active sur les autres du même type
+            chips.forEach(function (c) {
+                if (c.getAttribute('data-type') === type) {
+                    c.classList.remove('chip--active');
+                }
+            });
+
+            // Activer celui qu'on vient de cliquer
+            chip.classList.add('chip--active');
+
+            if (type === 'platform') {
+                activePlatform = value;
+            } else if (type === 'genre') {
+                activeGenre = value;
+            } else if (type === 'editor') {
+                activeEditor = value;
+            }
+
+            applyFilters();
+        });
+    });
+
+    if (resetBtn) {
+        resetBtn.addEventListener('click', function () {
+            activePlatform = '';
+            activeGenre    = '';
+            activeEditor   = '';
+
+            // Remettre tous les "Tous" actifs
+            chips.forEach(function (c) {
+                const type  = c.getAttribute('data-type');
+                const value = c.getAttribute('data-value') || '';
+                if (value === '') {
+                    c.classList.add('chip--active');
+                } else {
+                    c.classList.remove('chip--active');
+                }
+            });
+
+            applyFilters();
+        });
+    }
+}
+
+// ------------- INITIALISATION -------------
+function initSearch() {
+    if (searchBtn) {
+        searchBtn.addEventListener('click', function () {
+            searchGames();
+        });
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                searchGames();
+            }
+        });
+    }
+
+    initFilters();
+
+    // On charge les jeux populaires au début
+    loadPopularGames();
+}
+
+// Quand la page est prête on lance tout
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initRecherche);
+    document.addEventListener('DOMContentLoaded', initSearch);
 } else {
-  initRecherche();
+    initSearch();
 }
