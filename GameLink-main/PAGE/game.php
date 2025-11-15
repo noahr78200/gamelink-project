@@ -4,7 +4,7 @@ $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 if ($id <= 0) { http_response_code(400); echo "ID invalide"; exit; }
 
 $CLIENT_ID = 'spy0n0vev24kqu6gg3m6t9gh0a9d6r';
-$TOKEN     = '04ier75mkj5q1ez34le11sydhn3ckg';
+$TOKEN     = ' lilj1h9k3hhug3bcmkch3ujuraj8y3'; // token client_credentials : expire regulierement
 
 $body = 'fields name, cover.image_id, genres.name, platforms.name, summary, rating, first_release_date;
          where id = ' . $id . ';
