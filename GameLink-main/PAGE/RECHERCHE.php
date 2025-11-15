@@ -44,5 +44,5 @@ require_once __DIR__ . '/../INCLUDES/track.php';  // ← Ajoute cette ligne
             </section>  
         
         </main>
-        <script src="../JS/RECHERCHE.js?v=1" defer></script>
+        <script src="/../JS/RECHERCHE.js?v=1" defer></script>
     </body>

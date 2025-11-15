@@ -9,7 +9,7 @@
 
 async function LoadGame() {
   // URL de l'API
-  const url = '../API/igdb.php';
+  const url = '/../API/igdb.php';
   
   // Options pour la requête
   const options = {
