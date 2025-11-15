@@ -1,94 +1,145 @@
 <?php
-//id depuis l'URL
+// PAGE/game.php
+// Affiche les infos détaillées d'un jeu IGDB à partir de son id dans l'URL.
+
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-if ($id <= 0) { http_response_code(400); echo "ID invalide"; exit; }
 
+if ($id <= 0) {
+    http_response_code(400);
+    echo "ID invalide";
+    exit;
+}
+
+// ⚠️ Même config IGDB que igdb.php (tu peux factoriser plus tard si tu veux)
 $CLIENT_ID = 'spy0n0vev24kqu6gg3m6t9gh0a9d6r';
-$TOKEN     = 'lilj1h9k3hhug3bcmkch3ujuraj8y3'; // token client_credentials : expire regulierement
+$TOKEN     = 'lilj1h9k3hhug3bcmkch3ujuraj8y3';
 
-$body = 'fields name, cover.image_id, genres.name, platforms.name, summary, rating, first_release_date;
+$body = 'fields id, name, cover.image_id, genres.name, platforms.name, summary, rating, first_release_date;
          where id = ' . $id . ';
          limit 1;';
 
 $ch = curl_init('https://api.igdb.com/v4/games');
+
 curl_setopt_array($ch, [
-  CURLOPT_RETURNTRANSFER => true,
-  CURLOPT_POST => true,
-  CURLOPT_HTTPHEADER => [
-    "Client-ID: $CLIENT_ID",
-    "Authorization: Bearer $TOKEN",
-    "Accept: application/json",
-    "Content-Type: text/plain"
-  ],
-  CURLOPT_POSTFIELDS => $body,
-  CURLOPT_TIMEOUT => 12,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_POST           => true,
+    CURLOPT_HTTPHEADER     => [
+        'Client-ID: ' . $CLIENT_ID,
+        'Authorization: Bearer ' . $TOKEN,
+        'Accept: application/json'
+    ],
+    CURLOPT_POSTFIELDS     => $body
 ]);
-$resp = curl_exec($ch);
-$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+$response = curl_exec($ch);
+$status   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+$error    = curl_error($ch);
+
 curl_close($ch);
 
-if ($code >= 400 || $resp === false) { http_response_code($code ?: 500); echo "Erreur IGDB"; exit; }
+if ($response === false || $status !== 200) {
+    http_response_code(500);
+    echo "Erreur lors du chargement du jeu.";
+    exit;
+}
 
-$data = json_decode($resp, true);
-$g = (is_array($data) && isset($data[0])) ? $data[0] : null;
-if (!$g) { http_response_code(404); echo "Jeu introuvable"; exit; }
+$data = json_decode($response, true);
 
-$cover = (isset($g['cover']['image_id']))
-  ? 'https://images.igdb.com/igdb/image/upload/t_cover_big/'.$g['cover']['image_id'].'.jpg'
-  : 'https://placehold.co/400x540?text='.urlencode($g['name'] ?? 'Jeu');
+// Normalement on a un tableau avec un seul jeu
+$game = isset($data[0]) ? $data[0] : null;
 
-function listNames($arr){ return $arr ? implode(', ', array_map(fn($x)=>$x['name'], $arr)) : '—'; }
+if (!$game) {
+    http_response_code(404);
+    echo "Jeu introuvable.";
+    exit;
+}
+
+// Préparation des infos pour l'affichage
+$name   = isset($game['name']) ? $game['name'] : 'Jeu';
+$cover  = '';
+
+if (isset($game['cover']['image_id'])) {
+    $cover = 'https://images.igdb.com/igdb/image/upload/t_cover_big/' .
+             $game['cover']['image_id'] . '.jpg';
+} else {
+    $cover = 'https://placehold.co/264x352?text=' . urlencode($name);
+}
+
+$rating = isset($game['rating']) ? (int)$game['rating'] : null;
+$summary = isset($game['summary']) ? $game['summary'] : 'Aucun résumé disponible.';
+
+$releaseDateText = 'Date inconnue';
+if (isset($game['first_release_date'])) {
+    $dateObj = new DateTime('@' . $game['first_release_date']);
+    $dateObj->setTimezone(new DateTimeZone('Europe/Paris'));
+    $releaseDateText = $dateObj->format('d/m/Y');
+}
+
+$genres = [];
+if (isset($game['genres']) && is_array($game['genres'])) {
+    foreach ($game['genres'] as $genre) {
+        if (isset($genre['name'])) {
+            $genres[] = $genre['name'];
+        }
+    }
+}
+
+$platforms = [];
+if (isset($game['platforms']) && is_array($game['platforms'])) {
+    foreach ($game['platforms'] as $plat) {
+        if (isset($plat['name'])) {
+            $platforms[] = $plat['name'];
+        }
+    }
+}
 ?>
-
-
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <title><?= htmlspecialchars($g['name'] ?? 'Jeu') ?></title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="../CSS/STYLE_GAME.css">
-  <link rel="icon" type="image/png" sizes="32x32" href="../ICON/LogoSimple.svg">
+    <meta charset="utf-8">
+    <title><?php echo htmlspecialchars($name); ?> | GameLink</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../CSS/STYLE_GAME.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="../ICON/LogoSimple.svg">
 </head>
-  <body class="game">
+<body class="game">
     <main class="game-wrap">
-      <section class="game-hero">
-        <div class="game-grid">
-          <img class="cover-game" src="<?= htmlspecialchars($cover) ?>" alt="<?= htmlspecialchars($g['name'] ?? 'cover') ?>">
-          <div class="game-info">
-            <h1><?= htmlspecialchars($g['name'] ?? '') ?></h1>
+        <section class="game-hero">
+            <div class="game-grid">
+                <div class="game-cover-wrapper">
+                    <img class="cover-game" src="<?php echo htmlspecialchars($cover); ?>" alt="<?php echo htmlspecialchars($name); ?>">
+                </div>
+                <div class="game-infos">
+                    <h1 class="game-title"><?php echo htmlspecialchars($name); ?></h1>
 
-            <strong>Genres :</strong> <?= htmlspecialchars(listNames($g['genres'] ?? null)) ?><br>
-            <strong>Plateformes :</strong> <?= htmlspecialchars(listNames($g['platforms'] ?? null)) ?><br>
-            <strong>Note IGDB :</strong> <?= isset($g['rating']) ? round($g['rating']).' ⭐' : '—' ?><br>
-            <strong>Sortie :</strong> 
-            <?php
-            if (!empty($g['first_release_date'])) {
-              echo date('d/m/Y', (int)$g['first_release_date']);
-            } else {
-              echo '—';
-            }
-            ?>
+                    <p class="game-meta">
+                        <strong>Sortie :</strong> <?php echo htmlspecialchars($releaseDateText); ?><br>
+                        <?php if ($rating !== null): ?>
+                            <strong>Note :</strong> <?php echo $rating; ?>/100
+                        <?php else: ?>
+                            <strong>Note :</strong> inconnue
+                        <?php endif; ?>
+                    </p>
 
-            <h3 class="game-subtitle">Description :</h3>
-            <p class="game-desc">
-              <p><?= nl2br(htmlspecialchars($g['summary'] ?? 'Aucun résumé.')) ?></p>
-            </p>
-          </div>
-        </div>
-      </section>
+                    <?php if (!empty($genres)): ?>
+                        <p><strong>Genres :</strong> <?php echo htmlspecialchars(implode(', ', $genres)); ?></p>
+                    <?php endif; ?>
+
+                    <?php if (!empty($platforms)): ?>
+                        <p><strong>Plateformes :</strong> <?php echo htmlspecialchars(implode(', ', $platforms)); ?></p>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </section>
+
+        <section class="game-summary">
+            <h2>Résumé</h2>
+            <p><?php echo nl2br(htmlspecialchars($summary)); ?></p>
+        </section>
+
+        <p class="back-link">
+            <a href="RECHERCHE.php">← Retour à la recherche</a>
+        </p>
     </main>
-
-    <a class="back" href="../PAGE/RECHERCHE.php">←</a>
-    
-    <button class="fab-fav" aria-label="Favori">
-      <img class="star" src="../ICON/SVG/STAR_GREY.svg" alt="STAR" width="">
-    </button>
-    
-    <button class="fab-fav" aria-label="Add">
-      <img class="star" src="../ICON/SVG/ADD_LOGO.svg" alt="Add btn" width="">
-    </button>
-    
-  </body>
-
+</body>
 </html>
