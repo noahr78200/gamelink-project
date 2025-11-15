@@ -1,41 +1,49 @@
 <?php
 // API/igdb.php
-// Ce fichier appelle l'API IGDB et renvoie une liste de jeux en JSON.
+// Récupère une liste de jeux depuis IGDB
+// - si "search" est vide  -> liste A -> Z
+// - si "search" est rempli -> recherche par nom
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store, no-cache, must-revalidate');
 
-// ⚠️ Mets bien ton client_id et ton access_token ici :
+// ⚠️ Mets bien tes identifiants ici :
 $CLIENT_ID = 'spy0n0vev24kqu6gg3m6t9gh0a9d6r';
-$TOKEN     = 'jmapwgfaw3021u1ce2zdrqix57gxhz'; // ton access_token actuel
+$TOKEN     = 'jmapwgfaw3021u1ce2zdrqix57gxhz'; // ton access_token IGDB
 
-// Lecture du texte de recherche (peut être vide)
+// On lit le texte de recherche
 $search = isset($_POST['search']) ? trim($_POST['search']) : '';
-$search = str_replace('"', '', $search); // on enlève les guillemets pour éviter les soucis
+$search = str_replace('"', '', $search); // on enlève les " pour éviter de casser la requête
 
-// Si on a un texte → recherche par nom
 if ($search !== '') {
+    // 🔎 Recherche par nom
     $body = 'search "' . $search . '";
-             fields id, name, cover.image_id, first_release_date, rating,
-                    genres.name, platforms.name, involved_companies.company.name;
+             fields id, name, first_release_date, rating,
+                    cover.image_id,
+                    genres.name,
+                    platforms.name,
+                    involved_companies.company.name;
              sort name asc;
              limit 50;';
 } else {
-    // Sinon, on charge juste une liste de jeux triés A → Z
-    $body = 'fields id, name, cover.image_id, first_release_date, rating,
-                    genres.name, platforms.name, involved_companies.company.name;
+    // 📚 Liste par défaut, triée A -> Z
+    $body = 'fields id, name, first_release_date, rating,
+                    cover.image_id,
+                    genres.name,
+                    platforms.name,
+                    involved_companies.company.name;
              sort name asc;
              limit 50;';
 }
 
-// Vérification rapide que cURL existe
+// Vérifie que cURL existe
 if (!function_exists('curl_init')) {
     http_response_code(500);
     echo json_encode(['error' => 'cURL PHP n\'est pas installé.']);
     exit;
 }
 
-// Appel à IGDB
+// Appel vers IGDB
 $ch = curl_init('https://api.igdb.com/v4/games');
 
 curl_setopt_array($ch, [
@@ -55,7 +63,6 @@ $error    = curl_error($ch);
 
 curl_close($ch);
 
-// Si cURL a complètement échoué
 if ($response === false) {
     http_response_code(502);
     echo json_encode([
@@ -65,6 +72,8 @@ if ($response === false) {
     exit;
 }
 
-// On renvoie tel quel ce que répond IGDB
+// On renvoie la réponse d’IGDB telle quelle
 http_response_code($status);
 echo $response;
+exit;
+?>
