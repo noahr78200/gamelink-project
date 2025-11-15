@@ -1,12 +1,12 @@
 <?php
 // ==========================================
-// 🔒 VÉRIFICATION ADMIN SIMPLE
+// 🔒 VÉRIFICATION ADMIN - ID 7 SEULEMENT
 // ==========================================
 // Mets ce fichier dans INCLUDES/check_admin.php
 
 /**
- * Vérifie que l'utilisateur est admin
- * Redirige vers AUTH.php sinon
+ * Vérifie que l'utilisateur est admin (id_joueur = 7)
+ * Redirige vers ACCUEIL.php si ce n'est pas le cas
  */
 function require_admin() {
     // Démarrer la session si pas déjà fait
@@ -16,28 +16,24 @@ function require_admin() {
     
     // Vérifier si l'utilisateur est connecté
     if (!isset($_SESSION['id_joueur'])) {
+        // Pas connecté → Redirection vers la page de connexion
         header('Location: AUTH.php');
         exit;
     }
     
-    // Optionnel : Vérifier si c'est vraiment un admin
-    // Si tu as un champ 'is_admin' dans ta table joueur, décommente :
-    /*
-    require_once __DIR__ . '/dbconfig.php';
-    $stmt = $pdo->prepare("SELECT is_admin FROM joueur WHERE id_joueur = ?");
-    $stmt->execute([$_SESSION['id_joueur']]);
-    $user = $stmt->fetch();
-    
-    if (!$user || !$user['is_admin']) {
+    // Vérifier si c'est l'admin (id_joueur = 7)
+    if ($_SESSION['id_joueur'] != 7) {
+        // Connecté mais pas admin → Redirection vers l'accueil
         header('Location: ACCUEIL.php');
         exit;
     }
-    */
+    
+    // Si on arrive ici, c'est bon ! L'utilisateur est l'admin (id = 7)
 }
 
 /**
  * Vérifie si l'utilisateur est admin (sans redirection)
- * @return bool
+ * @return bool True si id_joueur = 7, False sinon
  */
 function is_admin() {
     // Démarrer la session si pas déjà fait
@@ -45,21 +41,6 @@ function is_admin() {
         session_start();
     }
     
-    // Pour l'instant, on considère que tous les connectés sont admin
-    // Change cette logique selon tes besoins
-    return isset($_SESSION['id_joueur']);
-    
-    // Optionnel : Vérifier dans la base de données
-    /*
-    if (!isset($_SESSION['id_joueur'])) {
-        return false;
-    }
-    
-    require_once __DIR__ . '/dbconfig.php';
-    $stmt = $pdo->prepare("SELECT is_admin FROM joueur WHERE id_joueur = ?");
-    $stmt->execute([$_SESSION['id_joueur']]);
-    $user = $stmt->fetch();
-    
-    return $user && $user['is_admin'];
-    */
+    // Vérifier si connecté ET si c'est l'ID 7
+    return isset($_SESSION['id_joueur']) && $_SESSION['id_joueur'] == 7;
 }
