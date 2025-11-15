@@ -12,7 +12,7 @@ if ($id <= 0) {
 
 // ⚠️ Même config IGDB que igdb.php (tu peux factoriser plus tard si tu veux)
 $CLIENT_ID = 'spy0n0vev24kqu6gg3m6t9gh0a9d6r';
-$TOKEN     = 'jmapwgfaw3021u1ce2zdrqix57gxhz';
+$TOKEN     = 'a0xyq1guaazgpnyb8qgzmtk3ickt35';
 
 $body = 'fields id, name, cover.image_id, genres.name, platforms.name, summary, rating, first_release_date;
          where id = ' . $id . ';
