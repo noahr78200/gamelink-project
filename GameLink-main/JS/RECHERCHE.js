@@ -2,7 +2,7 @@
 // VERSION ULTRA SIMPLE
 // - Affiche des jeux par défaut (A -> Z)
 // - Permet de chercher par NOM (Zelda, FIFA...)
-// - PAS DE FILTRES POUR L'INSTANT
+// - Les filtres HTML ne sont pas utilisés pour l'instant
 
 const API_URL = '/API/igdb.php';
 
@@ -13,13 +13,13 @@ const searchButton = document.getElementById('search-button');
 const errorBox     = document.getElementById('error-message');
 const gamesCountEl = document.getElementById('games-count');
 
-// Fonction qui va chercher les jeux auprès de l'API PHP
+// ---------------------------
+// 1) Appeler l'API PHP IGDB
+// ---------------------------
 function chargerJeux(texteRecherche) {
-  // On prépare les données pour POST
   const formData = new FormData();
   formData.append('search', texteRecherche || '');
 
-  // On vide les messages
   if (errorBox) errorBox.textContent = '';
 
   fetch(API_URL, {
@@ -33,7 +33,7 @@ function chargerJeux(texteRecherche) {
       return response.json();
     })
     .then(function (data) {
-      // data doit être un tableau de jeux
+      console.log('Données reçues depuis IGDB :', data);
       if (!Array.isArray(data)) {
         afficherJeux([]);
       } else {
@@ -49,12 +49,13 @@ function chargerJeux(texteRecherche) {
     });
 }
 
-// Fonction qui affiche les jeux dans la liste <ul id="Game-list">
+// ---------------------------
+// 2) Afficher les jeux
+// ---------------------------
 function afficherJeux(liste) {
   if (!gameList) return;
   gameList.innerHTML = '';
 
-  // Si aucun jeu trouvé
   if (!Array.isArray(liste) || liste.length === 0) {
     if (gamesCountEl) {
       gamesCountEl.textContent = '0 jeu trouvé';
@@ -65,7 +66,7 @@ function afficherJeux(liste) {
     return;
   }
 
-  // Tri alphabétique A -> Z sur le nom
+  // Tri alphabétique
   liste.sort(function (a, b) {
     const na = (a.name || '').toLowerCase();
     const nb = (b.name || '').toLowerCase();
@@ -77,7 +78,7 @@ function afficherJeux(liste) {
       liste.length + (liste.length > 1 ? ' jeux trouvés' : ' jeu trouvé');
   }
 
-  // Pour chaque jeu, on crée une carte simple
+  // Création des cartes
   liste.forEach(function (jeu) {
     const li = document.createElement('li');
     li.className = 'game-card';
@@ -134,13 +135,18 @@ function afficherJeux(liste) {
   });
 }
 
-// Quand on clique sur "Rechercher"
+// ---------------------------
+// 3) Lancer une recherche
+// ---------------------------
 function lancerRecherche() {
   const texte = searchInput ? searchInput.value.trim() : '';
+  console.log('Recherche lancée pour :', texte);
   chargerJeux(texte);
 }
 
-// Initialisation de la page
+// ---------------------------
+// 4) Initialisation
+// ---------------------------
 function initRecherche() {
   if (searchButton) {
     searchButton.addEventListener('click', lancerRecherche);
@@ -155,11 +161,10 @@ function initRecherche() {
     });
   }
 
-  // Au chargement, on affiche des jeux par défaut (search vide)
+  // Au chargement : on affiche des jeux par défaut
   chargerJeux('');
 }
 
-// On lance init quand la page est prête
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initRecherche);
 } else {
