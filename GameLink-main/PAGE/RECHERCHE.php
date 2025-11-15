@@ -16,10 +16,9 @@ require_once __DIR__ . '/../INCLUDES/track.php';
 </head>
 <body>
     <header class="main-header">
-         <?php 
-    // Inclure le header (qui affichera ou non le lien ADMIN)
-    include __DIR__ . '/../INCLUDES/header.php'; 
-    ?>
+        <div class="header-inner">
+            <a href="ACCUEIL.php" class="logo">GameLink</a>
+        </div>
     </header>
 
     <main class="page-recherche">
@@ -32,7 +31,7 @@ require_once __DIR__ . '/../INCLUDES/track.php';
                     placeholder="Tape le nom d'un jeu (ex : Mario, Zelda...)">
                 <button id="search-button">Rechercher</button>
             </div>
-           
+            <p id="error-message" class="error-message"></p>
         </section>
 
         <section class="games-section">
