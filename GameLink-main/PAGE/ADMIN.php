@@ -1,6 +1,6 @@
 <?php
 // ==========================================
-// 🎮 PAGE ADMIN FINALE COMPLÈTE
+// 🎮 PAGE ADMIN FINALE
 // ==========================================
 // Fichier : PAGE/ADMIN.php
 
@@ -117,19 +117,37 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
       <a href="?tab=dashboard" class="admin-tab <?= $current_tab === 'dashboard' ? 'active' : '' ?>">
         📊 Statistiques
       </a>
-      <a href="?tab=captcha" class="admin-tab <?= $current_tab === 'captcha' ? 'active' : '' ?>">
-        🔒 Captcha
-      </a>
       <a href="?tab=users" class="admin-tab <?= $current_tab === 'users' ? 'active' : '' ?>">
         👥 Utilisateurs
       </a>
     </div>
 
+      <!-- ONGLET CAPTCHA -->
+    <div class="tab-content <?= $current_tab === 'captcha' ? 'active' : '' ?>">
+      <?php 
+      // Ton fichier manage_captcha.php existe déjà, on l'inclut
+      $captcha_file = __DIR__ . '/manage_captcha.php';
+      if (file_exists($captcha_file)) {
+          include $captcha_file;
+      } else {
+          echo '<section class="admin-surface">';
+          echo '<div class="card">';
+          echo '<div class="card-title">🔒 Gestion des Captchas</div>';
+          echo '<p style="padding: 20px; text-align: center; color: #99a1b3;">';
+          echo '⚠️ Le fichier <code>manage_captcha.php</code> est introuvable.';
+          echo '</p>';
+          echo '</div>';
+          echo '</section>';
+      }
+      ?>
+    </div>
+
+
     <!-- ONGLET STATISTIQUES -->
     <div class="tab-content <?= $current_tab === 'dashboard' ? 'active' : '' ?>">
       <section class="admin-surface">
         
-        <!-- LES 4 COMPTEURS PRINCIPAUX -->
+        <!-- LES 3 COMPTEURS PRINCIPAUX -->
         <div class="kpi-row">
           
           <!-- COMPTEUR 1 : Nouvelles inscriptions aujourd'hui -->
@@ -151,17 +169,6 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
             </div>
             <div style="font-size: 12px; color: #99a1b3; margin-top: 5px;">
               Actifs dans les 5 dernières minutes
-            </div>
-          </div>
-
-          <!-- COMPTEUR 2.5 : Connectés dans les 24h (NOUVEAU !) -->
-          <div class="kpi-card">
-            <div class="kpi-label">Connectés 24h :</div>
-            <div class="kpi-main">
-              <span class="kpi-value"><?= number_format($connectes_24h) ?></span>
-            </div>
-            <div style="font-size: 12px; color: #99a1b3; margin-top: 5px;">
-              Joueurs actifs dans les dernières 24h
             </div>
           </div>
 
@@ -251,26 +258,6 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
           </aside>
         </div>
       </section>
-    </div>
-
-    <!-- ONGLET CAPTCHA -->
-    <div class="tab-content <?= $current_tab === 'captcha' ? 'active' : '' ?>">
-      <?php 
-      // Ton fichier manage_captcha.php existe déjà, on l'inclut
-      $captcha_file = __DIR__ . '/manage_captcha.php';
-      if (file_exists($captcha_file)) {
-          include $captcha_file;
-      } else {
-          echo '<section class="admin-surface">';
-          echo '<div class="card">';
-          echo '<div class="card-title">🔒 Gestion des Captchas</div>';
-          echo '<p style="padding: 20px; text-align: center; color: #99a1b3;">';
-          echo '⚠️ Le fichier <code>manage_captcha.php</code> est introuvable.';
-          echo '</p>';
-          echo '</div>';
-          echo '</section>';
-      }
-      ?>
     </div>
 
     <!-- ONGLET UTILISATEURS -->
