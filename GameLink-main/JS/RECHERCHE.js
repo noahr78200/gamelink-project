@@ -1,22 +1,21 @@
 // RECHERCHE.js
 // - Charge une liste de jeux depuis IGDB via API/igdb.php
 // - Permet de chercher par nom
-// - Permet de filtrer par plateforme / genre / éditeur (en mode "mot-clé")
+// - Permet de filtrer par plateforme / genre / éditeur (mot-clé)
 
-// URL de l'API PHP
-// Sur ton serveur : racine du site = GameLink-main → /API/igdb.php
+// URL de l'API PHP (DocumentRoot = GameLink-main)
 const API_URL = '/API/igdb.php';
 
-// Tableau avec tous les jeux reçus de l'API
+// Données en mémoire
 let tousLesJeux = [];
 
-// Filtres actifs (texte + filtres boutons)
+// Filtres actifs
 let texteRecherche = '';
 let filtrePlateforme = '';
 let filtreGenre = '';
 let filtreEditeur = '';
 
-// Récupération des éléments HTML
+// Éléments HTML
 const gameList     = document.getElementById('Game-list');
 const searchInput  = document.getElementById('search-input');
 const searchButton = document.getElementById('search-button');
@@ -47,8 +46,6 @@ function chargerJeux(texte) {
       } else {
         tousLesJeux = data;
       }
-
-      // Une fois qu'on a les jeux → on applique les filtres et on affiche
       appliquerFiltresEtAfficher();
     })
     .catch(function (err) {
@@ -58,93 +55,69 @@ function chargerJeux(texte) {
 }
 
 // ==================================
-// 2) Appliquer les filtres + afficher
+// 2) Appliquer filtres + afficher
 // ==================================
 function appliquerFiltresEtAfficher() {
   gameList.innerHTML = '';
   errorBox.textContent = '';
 
-  // On crée une liste filtrée
   let liste = tousLesJeux.filter(function (jeu) {
     const nom = (jeu.name || '').toLowerCase();
 
-    // --- recherche texte (sur le nom du jeu) ---
+    // Recherche texte sur le nom
     if (texteRecherche !== '') {
       if (!nom.includes(texteRecherche.toLowerCase())) {
         return false;
       }
     }
 
-    // Récupérer plateformes / genres / éditeurs sous forme de tableaux de chaînes
+    // Récupération des données IGDB
     let plateformes = [];
     if (Array.isArray(jeu.platforms)) {
       plateformes = jeu.platforms
-        .filter(function (p) { return p && p.name; })
-        .map(function (p) { return p.name; });
+        .filter(p => p && p.name)
+        .map(p => p.name.toLowerCase());
     }
 
     let genres = [];
     if (Array.isArray(jeu.genres)) {
       genres = jeu.genres
-        .filter(function (g) { return g && g.name; })
-        .map(function (g) { return g.name; });
+        .filter(g => g && g.name)
+        .map(g => g.name.toLowerCase());
     }
 
     let editeurs = [];
     if (Array.isArray(jeu.involved_companies)) {
       editeurs = jeu.involved_companies
-        .filter(function (ic) { return ic && ic.company && ic.company.name; })
-        .map(function (ic) { return ic.company.name; });
+        .filter(ic => ic && ic.company && ic.company.name)
+        .map(ic => ic.company.name.toLowerCase());
     }
 
-    // On travaille en minuscule pour comparer
-    const plateformesMin = plateformes.map(function (p) { return p.toLowerCase(); });
-    const genresMin      = genres.map(function (g) { return g.toLowerCase(); });
-    const editeursMin    = editeurs.map(function (e) { return e.toLowerCase(); });
-
-    // Filtre plateforme (mot-clé, ex : "pc", "playstation 4")
+    // Filtre plateforme (mot-clé, ex: "pc", "playstation 4")
     if (filtrePlateforme !== '') {
       const key = filtrePlateforme.toLowerCase();
-      let ok = false;
-      for (let i = 0; i < plateformesMin.length; i++) {
-        if (plateformesMin[i].includes(key)) {
-          ok = true;
-          break;
-        }
-      }
+      const ok = plateformes.some(p => p.includes(key));
       if (!ok) return false;
     }
 
-    // Filtre genre (ex : "rpg", "sport", "adventure")
+    // Filtre genre (ex: "role-playing", "sport")
     if (filtreGenre !== '') {
       const key = filtreGenre.toLowerCase();
-      let ok = false;
-      for (let i = 0; i < genresMin.length; i++) {
-        if (genresMin[i].includes(key)) {
-          ok = true;
-          break;
-        }
-      }
+      const ok = genres.some(g => g.includes(key));
       if (!ok) return false;
     }
 
-    // Filtre éditeur (ex : "nintendo", "ubisoft")
+    // Filtre éditeur (ex: "nintendo", "ubisoft")
     if (filtreEditeur !== '') {
       const key = filtreEditeur.toLowerCase();
-      let ok = false;
-      for (let i = 0; i < editeursMin.length; i++) {
-        if (editeursMin[i].includes(key)) {
-          ok = true;
-          break;
-        }
-      }
+      const ok = editeurs.some(e => e.includes(key));
       if (!ok) return false;
     }
 
     return true;
   });
 
-  // Tri alphabétique A → Z sur le nom du jeu
+  // Tri alphabétique sur le nom
   liste.sort(function (a, b) {
     const na = (a.name || '').toLowerCase();
     const nb = (b.name || '').toLowerCase();
@@ -154,7 +127,7 @@ function appliquerFiltresEtAfficher() {
   // Si aucun jeu
   if (liste.length === 0) {
     gamesCountEl.textContent = '0 jeu trouvé';
-    errorBox.textContent = 'Aucun jeu trouvé avec ces critères.';
+    errorBox.textContent = 'Aucun jeu n’est disponible avec ces critères.';
     return;
   } else {
     gamesCountEl.textContent =
@@ -170,7 +143,6 @@ function appliquerFiltresEtAfficher() {
     lien.className = 'game-link';
     lien.href = 'game.php?id=' + jeu.id;
 
-    // Image
     const img = document.createElement('img');
     img.className = 'game-cover';
     img.alt = jeu.name || 'Jeu';
@@ -186,7 +158,6 @@ function appliquerFiltresEtAfficher() {
         encodeURIComponent(jeu.name || 'Jeu');
     }
 
-    // Contenu texte
     const body = document.createElement('div');
     body.className = 'game-card-body';
 
@@ -210,11 +181,9 @@ function appliquerFiltresEtAfficher() {
 
     info.textContent = morceaux.join(' · ');
 
-    // Tags (plateforme + genre + éditeur)
     const tags = document.createElement('div');
     tags.className = 'game-tags';
 
-    // Plateformes
     if (Array.isArray(jeu.platforms)) {
       jeu.platforms.slice(0, 2).forEach(function (p) {
         if (p && p.name) {
@@ -226,7 +195,6 @@ function appliquerFiltresEtAfficher() {
       });
     }
 
-    // Genres
     if (Array.isArray(jeu.genres)) {
       jeu.genres.slice(0, 1).forEach(function (g) {
         if (g && g.name) {
@@ -238,11 +206,8 @@ function appliquerFiltresEtAfficher() {
       });
     }
 
-    // Éditeur
     if (Array.isArray(jeu.involved_companies)) {
-      const ic = jeu.involved_companies.find(function (x) {
-        return x && x.company && x.company.name;
-      });
+      const ic = jeu.involved_companies.find(x => x && x.company && x.company.name);
       if (ic && ic.company && ic.company.name) {
         const tag = document.createElement('span');
         tag.className = 'game-tag';
@@ -267,14 +232,7 @@ function appliquerFiltresEtAfficher() {
 // ===============================
 function lancerRecherche() {
   texteRecherche = searchInput.value.trim();
-
-  // Quand tu lances une nouvelle recherche, on remet les filtres à "Tous"
-  filtrePlateforme = '';
-  filtreGenre = '';
-  filtreEditeur = '';
-  resetChipsUI();
-
-  // On recharge depuis l'API avec le texte de recherche
+  // À chaque nouvelle recherche, on recharge depuis l’API
   chargerJeux(texteRecherche);
 }
 
@@ -301,17 +259,14 @@ function initialiserFiltres() {
       const type  = chip.getAttribute('data-type');
       const value = chip.getAttribute('data-value') || '';
 
-      // On enlève la classe active pour les autres du même type
       chips.forEach(function (c) {
         if (c.getAttribute('data-type') === type) {
           c.classList.remove('chip--active');
         }
       });
 
-      // On active ce bouton
       chip.classList.add('chip--active');
 
-      // Mise à jour des variables de filtre
       if (type === 'platform') {
         filtrePlateforme = value;
       } else if (type === 'genre') {
@@ -320,12 +275,10 @@ function initialiserFiltres() {
         filtreEditeur = value;
       }
 
-      // On ne recharge pas l'API, on filtre juste la liste en mémoire
       appliquerFiltresEtAfficher();
     });
   });
 
-  // Bouton "Réinitialiser"
   if (resetButton) {
     resetButton.addEventListener('click', function () {
       texteRecherche = '';
@@ -342,7 +295,7 @@ function initialiserFiltres() {
 }
 
 // ===============================
-// 5) Initialisation de la page
+// 5) Initialisation
 // ===============================
 function initRecherche() {
   if (searchButton) {
@@ -360,7 +313,7 @@ function initRecherche() {
 
   initialiserFiltres();
 
-  // Au chargement de la page : on récupère une liste A→Z
+  // Chargement initial : liste A→Z, sans filtre ni recherche
   chargerJeux('');
 }
 

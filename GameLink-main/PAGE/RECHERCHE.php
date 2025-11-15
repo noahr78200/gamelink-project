@@ -1,7 +1,6 @@
 <?php
 session_start();
-// si tu as un track.php, garde-le :
-/* require_once __DIR__ . '/../INCLUDES/track.php'; */
+// require_once __DIR__ . '/../INCLUDES/track.php';
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -10,7 +9,7 @@ session_start();
     <title>Recherche | GameLink</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Adapte ces chemins si besoin en local -->
+    <!-- Adapte si besoin, mais en prod : DocumentRoot = GameLink-main -->
     <link rel="stylesheet" href="/CSS/HEADER.css" type="text/css">
     <link rel="stylesheet" href="/CSS/STYLE_RECHERCHE.css" type="text/css">
     <link rel="icon" type="image/png" sizes="32x32" href="/ICON/LogoSimple.svg">
@@ -18,12 +17,12 @@ session_start();
 <body>
     <main class="page-recherche">
 
-        <!-- Titre + barre de recherche -->
+        <!-- Barre de recherche -->
         <section class="search-header">
             <h1>Rechercher un jeu</h1>
             <p class="search-subtext">
-                Les jeux s’affichent par défaut par ordre alphabétique. Tu peux rechercher
-                par nom ou filtrer par plateforme, genre ou éditeur.
+                Par défaut les jeux sont triés par ordre alphabétique. Tu peux rechercher par nom
+                et filtrer par plateforme, genre ou éditeur.
             </p>
 
             <div class="search-area">
@@ -38,7 +37,7 @@ session_start();
             </div>
         </section>
 
-        <!-- Filtres très simples avec boutons -->
+        <!-- Filtres simples -->
         <section class="filters-panel">
             <div class="filters-panel-header">
                 <span>Filtres</span>
@@ -48,41 +47,41 @@ session_start();
             </div>
 
             <div class="filters-groups">
-                <!-- Plateformes -->
+                <!-- Plateforme -->
                 <div class="filter-group">
                     <span class="filter-label">Plateforme</span>
                     <div class="filters">
                         <button class="chip chip--active" data-type="platform" data-value="">Toutes</button>
-                        <button class="chip" data-type="platform" data-value="PC">PC</button>
-                        <button class="chip" data-type="platform" data-value="PlayStation 4">PS4</button>
-                        <button class="chip" data-type="platform" data-value="PlayStation 5">PS5</button>
-                        <button class="chip" data-type="platform" data-value="Xbox One">Xbox One</button>
-                        <button class="chip" data-type="platform" data-value="Nintendo Switch">Switch</button>
+                        <button class="chip" data-type="platform" data-value="pc">PC</button>
+                        <button class="chip" data-type="platform" data-value="playstation 4">PS4</button>
+                        <button class="chip" data-type="platform" data-value="playstation 5">PS5</button>
+                        <button class="chip" data-type="platform" data-value="xbox one">Xbox One</button>
+                        <button class="chip" data-type="platform" data-value="nintendo switch">Switch</button>
                     </div>
                 </div>
 
-                <!-- Genres -->
+                <!-- Genre -->
                 <div class="filter-group">
                     <span class="filter-label">Genre</span>
                     <div class="filters">
                         <button class="chip chip--active" data-type="genre" data-value="">Tous</button>
-                        <button class="chip" data-type="genre" data-value="Role-playing (RPG)">RPG</button>
-                        <button class="chip" data-type="genre" data-value="Shooter">Shooter</button>
-                        <button class="chip" data-type="genre" data-value="Adventure">Aventure</button>
-                        <button class="chip" data-type="genre" data-value="Sport">Sport</button>
-                        <button class="chip" data-type="genre" data-value="Racing">Course</button>
+                        <button class="chip" data-type="genre" data-value="role-playing">RPG</button>
+                        <button class="chip" data-type="genre" data-value="shooter">Shooter</button>
+                        <button class="chip" data-type="genre" data-value="adventure">Aventure</button>
+                        <button class="chip" data-type="genre" data-value="sport">Sport</button>
+                        <button class="chip" data-type="genre" data-value="racing">Course</button>
                     </div>
                 </div>
 
-                <!-- Éditeurs / studios (exemples) -->
+                <!-- Éditeur -->
                 <div class="filter-group">
-                    <span class="filter-label">Éditeur / Studio</span>
+                    <span class="filter-label">Éditeur</span>
                     <div class="filters">
                         <button class="chip chip--active" data-type="editor" data-value="">Tous</button>
-                        <button class="chip" data-type="editor" data-value="Nintendo">Nintendo</button>
-                        <button class="chip" data-type="editor" data-value="Electronic Arts">EA</button>
-                        <button class="chip" data-type="editor" data-value="Ubisoft">Ubisoft</button>
-                        <button class="chip" data-type="editor" data-value="Sony Interactive Entertainment">Sony</button>
+                        <button class="chip" data-type="editor" data-value="nintendo">Nintendo</button>
+                        <button class="chip" data-type="editor" data-value="ubisoft">Ubisoft</button>
+                        <button class="chip" data-type="editor" data-value="electronic arts">EA</button>
+                        <button class="chip" data-type="editor" data-value="sony">Sony</button>
                     </div>
                 </div>
             </div>
@@ -96,12 +95,12 @@ session_start();
             </div>
 
             <ul id="Game-list" class="game-list">
-                <!-- Les jeux seront ajoutés ici en JS -->
+                <!-- Rempli en JS -->
             </ul>
         </section>
     </main>
 
-    <!-- JS : en prod /JS/..., en local tu peux mettre ../JS/... -->
-    <script src="/JS/RECHERCHE.js?v=1" defer></script>
+    <!-- Important : chemin depuis la racine du site -->
+    <script src="../JS/RECHERCHE.js?v=2" defer></script>
 </body>
 </html>
