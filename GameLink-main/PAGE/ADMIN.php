@@ -1,14 +1,105 @@
 <?php
 // ==========================================
-// 🎮 PAGE ADMIN SIMPLE - Version Enfant
+// 🎮 PAGE ADMIN AVEC GESTION D'ERREURS
 // ==========================================
 
-// Protection admin
-require_once __DIR__ . '/../INCLUDES/check_admin.php';
-require_admin();
+// Activer l'affichage des erreurs pour voir le problème
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-// Charger les stats (avec debug)
-include __DIR__ . '/../INCLUDES/stats.php';
+// ==========================================
+// ÉTAPE 1 : VÉRIFIER check_admin.php
+// ==========================================
+
+$check_admin_file = __DIR__ . '/../INCLUDES/check_admin.php';
+
+if (!file_exists($check_admin_file)) {
+    die("
+        <div style='padding: 20px; background: #fee; border: 2px solid red; margin: 20px; border-radius: 10px;'>
+            <h2>❌ Fichier manquant</h2>
+            <p>Le fichier <code>check_admin.php</code> n'existe pas dans <code>/INCLUDES/</code></p>
+            <p><strong>Solution :</strong> Crée ce fichier ou commente la ligne qui l'appelle.</p>
+        </div>
+    ");
+}
+
+try {
+    require_once $check_admin_file;
+} catch (Exception $e) {
+    die("
+        <div style='padding: 20px; background: #fee; border: 2px solid red; margin: 20px; border-radius: 10px;'>
+            <h2>❌ Erreur dans check_admin.php</h2>
+            <p><strong>Message :</strong> " . htmlspecialchars($e->getMessage()) . "</p>
+        </div>
+    ");
+}
+
+// ==========================================
+// ÉTAPE 2 : VÉRIFIER LA FONCTION require_admin()
+// ==========================================
+
+if (function_exists('require_admin')) {
+    try {
+        require_admin();
+    } catch (Exception $e) {
+        die("
+            <div style='padding: 20px; background: #fee; border: 2px solid red; margin: 20px; border-radius: 10px;'>
+                <h2>❌ Erreur dans require_admin()</h2>
+                <p><strong>Message :</strong> " . htmlspecialchars($e->getMessage()) . "</p>
+            </div>
+        ");
+    }
+} else {
+    // Si la fonction n'existe pas, on fait une vérification simple
+    session_start();
+    if (!isset($_SESSION['id_joueur'])) {
+        die("
+            <div style='padding: 20px; background: #fff3cd; border: 2px solid orange; margin: 20px; border-radius: 10px;'>
+                <h2>⚠️ Non connecté</h2>
+                <p>Tu dois être connecté pour accéder à cette page.</p>
+                <p><a href='../PAGE/AUTH.php'>Se connecter</a></p>
+            </div>
+        ");
+    }
+}
+
+// ==========================================
+// ÉTAPE 3 : CHARGER LES STATS
+// ==========================================
+
+$stats_file = __DIR__ . '/../INCLUDES/stats.php';
+
+if (!file_exists($stats_file)) {
+    echo "
+        <div style='padding: 20px; background: #fff3cd; border: 2px solid orange; margin: 20px; border-radius: 10px;'>
+            <h2>⚠️ Fichier stats.php manquant</h2>
+            <p>Le fichier <code>stats.php</code> n'existe pas dans <code>/INCLUDES/</code></p>
+        </div>
+    ";
+    // Initialiser des valeurs par défaut
+    $joueurs_actifs = 0;
+    $connectes_maintenant = 0;
+    $pages_vues = 0;
+    $top_pages = [];
+    $total_joueurs = 0;
+} else {
+    try {
+        include $stats_file;
+    } catch (Exception $e) {
+        echo "
+            <div style='padding: 20px; background: #fee; border: 2px solid red; margin: 20px; border-radius: 10px;'>
+                <h2>❌ Erreur dans stats.php</h2>
+                <p><strong>Message :</strong> " . htmlspecialchars($e->getMessage()) . "</p>
+            </div>
+        ";
+        // Initialiser des valeurs par défaut
+        $joueurs_actifs = 0;
+        $connectes_maintenant = 0;
+        $pages_vues = 0;
+        $top_pages = [];
+        $total_joueurs = 0;
+    }
+}
 
 // Onglet actif
 $current_tab = $_GET['tab'] ?? 'dashboard';
@@ -103,7 +194,7 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
       <a href="RECHERCHE.php">RECHERCHE</a>
       <a href="COMMUNAUTE.php">COMMUNAUTÉ</a>
       
-      <?php if (is_admin()): ?>
+      <?php if (function_exists('is_admin') && is_admin()): ?>
         <a href="ADMIN.php">ADMIN</a>
       <?php endif; ?>
     </nav>
@@ -124,7 +215,7 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
         </p>
       <?php endif; ?>
       
-      <!-- Debug info (tu peux l'enlever après) -->
+      <!-- Debug info -->
       <div class="debug-info">
         🔍 Debug : 
         Actifs=<?= $joueurs_actifs ?? '?' ?> | 
@@ -150,10 +241,9 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
     <div class="tab-content <?= $current_tab === 'dashboard' ? 'active' : '' ?>">
       <section class="admin-surface">
         
-        <!-- LES 3 COMPTEURS SIMPLES -->
+        <!-- LES 3 COMPTEURS -->
         <div class="kpi-row">
           
-          <!-- COMPTEUR 1 : Joueurs actifs aujourd'hui -->
           <div class="kpi-card">
             <div class="kpi-label">Joueurs actifs aujourd'hui :</div>
             <div class="kpi-main">
@@ -163,7 +253,6 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
             </div>
           </div>
 
-          <!-- COMPTEUR 2 : Connectés maintenant -->
           <div class="kpi-card">
             <div class="kpi-label">Connectés maintenant :</div>
             <div class="kpi-main">
@@ -173,7 +262,6 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
             </div>
           </div>
 
-          <!-- COMPTEUR 3 : Pages vues aujourd'hui -->
           <div class="kpi-card">
             <div class="kpi-label">Pages vues aujourd'hui :</div>
             <div class="kpi-main">
@@ -209,7 +297,7 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
               <?php if (empty($top_pages)): ?>
                 <li style="text-align: center; color: #99a1b3; padding: 20px;">
                   Pas encore de données 📊<br>
-                  <small>Navigue sur le site pour voir des stats !</small>
+                  <small>Navigue sur le site !</small>
                 </li>
               <?php else: ?>
                 <?php foreach ($top_pages as $page): ?>
@@ -257,7 +345,14 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
 
     <!-- ONGLET CAPTCHA -->
     <div class="tab-content <?= $current_tab === 'captcha' ? 'active' : '' ?>">
-      <?php include __DIR__ . '/manage_captcha.php'; ?>
+      <?php 
+      $captcha_file = __DIR__ . '/manage_captcha.php';
+      if (file_exists($captcha_file)) {
+          include $captcha_file;
+      } else {
+          echo '<section class="admin-surface"><div class="card"><p style="padding: 20px; text-align: center;">Le fichier manage_captcha.php n\'existe pas</p></div></section>';
+      }
+      ?>
     </div>
 
     <!-- ONGLET UTILISATEURS -->
