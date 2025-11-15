@@ -1,16 +1,16 @@
 <?php
 // ==========================================
-// 🎮 PAGE ADMIN - Adaptée pour GameLink
+// 🎮 PAGE ADMIN SIMPLE - Version Enfant
 // ==========================================
 
-// PROTECTION : Seuls les admins peuvent voir cette page
+// Protection admin
 require_once __DIR__ . '/../INCLUDES/check_admin.php';
 require_admin();
 
-// On récupère les statistiques
-include __DIR__ . '/../INCLUDES/get_stats.php';
+// Charger les stats (avec debug)
+include __DIR__ . '/../INCLUDES/stats.php';
 
-// On récupère l'onglet actif
+// Onglet actif
 $current_tab = $_GET['tab'] ?? 'dashboard';
 ?>
 <!doctype html>
@@ -78,16 +78,17 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
     }
     
     .admin-welcome p {
-      margin: 0;
+      margin: 5px 0;
       opacity: 0.9;
     }
 
-    .stats-info {
+    .debug-info {
       background: rgba(255,255,255,0.1);
       padding: 10px;
       border-radius: 8px;
       margin-top: 10px;
-      font-size: 13px;
+      font-size: 12px;
+      font-family: monospace;
     }
   </style>
 </head>
@@ -114,10 +115,21 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
   <main>
     <!-- Message de bienvenue -->
     <div class="admin-welcome">
-      <h2>👋 Bienvenue Admin !</h2>
-      <p>Tu es connecté avec l'ID : <strong><?= htmlspecialchars($_SESSION['id_joueur'] ?? '7') ?></strong></p>
-      <div class="stats-info">
-        📊 Total de joueurs inscrits : <strong><?= number_format($stats['total_joueurs']) ?></strong>
+      <h2>👋 Salut Admin !</h2>
+      <p>Tu es connecté avec l'ID : <strong><?= htmlspecialchars($_SESSION['id_joueur'] ?? 'N/A') ?></strong></p>
+      
+      <?php if (isset($total_joueurs)): ?>
+        <p style="font-size: 14px; margin-top: 10px;">
+          📊 Total de joueurs inscrits : <strong><?= number_format($total_joueurs) ?></strong>
+        </p>
+      <?php endif; ?>
+      
+      <!-- Debug info (tu peux l'enlever après) -->
+      <div class="debug-info">
+        🔍 Debug : 
+        Actifs=<?= $joueurs_actifs ?? '?' ?> | 
+        Connectés=<?= $connectes_maintenant ?? '?' ?> | 
+        Pages=<?= $pages_vues ?? '?' ?>
       </div>
     </div>
 
@@ -138,17 +150,15 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
     <div class="tab-content <?= $current_tab === 'dashboard' ? 'active' : '' ?>">
       <section class="admin-surface">
         
-        <!-- Les 4 compteurs principaux -->
+        <!-- LES 3 COMPTEURS SIMPLES -->
         <div class="kpi-row">
           
           <!-- COMPTEUR 1 : Joueurs actifs aujourd'hui -->
           <div class="kpi-card">
             <div class="kpi-label">Joueurs actifs aujourd'hui :</div>
             <div class="kpi-main">
-              <span class="kpi-value"><?= number_format($stats['dau']['value']) ?></span>
-              <span class="delta <?= $stats['dau']['trend'] ?>">
-                <?= $stats['dau']['trend'] === 'up' ? '▲' : '▼' ?> 
-                <?= abs($stats['dau']['delta']) ?>%
+              <span class="kpi-value">
+                <?= isset($joueurs_actifs) ? number_format($joueurs_actifs) : '0' ?>
               </span>
             </div>
           </div>
@@ -157,34 +167,18 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
           <div class="kpi-card">
             <div class="kpi-label">Connectés maintenant :</div>
             <div class="kpi-main">
-              <span class="kpi-value"><?= number_format($stats['online_users']['value']) ?></span>
-              <span class="delta <?= $stats['online_users']['trend'] ?>">
-                <?= $stats['online_users']['trend'] === 'up' ? '▲' : '▼' ?> 
-                <?= abs($stats['online_users']['delta']) ?>%
+              <span class="kpi-value">
+                <?= isset($connectes_maintenant) ? number_format($connectes_maintenant) : '0' ?>
               </span>
             </div>
           </div>
 
-          <!-- COMPTEUR 3 : Nouvelles inscriptions -->
-          <div class="kpi-card">
-            <div class="kpi-label">Inscriptions aujourd'hui :</div>
-            <div class="kpi-main">
-              <span class="kpi-value"><?= number_format($stats['new_registrations']['value']) ?></span>
-              <span class="delta <?= $stats['new_registrations']['trend'] ?>">
-                <?= $stats['new_registrations']['trend'] === 'up' ? '▲' : '▼' ?> 
-                <?= abs($stats['new_registrations']['delta']) ?>%
-              </span>
-            </div>
-          </div>
-
-          <!-- COMPTEUR 4 : Pages vues -->
+          <!-- COMPTEUR 3 : Pages vues aujourd'hui -->
           <div class="kpi-card">
             <div class="kpi-label">Pages vues aujourd'hui :</div>
             <div class="kpi-main">
-              <span class="kpi-value"><?= number_format($stats['page_views']['value']) ?></span>
-              <span class="delta <?= $stats['page_views']['trend'] ?>">
-                <?= $stats['page_views']['trend'] === 'up' ? '▲' : '▼' ?> 
-                <?= abs($stats['page_views']['delta']) ?>%
+              <span class="kpi-value">
+                <?= isset($pages_vues) ? number_format($pages_vues) : '0' ?>
               </span>
             </div>
           </div>
@@ -208,17 +202,17 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
             <canvas id="chartBig"></canvas>
           </div>
 
-          <!-- Liste des pages les plus visitées -->
+          <!-- Top 5 des pages -->
           <aside class="card sidecard">
-            <div class="card-title">📄 Pages les plus visitées aujourd'hui</div>
+            <div class="card-title">📄 Pages les plus visitées</div>
             <ul class="toplist">
-              <?php if (empty($stats['page_views']['top_pages'])): ?>
+              <?php if (empty($top_pages)): ?>
                 <li style="text-align: center; color: #99a1b3; padding: 20px;">
                   Pas encore de données 📊<br>
                   <small>Navigue sur le site pour voir des stats !</small>
                 </li>
               <?php else: ?>
-                <?php foreach ($stats['page_views']['top_pages'] as $page): ?>
+                <?php foreach ($top_pages as $page): ?>
                   <li>
                     <span><?= htmlspecialchars($page['page_url']) ?></span>
                     <b><?= number_format($page['views']) ?></b>
@@ -229,7 +223,7 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
           </aside>
         </div>
 
-        <!-- Tableau des signalements -->
+        <!-- Signalements -->
         <div class="reports-grid">
           <section class="card">
             <div class="card-title">Contenu signalé</div>
@@ -280,7 +274,7 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
 
   </main>
 
-  <!-- Modal détaillé : Signalement -->
+  <!-- Modal -->
   <div class="modal-overlay" id="reportModal" aria-hidden="true">
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <header class="modal-header">
