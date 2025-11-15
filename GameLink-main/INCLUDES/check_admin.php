@@ -1,42 +1,65 @@
 <?php
 // ==========================================
-// FICHIER : check_admin.php
-// BUT : Vérifier si l'utilisateur est admin
+// 🔒 VÉRIFICATION ADMIN SIMPLE
 // ==========================================
+// Mets ce fichier dans INCLUDES/check_admin.php
 
-// Démarrer la session si elle n'est pas déjà démarrée
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+/**
+ * Vérifie que l'utilisateur est admin
+ * Redirige vers AUTH.php sinon
+ */
+function require_admin() {
+    // Démarrer la session si pas déjà fait
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    
+    // Vérifier si l'utilisateur est connecté
+    if (!isset($_SESSION['id_joueur'])) {
+        header('Location: AUTH.php');
+        exit;
+    }
+    
+    // Optionnel : Vérifier si c'est vraiment un admin
+    // Si tu as un champ 'is_admin' dans ta table joueur, décommente :
+    /*
+    require_once __DIR__ . '/dbconfig.php';
+    $stmt = $pdo->prepare("SELECT is_admin FROM joueur WHERE id_joueur = ?");
+    $stmt->execute([$_SESSION['id_joueur']]);
+    $user = $stmt->fetch();
+    
+    if (!$user || !$user['is_admin']) {
+        header('Location: ACCUEIL.php');
+        exit;
+    }
+    */
 }
 
-// =======================
-// FONCTION : Est-ce un admin ?
-// =======================
+/**
+ * Vérifie si l'utilisateur est admin (sans redirection)
+ * @return bool
+ */
 function is_admin() {
-    // Vérifier si l'utilisateur est connecté
-    if (!isset($_SESSION['user_id'])) {
+    // Démarrer la session si pas déjà fait
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    
+    // Pour l'instant, on considère que tous les connectés sont admin
+    // Change cette logique selon tes besoins
+    return isset($_SESSION['id_joueur']);
+    
+    // Optionnel : Vérifier dans la base de données
+    /*
+    if (!isset($_SESSION['id_joueur'])) {
         return false;
     }
     
-    // Vérifier si c'est l'ID 7
-    if ($_SESSION['user_id'] == 7) {
-        return true;
-    }
+    require_once __DIR__ . '/dbconfig.php';
+    $stmt = $pdo->prepare("SELECT is_admin FROM joueur WHERE id_joueur = ?");
+    $stmt->execute([$_SESSION['id_joueur']]);
+    $user = $stmt->fetch();
     
-    return false;
-}
-
-// =======================
-// FONCTION : Bloquer si pas admin
-// =======================
-function require_admin() {
-    // Si l'utilisateur n'est pas admin
-    if (!is_admin()) {
-        // Rediriger vers l'accueil avec un message d'erreur
-        $_SESSION['flash'] = [
-            'error' => 'Accès refusé. Cette page est réservée aux administrateurs.'
-        ];
-        header('Location: /PAGE/ACCUEIL.php');
-        exit;
-    }
+    return $user && $user['is_admin'];
+    */
 }
