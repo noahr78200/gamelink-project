@@ -122,6 +122,19 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
       </a>
     </div>
 
+     <!-- ONGLET CAPTCHA -->
+    <div class="tab-content <?= $current_tab === 'captcha' ? 'active' : '' ?>">
+      <?php 
+      $captcha_file = __DIR__ . '/manage_captcha.php';
+      if (file_exists($captcha_file)) {
+          include $captcha_file;
+      } else {
+          echo '<section class="admin-surface"><div class="card"><p style="padding: 20px; text-align: center;">Le fichier manage_captcha.php n\'existe pas</p></div></section>';
+      }
+      ?>
+    </div>
+
+
     <!-- ONGLET STATISTIQUES -->
     <div class="tab-content <?= $current_tab === 'dashboard' ? 'active' : '' ?>">
       <section class="admin-surface">
