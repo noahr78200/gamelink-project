@@ -24,7 +24,7 @@ if ($search !== '') {
                     platforms.name,
                     involved_companies.company.name;
              sort name asc;
-             limit 50;';
+             ;
 } else {
     // 📚 Liste A → Z par défaut
     $body = 'fields id, name, first_release_date, rating,
