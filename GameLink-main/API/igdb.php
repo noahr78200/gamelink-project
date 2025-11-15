@@ -6,14 +6,8 @@ error_reporting(E_ALL);
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store, no-cache, must-revalidate');
 
-// 🔍 Test : est-ce que curl existe ?
-if (!function_exists('curl_init')) {
-    http_response_code(500);
-    echo json_encode([
-        'error' => 'L’extension PHP cURL n’est pas installée ou activée.'
-    ]);
-    exit;
-}
+
+
 
 // 🟢 TES IDENTIFIANTS IGDB / TWITCH
 $CLIENT_ID = 'spy0n0vev24kqu6gg3m6t9gh0a9d6r';
@@ -72,3 +66,24 @@ if ($response === false) {
 // On renvoie le code HTTP d’IGDB (200, 401…)
 http_response_code($status);
 echo $response;
+
+// On lit les données envoyées en POST (FormData)
+$mode   = isset($_POST['mode'])   ? $_POST['mode']   : 'popular';
+$search = isset($_POST['search']) ? trim($_POST['search']) : '';
+
+$search = str_replace('"', '', $search);
+
+// 🔹 Recherche par nom
+if ($mode === 'search' && $search !== '') {
+    $body = 'search "' . $search . '";
+             fields id, name, cover.image_id, first_release_date, rating,
+                    genres.name, platforms.name, involved_companies.company.name;
+             sort name asc;
+             limit 40;';
+} else {
+    // 🔹 Liste par défaut = tri alphabétique
+    $body = 'fields id, name, cover.image_id, first_release_date, rating,
+                    genres.name, platforms.name, involved_companies.company.name;
+             sort name asc;
+             limit 40;';
+}
