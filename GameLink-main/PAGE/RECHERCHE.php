@@ -101,6 +101,6 @@ session_start();
     </main>
 
     <!-- Important : chemin depuis la racine du site -->
-    <script src="../JS/RECHERCHE.js?v=2" defer></script>
+    <script src="JS/RECHERCHE.js?v=3" defer></script>
 </body>
 </html>
