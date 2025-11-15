@@ -4,7 +4,7 @@ header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store, no-cache, must-revalidate');
 
 $CLIENT_ID = 'spy0n0vev24kqu6gg3m6t9gh0a9d6r';
-$TOKEN     = ' lilj1h9k3hhug3bcmkch3ujuraj8y3'; // token client_credentials : expire regulierement
+$TOKEN     = 'lilj1h9k3hhug3bcmkch3ujuraj8y3'; // token client_credentials : expire regulierement
 
 $rawBody = file_get_contents('php://input');
 if ($rawBody === false || trim($rawBody) === '') {
