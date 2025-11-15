@@ -1,3 +1,8 @@
+<?php
+session_start();
+require_once __DIR__ . '/../INCLUDES/track.php';  // ← Ajoute cette ligne
+?>
+
 <!DOCTYPE html>
 <html>
     <head>

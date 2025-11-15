@@ -2,6 +2,9 @@
 // PAGE/ACCUEIL.php - Page d'accueil pour utilisateurs connectés
 session_start();
 
+// TRACKING AUTOMATIQUE - Ne touche plus jamais à cette ligne !
+require_once __DIR__ . '/../INCLUDES/track.php';
+
 // Protection : redirection si non connecté
 if (!isset($_SESSION['user_id'])) {
     header('Location: ../index.php?login_required=1');
@@ -13,12 +16,6 @@ require_once __DIR__ . '/../DATA/DBConfig.php';
 
 $user_id = $_SESSION['user_id'];
 $user_pseudo = $_SESSION['user_pseudo'];
-
-// TODO: Récupérer les jeux de l'utilisateur depuis la BDD
-// Pour l'instant, on affiche juste un message de bienvenue
-
-
-   
 ?>
 <!DOCTYPE html>
 <html lang="fr">
