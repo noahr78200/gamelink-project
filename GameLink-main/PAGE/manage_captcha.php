@@ -563,7 +563,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </table>
             <?php endif; ?>
 
-            <a href="ADMIN.php" class="back-link">← Retour à l'administration</a>
+            
         </div>
     </div>
 </main>
