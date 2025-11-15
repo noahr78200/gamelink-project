@@ -473,35 +473,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 Ajoute, active/désactive ou supprime les questions utilisées pour vérifier que l'utilisateur est humain.
             </p>
 
-            <!-- Boîte de débogage -->
-            <div class="debug-box">
-                <strong>🔍 Diagnostic du système :</strong><br>
-                📁 Dossier DATA : <?= $dirExists ? '✅ Existe' : '❌ N\'existe pas' ?><br>
-                📝 Dossier accessible en écriture : <?= $dirWritable ? '✅ Oui' : '❌ Non' ?><br>
-                📄 Fichier captcha_bank.json : <?= $fileExists ? '✅ Existe' : '❌ N\'existe pas' ?><br>
-                ✏️ Fichier accessible en écriture : <?= $fileWritable ? '✅ Oui' : '❌ Non' ?><br>
-                📊 Questions chargées : <strong><?= count($bank) ?></strong><br>
-                <code><?= htmlspecialchars(CAPTCHA_JSON) ?></code>
-                
-                <?php if (!$dirWritable || !$fileWritable): ?>
-                    <br><br>
-                    <strong>⚠️ Action requise :</strong> Le dossier ou le fichier n'est pas accessible en écriture !<br>
-                    <strong>Solution rapide :</strong> Dans ton Terminal, tape :
-                    <code style="display: block; margin-top: 8px;">sudo chmod -R 777 <?= htmlspecialchars(dirname(CAPTCHA_JSON)) ?></code>
-                <?php endif; ?>
-            </div>
-
-            <?php if ($message): ?>
-                <div class="message">
-                    <?= htmlspecialchars($message) ?>
-                </div>
-            <?php endif; ?>
-
-            <?php if ($error): ?>
-                <div class="error">
-                    <?= htmlspecialchars($error) ?>
-                </div>
-            <?php endif; ?>
+           
 
             <div class="info-box">
                 <strong>💡 Astuce :</strong> pour accepter plusieurs réponses valides,
