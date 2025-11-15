@@ -5,31 +5,31 @@
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store, no-cache, must-revalidate');
 
-// ⚠️ MET ICI TES INFOS IGDB / TWITCH
+// 🟢 TES IDENTIFIANTS IGDB / TWITCH
 $CLIENT_ID = 'spy0n0vev24kqu6gg3m6t9gh0a9d6r';
-$TOKEN     = 'a0xyq1guaazgpnyb8qgzmtk3ickt35'; // access_token sans espace au début
+$TOKEN     = 'jmapwgfaw3021u1ce2zdrqix57gxhz'; // access_token récupéré avec curl
 
-// On lit les données envoyées en POST (form-data simple)
+// On lit les données envoyées en POST (FormData)
 $mode   = isset($_POST['mode'])   ? $_POST['mode']   : 'popular';
 $search = isset($_POST['search']) ? trim($_POST['search']) : '';
 
-// On nettoie un peu le texte de recherche pour éviter les guillemets
+// On nettoie un peu
 $search = str_replace('"', '', $search);
 
-// On construit la requête IGDB très simplement
+// On prépare la requête texte pour IGDB
 if ($mode === 'search' && $search !== '') {
     // Recherche par nom
     $body = 'search "' . $search . '";
              fields id, name, cover.image_id, first_release_date, rating;
              limit 20;';
 } else {
-    // Liste "populaire" par défaut
-    $body = 'fields id, name, cover.image_id, first_release_date, rating;
+    // Jeux “populaires” par défaut
+    $body = 'fields id, name, cover.image_id, first_release_date, rating, popularity;
              sort popularity desc;
              limit 20;';
 }
 
-// On prépare l'appel cURL vers IGDB
+// On prépare cURL vers IGDB
 $ch = curl_init('https://api.igdb.com/v4/games');
 
 curl_setopt_array($ch, [
@@ -49,7 +49,7 @@ $error    = curl_error($ch);
 
 curl_close($ch);
 
-// Si cURL casse totalement
+// Si cURL plante complètement
 if ($response === false) {
     http_response_code(502);
     echo json_encode([
@@ -59,6 +59,6 @@ if ($response === false) {
     exit;
 }
 
-// On renvoie exactement le code HTTP d’IGDB (200, 401, etc.)
+// On renvoie le code HTTP d’IGDB (200, 401…)
 http_response_code($status);
 echo $response;
