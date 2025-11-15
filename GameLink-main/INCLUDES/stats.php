@@ -1,6 +1,6 @@
 <?php
 // ==========================================
-// 📊 STATS AVEC DEBUG COMPLET
+// 📊 STATS AVEC TON dbconfig.php
 // ==========================================
 // Mets ce fichier dans INCLUDES/stats.php
 
@@ -8,24 +8,15 @@
 // MODE DEBUG
 // ==========================================
 
-// Mettre à true pour voir les valeurs dans la page
+// Mettre à true pour voir les valeurs
 $DEBUG_MODE = true;
 
 // ==========================================
-// Connexion à la base
+// CONNEXION EN UTILISANT TON FICHIER
 // ==========================================
 
 if (!isset($pdo)) {
-    try {
-        $pdo = new PDO(
-            "mysql:host=localhost;dbname=gamelink;charset=utf8mb4",
-            "root",
-            "",
-            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
-        );
-    } catch (Exception $e) {
-        die("❌ Erreur de connexion : " . $e->getMessage());
-    }
+    require_once __DIR__ . '/dbconfig.php';
 }
 
 // Initialiser les variables
@@ -39,21 +30,18 @@ $total_joueurs = 0;
 // COMPTEUR 1 : Joueurs actifs aujourd'hui
 // ==========================================
 
-$sql1 = "
-    SELECT COUNT(DISTINCT id_joueur) as count 
-    FROM user_activity 
-    WHERE DATE(last_activity) = CURDATE()
-    AND id_joueur IS NOT NULL
-";
-
 try {
-    $stmt = $pdo->query($sql1);
+    $stmt = $pdo->query("
+        SELECT COUNT(DISTINCT id_joueur) as count 
+        FROM user_activity 
+        WHERE DATE(last_activity) = CURDATE()
+        AND id_joueur IS NOT NULL
+    ");
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     $joueurs_actifs = (int)$result['count'];
     
     if ($DEBUG_MODE) {
         echo "<!-- DEBUG Joueurs actifs : $joueurs_actifs -->\n";
-        echo "<!-- SQL: $sql1 -->\n";
     }
 } catch (Exception $e) {
     if ($DEBUG_MODE) {
@@ -65,21 +53,18 @@ try {
 // COMPTEUR 2 : Connectés maintenant
 // ==========================================
 
-$sql2 = "
-    SELECT COUNT(DISTINCT id_joueur) as count 
-    FROM user_activity 
-    WHERE last_activity >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)
-    AND id_joueur IS NOT NULL
-";
-
 try {
-    $stmt = $pdo->query($sql2);
+    $stmt = $pdo->query("
+        SELECT COUNT(DISTINCT id_joueur) as count 
+        FROM user_activity 
+        WHERE last_activity >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)
+        AND id_joueur IS NOT NULL
+    ");
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     $connectes_maintenant = (int)$result['count'];
     
     if ($DEBUG_MODE) {
         echo "<!-- DEBUG Connectés maintenant : $connectes_maintenant -->\n";
-        echo "<!-- SQL: $sql2 -->\n";
     }
 } catch (Exception $e) {
     if ($DEBUG_MODE) {
@@ -91,20 +76,17 @@ try {
 // COMPTEUR 3 : Pages vues aujourd'hui
 // ==========================================
 
-$sql3 = "
-    SELECT COUNT(*) as count 
-    FROM page_views 
-    WHERE DATE(viewed_at) = CURDATE()
-";
-
 try {
-    $stmt = $pdo->query($sql3);
+    $stmt = $pdo->query("
+        SELECT COUNT(*) as count 
+        FROM page_views 
+        WHERE DATE(viewed_at) = CURDATE()
+    ");
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     $pages_vues = (int)$result['count'];
     
     if ($DEBUG_MODE) {
         echo "<!-- DEBUG Pages vues : $pages_vues -->\n";
-        echo "<!-- SQL: $sql3 -->\n";
     }
 } catch (Exception $e) {
     if ($DEBUG_MODE) {
@@ -116,24 +98,21 @@ try {
 // BONUS : Top 5 des pages
 // ==========================================
 
-$sql4 = "
-    SELECT 
-        page_url, 
-        COUNT(*) as views
-    FROM page_views 
-    WHERE DATE(viewed_at) = CURDATE()
-    GROUP BY page_url
-    ORDER BY views DESC
-    LIMIT 5
-";
-
 try {
-    $stmt = $pdo->query($sql4);
+    $stmt = $pdo->query("
+        SELECT 
+            page_url, 
+            COUNT(*) as views
+        FROM page_views 
+        WHERE DATE(viewed_at) = CURDATE()
+        GROUP BY page_url
+        ORDER BY views DESC
+        LIMIT 5
+    ");
     $top_pages = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     if ($DEBUG_MODE) {
         echo "<!-- DEBUG Top pages : " . count($top_pages) . " pages trouvées -->\n";
-        echo "<!-- " . print_r($top_pages, true) . " -->\n";
     }
 } catch (Exception $e) {
     if ($DEBUG_MODE) {
@@ -161,7 +140,7 @@ try {
 }
 
 // ==========================================
-// VÉRIFIER LES DONNÉES DANS LES TABLES
+// VÉRIFIER LES DONNÉES
 // ==========================================
 
 if ($DEBUG_MODE) {

@@ -1,12 +1,16 @@
 <?php
 // ==========================================
-// 📝 TRACKER AVEC DEBUG COMPLET
+// 📝 TRACKER AVEC TON dbconfig.php
 // ==========================================
 // Mets ce fichier dans INCLUDES/track.php
 
 // ==========================================
-// ÉTAPE 1 : Activer les logs
+// CONNEXION EN UTILISANT TON FICHIER
 // ==========================================
+
+if (!isset($pdo)) {
+    require_once __DIR__ . '/dbconfig.php';
+}
 
 // Créer un fichier de log pour voir ce qui se passe
 $log_file = __DIR__ . '/track_debug.log';
@@ -20,26 +24,7 @@ function write_log($message) {
 write_log("========== TRACKER APPELÉ ==========");
 
 // ==========================================
-// ÉTAPE 2 : Connexion à la base
-// ==========================================
-
-if (!isset($pdo)) {
-    try {
-        $pdo = new PDO(
-            "mysql:host=localhost;dbname=gamelink;charset=utf8mb4",
-            "root",
-            "",
-            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
-        );
-        write_log("✅ Connexion BDD OK");
-    } catch (Exception $e) {
-        write_log("❌ Erreur connexion BDD: " . $e->getMessage());
-        return;
-    }
-}
-
-// ==========================================
-// ÉTAPE 3 : Récupérer les infos
+// RÉCUPÉRER LES INFOS
 // ==========================================
 
 // Vérifier toutes les variables de session possibles
@@ -63,7 +48,7 @@ $page = $_SERVER['REQUEST_URI'] ?? '/unknown';
 write_log("📄 Page visitée: $page");
 
 // ==========================================
-// ÉTAPE 4 : Enregistrer la vue de page
+// ENREGISTRER LA VUE DE PAGE
 // ==========================================
 
 try {
@@ -78,12 +63,12 @@ try {
 }
 
 // ==========================================
-// ÉTAPE 5 : Mettre à jour l'activité
+// METTRE À JOUR L'ACTIVITÉ
 // ==========================================
 
 if ($id_joueur) {
     try {
-        // Vérifier si le joueur existe dans la table joueur
+        // Vérifier si le joueur existe
         $stmt = $pdo->prepare("SELECT id_joueur FROM joueur WHERE id_joueur = ?");
         $stmt->execute([$id_joueur]);
         
@@ -92,7 +77,7 @@ if ($id_joueur) {
         } else {
             write_log("✅ Le joueur $id_joueur existe dans la table joueur");
             
-            // Insérer ou mettre à jour l'activité
+            // Insérer ou mettre à jour
             $stmt = $pdo->prepare("
                 INSERT INTO user_activity (id_joueur, last_activity, page_url)
                 VALUES (?, NOW(), ?)
