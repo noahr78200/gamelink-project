@@ -463,19 +463,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body class="admin">
 
-<header>
-    <nav class="Menu">
-        <a href="">
-            <img class="logo" src="../ICON/LogoComplet.svg" alt="Logo GameLink">
-        </a>
-        <a href="ACCUEIL.php">ACCUEIL</a>
-        <a href="RECHERCHE.php">RECHERCHE</a>
-        <a href="COMMUNAUTE.php">COMMUNAUTÉ</a>
-        <?php if (is_admin()): ?>
-            <a href="ADMIN.php">ADMIN</a>
-        <?php endif; ?>
-    </nav>
-</header>
+
 
 <main>
     <div class="captcha-wrapper">
