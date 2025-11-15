@@ -487,7 +487,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <br><br>
                     <strong>⚠️ Action requise :</strong> Le dossier ou le fichier n'est pas accessible en écriture !<br>
                     <strong>Solution rapide :</strong> Dans ton Terminal, tape :
-                    <code style="display: block; margin-top: 8px;">chmod -R 777 <?= htmlspecialchars(dirname(CAPTCHA_JSON)) ?></code>
+                    <code style="display: block; margin-top: 8px;">sudo chmod -R 777 <?= htmlspecialchars(dirname(CAPTCHA_JSON)) ?></code>
                 <?php endif; ?>
             </div>
 
