@@ -313,37 +313,31 @@ CREATE TABLE IF NOT EXISTS user_activity (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ==========================================
--- BOÎTE 2 : Quelle page est visitée ?
+-- 📋 TABLES FINALES POUR GAMELINK
 -- ==========================================
--- Cette table note chaque visite de page
 
+-- Table 1 : Activité des utilisateurs (qui est connecté)
+CREATE TABLE IF NOT EXISTS user_activity (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL UNIQUE,
+    last_activity DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    page_url VARCHAR(255),
+    INDEX idx_last_activity (last_activity),
+    FOREIGN KEY (user_id) REFERENCES joueur(id_joueur) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Table 2 : Vues de pages (chaque visite)
 CREATE TABLE IF NOT EXISTS page_views (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    id_joueur INT,
+    user_id INT,
     page_url VARCHAR(255) NOT NULL,
     viewed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_id_joueur (id_joueur),
+    INDEX idx_user_id (user_id),
     INDEX idx_viewed_at (viewed_at),
     INDEX idx_page_url (page_url),
-    FOREIGN KEY (id_joueur) REFERENCES joueur(id_joueur) ON DELETE SET NULL
+    FOREIGN KEY (user_id) REFERENCES joueur(id_joueur) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ==========================================
--- BOÎTE 3 : Résumé de chaque jour
+-- C'EST TOUT ! 🎉
 -- ==========================================
--- Cette table stocke un résumé des statistiques quotidiennes
-
-CREATE TABLE IF NOT EXISTS daily_stats (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    stat_date DATE NOT NULL UNIQUE,
-    dau INT DEFAULT 0,
-    new_users INT DEFAULT 0,
-    total_page_views INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_stat_date (stat_date)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ==========================================
--- C'EST FINI ! 🎉
--- ==========================================
--- Les 3 tables sont créées et reliées à ta table joueur existante

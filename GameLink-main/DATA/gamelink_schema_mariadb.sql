@@ -262,43 +262,32 @@ CREATE TABLE joueur_badge (
 
 
 -- ==========================================
--- 📋 TABLES POUR LES STATISTIQUES
--- Adapté pour ta base de données GameLink existante
+-- 📋 TABLES FINALES POUR GAMELINK
 -- ==========================================
 
--- ==========================================
--- BOÎTE 1 : Qui est connecté ?
--- ==========================================
--- Cette table note quand un joueur visite ton site
-
+-- Table 1 : Activité des utilisateurs (qui est connecté)
 CREATE TABLE IF NOT EXISTS user_activity (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    id_joueur INT NOT NULL,
+    user_id INT NOT NULL UNIQUE,
     last_activity DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     page_url VARCHAR(255),
-    INDEX idx_id_joueur (id_joueur),
     INDEX idx_last_activity (last_activity),
-    FOREIGN KEY (id_joueur) REFERENCES joueur(id_joueur) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES joueur(id_joueur) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ==========================================
--- BOÎTE 2 : Quelle page est visitée ?
--- ==========================================
--- Cette table note chaque visite de page
-
+-- Table 2 : Vues de pages (chaque visite)
 CREATE TABLE IF NOT EXISTS page_views (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    id_joueur INT,
+    user_id INT,
     page_url VARCHAR(255) NOT NULL,
     viewed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_id_joueur (id_joueur),
+    INDEX idx_user_id (user_id),
     INDEX idx_viewed_at (viewed_at),
     INDEX idx_page_url (page_url),
-    FOREIGN KEY (id_joueur) REFERENCES joueur(id_joueur) ON DELETE SET NULL
+    FOREIGN KEY (user_id) REFERENCES joueur(id_joueur) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ==========================================
--- BOÎTE 3 : Résumé de chaque jour
+-- C'EST TOUT ! 🎉
 -- ==========================================
--- Cette table stocke un résumé des statistiques quotidiennes
 
