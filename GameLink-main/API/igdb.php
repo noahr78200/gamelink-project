@@ -1,9 +1,19 @@
+
 <?php
-// API/igdb.php
-// Ce fichier parle avec IGDB et renvoie la liste des jeux au JavaScript.
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store, no-cache, must-revalidate');
+
+// 🔍 Test : est-ce que curl existe ?
+if (!function_exists('curl_init')) {
+    http_response_code(500);
+    echo json_encode([
+        'error' => 'L’extension PHP cURL n’est pas installée ou activée.'
+    ]);
+    exit;
+}
 
 // 🟢 TES IDENTIFIANTS IGDB / TWITCH
 $CLIENT_ID = 'spy0n0vev24kqu6gg3m6t9gh0a9d6r';
