@@ -7,7 +7,7 @@ header('Cache-Control: no-store, no-cache, must-revalidate');
 
 // ⚠️ MET ICI TES INFOS IGDB / TWITCH
 $CLIENT_ID = 'spy0n0vev24kqu6gg3m6t9gh0a9d6r';
-$TOKEN     = 'lilj1h9k3hhug3bcmkch3ujuraj8y3'; // access_token sans espace au début
+$TOKEN     = 'jmapwgfaw3021u1ce2zdrqix57gxhz'; // access_token sans espace au début
 
 // On lit les données envoyées en POST (form-data simple)
 $mode   = isset($_POST['mode'])   ? $_POST['mode']   : 'popular';
