@@ -1,6 +1,6 @@
 <?php
 // ==========================================
-// 📊 STATISTIQUES - Version finale
+// 📊 STATISTIQUES - Version complète avec 24h
 // ==========================================
 // Fichier : INCLUDES/stats.php
 
@@ -38,6 +38,22 @@ try {
     $connectes_maintenant = (int)$stmt->fetch()['count'];
 } catch (Exception $e) {
     $connectes_maintenant = 0;
+}
+
+// ==========================================
+// STAT 2.5 : Connectés dans les 24h (NOUVEAU !)
+// ==========================================
+
+try {
+    $stmt = $pdo->query("
+        SELECT COUNT(DISTINCT user_id) as count 
+        FROM user_activity 
+        WHERE last_activity >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
+        AND user_id IS NOT NULL
+    ");
+    $connectes_24h = (int)$stmt->fetch()['count'];
+} catch (Exception $e) {
+    $connectes_24h = 0;
 }
 
 // ==========================================
