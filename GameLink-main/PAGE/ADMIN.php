@@ -22,7 +22,9 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
   <link rel="stylesheet" href="../CSS/HEADER.css" type="text/css"/>
   <link rel="stylesheet" href="../CSS/STYLE_ADMIN.css" type="text/css"/>
   <link rel="icon" type="image/png" sizes="32x32" href="../ICON/LogoSimple.svg">
- 
+  <style>
+  
+  </style>
 </head>
 
 <body class="admin">
