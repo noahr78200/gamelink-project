@@ -16,10 +16,7 @@ require_once __DIR__ . '/../INCLUDES/track.php';
 </head>
 <?php include __DIR__ . '/../INCLUDES/HEADER.php'; ?>
 <body>
-    <header >
-        
-    </header>
-
+    
     <main class="page-recherche">
         <!-- Barre de recherche -->
         <section class="search-bar-section">
