@@ -25,13 +25,7 @@ require_once __DIR__ . '/../INCLUDES/track.php';
         <a href="RECHERCHE.php">RECHERCHE</a>
         <a href="COMMUNAUTE.php">COMMUNAUTÉ</a>
         
-        <?php if (is_admin()): ?>
-            <!-- Ce lien ne s'affiche QUE pour l'ID joueur 7 -->
-            <a href="ADMIN.php">ADMIN</a>
-        <?php endif; ?>
-    </nav>
-    <a href="">
-        <img src="../ICON/iconProfil.svg" alt="Logo Profil" width="">
+     
     </a>
 </header>
     
