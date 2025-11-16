@@ -168,28 +168,146 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
         </div>
 
         <!-- Signalements -->
-        <div class="reports-grid">
-          <section class="card">
-            <div class="card-title">Contenu signalé</div>
-            <table class="report-table">
-              <thead>
-                <tr>
-                  <th>Joueurs</th>
-                  <th>Contenu</th>
-                  <th>Raison</th>
-                  <th>Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="report-row">
-                  <td colspan="4" style="text-align: center; color: #99a1b3; padding: 20px;">
-                    Aucun signalement pour le moment
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
+         <div class="reports-grid">
+        <section class="card">
+          <div class="card-title">Contenu signalé</div>
+          <table class="report-table">
+            <thead>
+              <tr>
+                <th>Users</th>
+                <th>Contenu</th>
+                <th>Raison</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+                  <tr class="report-row"
+                      data-id="rep_1001"
+                      data-offender="Zepkenio77"
+                      data-message="salopard mid diff"
+                      data-reason="Inapproprié"
+                      data-date="2025-10-06T14:12:00+02:00"
+                      data-game="League of Legends"
+                      data-chat="Chat d'équipe"
+                      data-reporter="ModArno"
+                      data-strikes2025="1">
+                    <td><span class="avatar"></span>Zepkenio77</td>
+                    <td>« salopard mid diff »</td>
+                    <td>Inapproprié</td>
+                    <td>OCT 6</td>
+                  </tr>
 
+                  <tr class="report-row"
+                      data-id="rep_1002"
+                      data-offender="YUIAuber"
+                      data-message="report noob botlane"
+                      data-reason="Inapproprié"
+                      data-date="2025-10-06T12:40:00+02:00"
+                      data-game="League of Legends"
+                      data-chat="Chat général"
+                      data-reporter="Kara"
+                      data-strikes2025="0">
+                    <td><span class="avatar"></span>YUIAuber</td>
+                    <td>« report noob botlane »</td>
+                    <td>Inapproprié</td>
+                    <td>OCT 6</td>
+                  </tr>
+
+                  <tr class="report-row"
+                      data-id="rep_1003"
+                      data-offender="SamsiLaFrappe"
+                      data-message="esp3ce de retard"
+                      data-reason="Inapproprié"
+                      data-date="2025-10-06T11:05:00+02:00"
+                      data-game="CS:GO"
+                      data-chat="Message privé"
+                      data-reporter="Rakun"
+                      data-strikes2025="4">
+                    <td><span class="avatar"></span>SamsiLaFrappe</td>
+                    <td>« esp3ce de retard »</td>
+                    <td>Inapproprié</td>
+                    <td>OCT 6</td>
+                  </tr>
+
+                  <tr class="report-row"
+                      data-id="rep_1004"
+                      data-offender="CiscoKillerDu92"
+                      data-message="go troll dog"
+                      data-reason="Inapproprié"
+                      data-date="2025-10-06T10:29:00+02:00"
+                      data-game="Valorant"
+                      data-chat="Chat d'équipe"
+                      data-reporter="Zlp"
+                      data-strikes2025="2">
+                    <td><span class="avatar"></span>CiscoKillerDu92</td>
+                    <td>« go troll dog »</td>
+                    <td>Inapproprié</td>
+                    <td>OCT 6</td>
+                  </tr>
+                  <tr class="report-row"
+                      data-id="rep_1001"
+                      data-offender="CircuitLogiqueMaVie"
+                      data-message="fais ton chronographe sale fou"
+                      data-reason="Inapproprié"
+                      data-date="2025-10-06T14:12:00+02:00"
+                      data-game="Processing"
+                      data-chat="Chat d'équipe"
+                      data-reporter="TweeDleDee"
+                      data-strikes2025="1">
+                    <td><span class="avatar"></span>Zepkenio77</td>
+                    <td>« fais ton chronographe sale fou »</td>
+                    <td>Inapproprié</td>
+                    <td>OCT 6</td>
+                  </tr>
+                  <tr class="report-row"
+                      data-id="rep_1001"
+                      data-offender="Clio2NordPasDeCalais"
+                      data-message="toi jvais t'attraper fdp ezzzz"
+                      data-reason="Inapproprié"
+                      data-date="2025-10-06T14:12:00+02:00"
+                      data-game="Rocket League "
+                      data-chat="Chat d'équipe"
+                      data-reporter="YTUUZI"
+                      data-strikes2025="1">
+                    <td><span class="avatar"></span>Clio2NordPasDeCalais</td>
+                    <td>« toi jvais t'attraper fdp ezzzz »</td>
+                    <td>Inapproprié</td>
+                    <td>OCT 6</td>
+                  </tr>
+                  <tr class="report-row"
+                      data-id="rep_1001"
+                      data-offender="AZAMAT"
+                      data-message="DECALE AU B STFU"
+                      data-reason="Inapproprié"
+                      data-date="2025-10-06T14:12:00+02:00"
+                      data-game="Valorant"
+                      data-chat="Chat d'équipe"
+                      data-reporter="ModArno"
+                      data-strikes2025="1">
+                    <td><span class="avatar"></span>AZAMAT</td>
+                    <td>« DECALE AU B STFU »</td>
+                    <td>Inapproprié</td>
+                    <td>OCT 6</td>
+                  </tr>
+                  <tr class="report-row"
+                      data-id="rep_1001"
+                      data-offender="GandalfBriveLaGaillarde"
+                      data-message="Bot Gap french retard"
+                      data-reason="Inapproprié"
+                      data-date="2025-10-06T14:12:00+02:00"
+                      data-game="League of Legends"
+                      data-chat="Chat d'équipe"
+                      data-reporter="temmo4life"
+                      data-strikes2025="1">
+                    <td><span class="avatar"></span>GandalfBriveLaGaillarde</td>
+                    <td>« Bot Gap french retard»</td>
+                    <td>Inapproprié</td>
+                    <td>OCT 6</td>
+                  </tr>
+            </tbody>
+
+          </table>
+        </section>
           <aside class="card alert-card">
             <div class="alert-icon">✅</div>
             <div class="alert-text">Tout va bien !</div>
