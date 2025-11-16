@@ -22,67 +22,7 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
   <link rel="stylesheet" href="../CSS/HEADER.css" type="text/css"/>
   <link rel="stylesheet" href="../CSS/STYLE_ADMIN.css" type="text/css"/>
   <link rel="icon" type="image/png" sizes="32x32" href="../ICON/LogoSimple.svg">
-  <style>
-    .admin-tabs {
-      display: flex;
-      gap: 10px;
-      margin: 20px 0;
-      border-bottom: 2px solid #2a3140;
-      padding: 0 20px;
-    }
-    
-    .admin-tab {
-      padding: 12px 24px;
-      background: transparent;
-      border: none;
-      color: #99a1b3;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: 500;
-      border-bottom: 3px solid transparent;
-      transition: all 0.3s;
-      text-decoration: none;
-      display: inline-block;
-    }
-    
-    .admin-tab:hover {
-      color: #e9ecf1;
-      background: rgba(255,255,255,0.05);
-    }
-    
-    .admin-tab.active {
-      color: #6ea8fe;
-      border-bottom-color: #6ea8fe;
-    }
-    
-    .tab-content {
-      display: none;
-    }
-    
-    .tab-content.active {
-      display: block;
-    }
-    
-    .admin-welcome {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 20px;
-      border-radius: 12px;
-      margin: 20px;
-      text-align: center;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-    }
-    
-    .admin-welcome h2 {
-      margin: 0 0 10px 0;
-      font-size: 24px;
-    }
-    
-    .admin-welcome p {
-      margin: 5px 0;
-      opacity: 0.9;
-    }
-  </style>
+ 
 </head>
 
 <body class="admin">
