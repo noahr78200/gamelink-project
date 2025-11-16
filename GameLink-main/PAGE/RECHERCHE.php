@@ -15,10 +15,8 @@ require_once __DIR__ . '/../INCLUDES/track.php';
     <link rel="icon" type="image/png" sizes="32x32" href="../ICON/LogoSimple.svg">
 </head>
 <body>
-    <header class="main-header">
-        <div class="header-inner">
-            <a href="ACCUEIL.php" class="logo">GameLink</a>
-        </div>
+    <header >
+        <?php include __DIR__ . '/../INCLUDES/HEADER.php'; ?>
     </header>
 
     <main class="page-recherche">
