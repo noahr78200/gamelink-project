@@ -14,29 +14,12 @@ require_once __DIR__ . '/../INCLUDES/track.php';
     <link rel="stylesheet" href="../CSS/GAME_CARD.css" type="text/css">
     <link rel="icon" type="image/png" sizes="32x32" href="../ICON/LogoSimple.svg">
 </head>
-
+ <?php 
+    // Inclure le header (qui affichera ou non le lien ADMIN)
+    include __DIR__ . '/../INCLUDES/header.php'; 
+    ?>
 <body>
-    <header>
-    <nav class="Menu">
-        <a href="">
-            <img class="logo" src="../ICON/LogoComplet.svg" alt="Logo GameLink" width="">
-        </a>
-        <a href="ACCUEIL.php">ACCUEIL</a>
-        <a href="RECHERCHE.php">RECHERCHE</a>
-        <a href="COMMUNAUTE.php">COMMUNAUTÉ</a>
-        <?php
-        // Inclure le fichier de vérification admin 
-        require_once __DIR__ . '/../INCLUDES/check_admin.php';
-        if (is_admin()):
-        ?>
-            <!-- Ce lien ne s'affiche QUE pour les admins -->
-            <a href="ADMIN.php">ADMIN</a>
-        <?php endif; ?>
-    </nav>
-        
 
-</header>
-    
     <main class="page-recherche">
         <!-- Barre de recherche -->
         <section class="search-bar-section">

@@ -89,6 +89,10 @@ if (!empty($game['platforms'])) {
     <title><?php echo htmlspecialchars($name); ?> | GameLink</title>
     <link rel="stylesheet" href="../CSS/STYLE_GAME.css">
 </head>
+ <?php 
+    // Inclure le header (qui affichera ou non le lien ADMIN)
+    include __DIR__ . '/../INCLUDES/header.php'; 
+    ?>
 <body class="game">
     <main class="game-wrap">
         <section class="game-hero">

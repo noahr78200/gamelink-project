@@ -1,40 +1,68 @@
 /* ==========================================
-   HEADER.css - Header unifié pour tout le site
+   HEADER.css - Header unifié style ADMIN
+   Correspond exactement au style de STYLE_ADMIN.css
    ========================================== */
 
+/* -------------------------------
+   Variables (même style que ADMIN)
+-------------------------------- */
 :root {
-    --text-color: rgb(255, 255, 255);
-    --background-color: radial-gradient(circle at top right, #0f1011 10%, #737689 100%);
+    /* Fond & panneaux */
+    --bg: #0f1115;
+    --bg-grad1: #11151c;
+    --bg-grad2: #0c0f14;
+
+    /* Traits & texte */
+    --border: #2a3140;
+    --hoverBorder: #3a4559;
+
+    --text: #E7E9ED;
+    --muted: #8c95a3;
+    --navText: #E9ECF4;
+
+    /* Accents */
+    --accent: #6ea8ff;
+    
+    /* Halo discret */
+    --glow: rgba(110, 168, 255, .12);
 }
 
-/* Police Roboto */
-@font-face {
-    font-family: 'Roboto';
-    src: url("../FONTS/Roboto-Regular.ttf");
-    font-weight: 400;
-    font-style: normal;
+/* -------------------------------
+   Reset + Style de base du body
+-------------------------------- */
+* {
+    box-sizing: border-box;
 }
 
-@font-face {
-    font-family: 'Roboto';
-    src: url("../FONTS/Roboto-Bold.ttf");
-    font-weight: 700;
-    font-style: normal;
+html, body {
+    height: 100%;
 }
 
-/* Style de base du body */
 body {
     margin: 0;
-    min-height: 100vh;
-    background: var(--background-color);
-    background-attachment: fixed;
-    color: var(--text-color);
-    font-family: 'Roboto', sans-serif;
+    color: var(--text);
+    background:
+        radial-gradient(1200px 560px at 75% -15%, var(--glow), transparent 60%),
+        linear-gradient(180deg, var(--bg-grad1), var(--bg-grad2));
+    /* MÊME POLICE QUE ADMIN */
+    font: 14px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 a {
     text-decoration: none;
-    color: var(--text-color);
+    color: var(--text);
+}
+
+/* -------------------------------
+   Marge principale pour le contenu
+-------------------------------- */
+body > main {
+    margin-top: 6rem;
+    margin-left: 1%;
+    margin-right: 1%;
+    font-size: clamp(14px, .9vw + 12px, 16px);
 }
 
 /* ==========================================
@@ -69,13 +97,13 @@ body > header .logo {
     display: flex;
     align-items: center;
     gap: 2rem;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 500;
 }
 
 /* Liens du menu */
 .Menu a {
-    color: var(--text-color);
+    color: var(--navText);
     padding: 0.5rem 1rem;
     border-radius: 8px;
     transition: all 0.3s ease;
@@ -90,7 +118,7 @@ body > header .logo {
 /* Lien actif (page actuelle) */
 .Menu a.active {
     background: rgba(110, 168, 255, 0.2);
-    color: #6ea8ff;
+    color: var(--accent);
 }
 
 /* Icône de profil (à droite) */
@@ -110,7 +138,7 @@ body > header > a:last-child img:hover {
    ========================================== */
 @media (max-width: 1024px) {
     .Menu {
-        font-size: 1rem;
+        font-size: 0.95rem;
         gap: 1.5rem;
     }
     
@@ -174,4 +202,13 @@ body > header > a:last-child img:hover {
     body > header > a:last-child img {
         height: 1.5rem;
     }
+}
+
+/* ==========================================
+   Focus visible (accessibilité)
+   ========================================== */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 6px;
 }
