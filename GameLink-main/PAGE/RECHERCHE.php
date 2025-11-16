@@ -24,9 +24,18 @@ require_once __DIR__ . '/../INCLUDES/track.php';
         <a href="ACCUEIL.php">ACCUEIL</a>
         <a href="RECHERCHE.php">RECHERCHE</a>
         <a href="COMMUNAUTE.php">COMMUNAUTÉ</a>
+        <?php
+        // Inclure le fichier de vérification admin 
+        require_once __DIR__ . '/../INCLUDES/check_admin.php';
+        if (is_admin()):
+        ?>
+            <!-- Ce lien ne s'affiche QUE pour les admins -->
+            <a href="ADMIN.php">ADMIN</a>
+        <?php endif; ?>
+    </nav>
         
      
-    </a>
+   
 </header>
     
     <main class="page-recherche">
