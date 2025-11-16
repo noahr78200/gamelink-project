@@ -14,8 +14,26 @@ require_once __DIR__ . '/../INCLUDES/track.php';
     <link rel="stylesheet" href="../CSS/GAME_CARD.css" type="text/css">
     <link rel="icon" type="image/png" sizes="32x32" href="../ICON/LogoSimple.svg">
 </head>
-<?php include __DIR__ . '/../INCLUDES/HEADER.php'; ?>
+
 <body>
+    <header>
+    <nav class="Menu">
+        <a href="">
+            <img class="logo" src="../ICON/LogoComplet.svg" alt="Logo GameLink" width="">
+        </a>
+        <a href="ACCUEIL.php">ACCUEIL</a>
+        <a href="RECHERCHE.php">RECHERCHE</a>
+        <a href="COMMUNAUTE.php">COMMUNAUTÉ</a>
+        
+        <?php if (is_admin()): ?>
+            <!-- Ce lien ne s'affiche QUE pour l'ID joueur 7 -->
+            <a href="ADMIN.php">ADMIN</a>
+        <?php endif; ?>
+    </nav>
+    <a href="">
+        <img src="../ICON/iconProfil.svg" alt="Logo Profil" width="">
+    </a>
+</header>
     
     <main class="page-recherche">
         <!-- Barre de recherche -->
