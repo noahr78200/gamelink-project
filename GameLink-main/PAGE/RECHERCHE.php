@@ -22,6 +22,7 @@ require_once __DIR__ . '/../INCLUDES/track.php';
     </header>
 
     <main class="page-recherche">
+        <!-- Barre de recherche -->
         <section class="search-bar-section">
             <h1>Rechercher un jeu</h1>
             <div class="search-bar">
@@ -34,9 +35,28 @@ require_once __DIR__ . '/../INCLUDES/track.php';
             <p id="error-message" class="error-message"></p>
         </section>
 
-        <!-- 🔹 Filtres simples : plateforme / genre / éditeur -->
+        <!-- Bouton pour voir tous les jeux -->
+        <section class="all-games-section">
+            <button id="show-all-button" class="show-all-button">
+                Afficher tous les jeux disponibles
+            </button>
+        </section>
+
+        <!-- Filtres -->
         <section class="filters-panel">
             <div class="filters-groups">
+
+                <!-- Tri par ordre -->
+                <div class="filter-group">
+                    <span class="filter-label">Trier par</span>
+                    <div class="filters">
+                        <button class="chip chip--active" type="button" data-type="sort" data-value="name-asc">A → Z</button>
+                        <button class="chip" type="button" data-type="sort" data-value="name-desc">Z → A</button>
+                        <button class="chip" type="button" data-type="sort" data-value="date-desc">Plus récent</button>
+                        <button class="chip" type="button" data-type="sort" data-value="date-asc">Plus ancien</button>
+                        <button class="chip" type="button" data-type="sort" data-value="rating-desc">Meilleure note</button>
+                    </div>
+                </div>
 
                 <!-- Plateformes -->
                 <div class="filter-group">
@@ -47,6 +67,7 @@ require_once __DIR__ . '/../INCLUDES/track.php';
                         <button class="chip" type="button" data-type="platform" data-value="playstation 4">PS4</button>
                         <button class="chip" type="button" data-type="platform" data-value="playstation 5">PS5</button>
                         <button class="chip" type="button" data-type="platform" data-value="xbox one">Xbox One</button>
+                        <button class="chip" type="button" data-type="platform" data-value="xbox series">Xbox Series</button>
                         <button class="chip" type="button" data-type="platform" data-value="nintendo switch">Switch</button>
                     </div>
                 </div>
@@ -61,6 +82,8 @@ require_once __DIR__ . '/../INCLUDES/track.php';
                         <button class="chip" type="button" data-type="genre" data-value="adventure">Aventure</button>
                         <button class="chip" type="button" data-type="genre" data-value="sport">Sport</button>
                         <button class="chip" type="button" data-type="genre" data-value="racing">Course</button>
+                        <button class="chip" type="button" data-type="genre" data-value="strategy">Stratégie</button>
+                        <button class="chip" type="button" data-type="genre" data-value="action">Action</button>
                     </div>
                 </div>
 
@@ -73,6 +96,8 @@ require_once __DIR__ . '/../INCLUDES/track.php';
                         <button class="chip" type="button" data-type="editor" data-value="ubisoft">Ubisoft</button>
                         <button class="chip" type="button" data-type="editor" data-value="electronic arts">EA</button>
                         <button class="chip" type="button" data-type="editor" data-value="sony">Sony</button>
+                        <button class="chip" type="button" data-type="editor" data-value="activision">Activision</button>
+                        <button class="chip" type="button" data-type="editor" data-value="rockstar">Rockstar</button>
                     </div>
                 </div>
             </div>
@@ -82,15 +107,18 @@ require_once __DIR__ . '/../INCLUDES/track.php';
             </button>
         </section>
 
+        <!-- Liste des jeux -->
         <section class="games-section">
-            <p class="games-count" id="games-count">0 jeu trouvé</p>
+            <div class="games-header">
+                <p class="games-count" id="games-count">0 jeu trouvé</p>
+                <p class="loading-text" id="loading-text">Chargement en cours...</p>
+            </div>
             <ul id="Game-list" class="game-list">
-                <!-- Les jeux seront ajoutés ici en JavaScript -->
+                <!-- Les jeux seront ajoutés ici par JavaScript -->
             </ul>
         </section>
     </main>
 
-    <!-- On reste sur le même chemin JS qui fonctionnait -->
-    <script src="../JS/RECHERCHE.js?v=3" defer></script>
+    <script src="../JS/RECHERCHE.js" defer></script>
 </body>
 </html>
