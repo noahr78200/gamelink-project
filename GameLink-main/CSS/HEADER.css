@@ -68,7 +68,7 @@ body > main {
 /* ==========================================
    HEADER PRINCIPAL
    ========================================== */
-body > header {
+ header {
     position: fixed;
     top: 0;
     left: 0;
@@ -86,7 +86,7 @@ body > header {
 }
 
 /* Logo GameLink (à gauche) */
-body > header .logo {
+header .logo {
     height: 2.5rem;
     width: auto;
     display: block;
@@ -122,14 +122,14 @@ body > header .logo {
 }
 
 /* Icône de profil (à droite) */
-body > header > a:last-child img {
+ header > a:last-child img {
     height: 2.5rem;
     width: auto;
     border-radius: 50%;
     transition: transform 0.3s ease;
 }
 
-body > header > a:last-child img:hover {
+header > a:last-child img:hover {
     transform: scale(1.1);
 }
 
@@ -142,11 +142,11 @@ body > header > a:last-child img:hover {
         gap: 1.5rem;
     }
     
-    body > header .logo {
+     header .logo {
         height: 2rem;
     }
     
-    body > header > a:last-child img {
+    header > a:last-child img {
         height: 2rem;
     }
 }
@@ -155,7 +155,7 @@ body > header > a:last-child img:hover {
    RESPONSIVE - MOBILE
    ========================================== */
 @media (max-width: 768px) {
-    body > header {
+    header {
         height: 4rem;
         padding: 0 1%;
     }
@@ -169,11 +169,11 @@ body > header > a:last-child img:hover {
         padding: 0.4rem 0.7rem;
     }
     
-    body > header .logo {
+    header .logo {
         height: 1.8rem;
     }
     
-    body > header > a:last-child img {
+   header > a:last-child img {
         height: 1.8rem;
     }
 }
@@ -195,11 +195,11 @@ body > header > a:last-child img:hover {
         padding: 0.3rem 0.5rem;
     }
     
-    body > header .logo {
+    header .logo {
         height: 1.5rem;
     }
     
-    body > header > a:last-child img {
+    header > a:last-child img {
         height: 1.5rem;
     }
 }
