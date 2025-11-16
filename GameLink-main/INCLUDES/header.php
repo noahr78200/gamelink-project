@@ -11,22 +11,33 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Inclure le fichier de vérification admin
 require_once __DIR__ . '/../INCLUDES/check_admin.php';
+
+// Récupérer le nom de la page actuelle pour mettre le lien en surbrillance
+$current_page = basename($_SERVER['PHP_SELF']);
 ?>
 <header>
     <nav class="Menu">
-        <a href="">
-            <img class="logo" src="../ICON/LogoComplet.svg" alt="Logo GameLink" width="">
+        <a href="ACCUEIL.php">
+            <img class="logo" src="../ICON/LogoComplet.svg" alt="Logo GameLink">
         </a>
-        <a href="ACCUEIL.php">ACCUEIL</a>
-        <a href="RECHERCHE.php">RECHERCHE</a>
-        <a href="COMMUNAUTE.php">COMMUNAUTÉ</a>
+        <a href="ACCUEIL.php" class="<?= $current_page === 'ACCUEIL.php' ? 'active' : '' ?>">
+            ACCUEIL
+        </a>
+        <a href="RECHERCHE.php" class="<?= $current_page === 'RECHERCHE.php' ? 'active' : '' ?>">
+            RECHERCHE
+        </a>
+        <a href="COMMUNAUTE.php" class="<?= $current_page === 'COMMUNAUTE.php' ? 'active' : '' ?>">
+            COMMUNAUTÉ
+        </a>
         
         <?php if (is_admin()): ?>
-            <!-- Ce lien ne s'affiche QUE pour l'ID joueur 7 -->
-            <a href="ADMIN.php">ADMIN</a>
+            <!-- Ce lien ne s'affiche QUE pour les admins -->
+            <a href="ADMIN.php" class="<?= $current_page === 'ADMIN.php' ? 'active' : '' ?>">
+                ADMIN
+            </a>
         <?php endif; ?>
     </nav>
-    <a href="">
-        <img src="../ICON/iconProfil.svg" alt="Logo Profil" width="">
+    <a href="PROFIL.php">
+        <img src="../ICON/iconProfil.svg" alt="Logo Profil">
     </a>
 </header>
