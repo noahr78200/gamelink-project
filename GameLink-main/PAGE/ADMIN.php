@@ -28,24 +28,11 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
   </style>
 </head>
 
+<?php  include __DIR__ . '/../INCLUDES/header.php'; 
+    ?>
+
 <body class="admin">
-  <header>
-    <nav class="Menu">
-      <a href="">
-        <img class="logo" src="../ICON/LogoComplet.svg" alt="Logo GameLink">
-      </a>
-      <a href="ACCUEIL.php">ACCUEIL</a>
-      <a href="RECHERCHE.php">RECHERCHE</a>
-      <a href="COMMUNAUTE.php">COMMUNAUTÉ</a>
-      <a href="ADMIN.php" class="active">ADMIN</a>
-    </nav>
-    <a href="">
-      <img src="../ICON/iconProfil.svg" alt="Logo Profil">
-    </a>
-  </header>
-  <style>
-      
-  </style>
+ 
   
   <main>
     <!-- Message de bienvenue -->
