@@ -14,9 +14,10 @@ require_once __DIR__ . '/../INCLUDES/track.php';
     <link rel="stylesheet" href="../CSS/GAME_CARD.css" type="text/css">
     <link rel="icon" type="image/png" sizes="32x32" href="../ICON/LogoSimple.svg">
 </head>
+<?php include __DIR__ . '/../INCLUDES/HEADER.php'; ?>
 <body>
     <header >
-        <?php include __DIR__ . '/../INCLUDES/HEADER.php'; ?>
+        
     </header>
 
     <main class="page-recherche">
