@@ -18,26 +18,15 @@ require_once __DIR__ . '/../DATA/DBConfig.php';
         <meta charset="utf-8">
         <meta name="description"content="Profil GameLink">
         <title>Profil | GameLink</title>
-        <link rel="stylesheet" href="/GameLink/CSS/HEADER.css" type="text/css"/>
-        <link rel="stylesheet" href="/GameLink/CSS/STYLE_PROFIL.css" type="text/css"/>
-        <link rel="icon" type="image/png" sizes="32x32" href="/GameLink/ICON/LogoSimple.svg">
+        <link rel="stylesheet" href="/../CSS/HEADER.css" type="text/css"/>
+        <link rel="stylesheet" href="/../CSS/STYLE_PROFIL.css" type="text/css"/>
+        <link rel="icon" type="image/png" sizes="32x32" href="/../ICON/LogoSimple.svg">
     </head>
     <body>
-        <header>
-            <nav class="Menu">
-                <a href="">
-                    <img  class="logo" src="/GameLink/ICON/LogoComplet.svg" alt="Logo GameLink" width="">
-                </a>
-                <a href="ACCUEIL.php">ACCUEIL</a>
-                <a href="RECHERCHE.php">RECHERCHE</a>
-                <a href="COMMUNAUTE.php">COMMUNAUTÉ</a>
-                <a href="ADMIN.php">ADMIN</a>
-            </nav>
-            <a href="PROFIL.php">
-                <img src="/GameLink/ICON/iconProfil.svg" alt="Logo Profil" width="">
-            </a>
-        </header>
-        
+        <?php 
+    // Inclure le header (qui affichera ou non le lien ADMIN)
+    include __DIR__ . '/../INCLUDES/header.php'; 
+    ?>
         <main>
             <section class="profile-card">
                 <button class="edit-btn">
