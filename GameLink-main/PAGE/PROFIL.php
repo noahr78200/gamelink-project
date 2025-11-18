@@ -101,3 +101,4 @@ require_once __DIR__ . '/../DATA/DBConfig.php';
         </main>
         <script src="/../JS/PROFIL.js"></script>
     </body>
+</html>
