@@ -2,13 +2,7 @@
 session_start();
 include '../DATA/DBConfig.php';
 
-$id = 1;
-$stmt = $pdo->prepare("SELECT pseudo, email, bio, avatar_url FROM users WHERE id = :id");
-$stmt->execute(['id' => $id]);
-$user = $stmt->fetch();
-if (!$user) {
-    die("Utilisateur introuvable !");
-}
+
 require_once __DIR__ . '/../INCLUDES/track.php';
 
 
