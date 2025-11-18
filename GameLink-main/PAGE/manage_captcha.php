@@ -476,7 +476,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
            
 
             <div class="info-box">
-                <strong>💡 Astuce :</strong> pour accepter plusieurs réponses valides,
+                <strong> Astuce :</strong> pour accepter plusieurs réponses valides,
                 sépare-les avec le caractère <code>|</code>.<br>
                 Exemple : <code>paris|Paris|PARIS</code>
             </div>
@@ -504,7 +504,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
 
             <!-- Liste des questions -->
-            <h2 class="questions-title">📋 Questions existantes (<?= count($bank) ?>)</h2>
+            <h2 class="questions-title"> Questions existantes (<?= count($bank) ?>)</h2>
 
             <?php if (empty($bank)): ?>
                 <p style="font-size: 14px; color: #9ca3af;">Aucune question définie pour le moment.</p>
