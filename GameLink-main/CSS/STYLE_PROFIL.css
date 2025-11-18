@@ -1,0 +1,191 @@
+:root {
+    --bg-profil: #1e1e1e;
+    --bg-edit: #ffffff;
+    --font-color: #000000;
+    --font-color-bis: #00000071;
+}
+
+:root[data-theme="light"] {
+    --bg-profil: #ffffff;
+    --bg-edit: #dddddd;
+    --font-color: #000000;
+    --font-color-bis: #00000071;
+}
+
+:root[data-theme="dark"] {
+    --bg-profil: #181818;
+    --bg-edit: #2b2b2b;
+    --font-color: #ffffff;
+    --font-color-bis: #ffffff71;
+}
+
+body > main{
+    margin-top: 6rem;
+    margin-left: 1%;
+    margin-right: 1%;
+    font-size: medium;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin-right: 3rem;
+}
+
+.profile-card {
+    background: var(--background-profil);
+    width: 100%;
+    border-radius: 15px 15px 0 0;
+    padding: 20px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: 10px;
+}
+
+.edit-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    position: absolute;
+    right: 1rem;
+    background: var(--background-edit);
+    border: none;
+    padding: 5px 5px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.profile-info img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.name-bio {
+    margin-left: 1rem;
+}
+
+.name-bio h2 {
+    margin: 0;
+    font-size: 1.5em;
+}
+
+.name-bio p {
+    margin: 5px 0 0 0;
+    color: var(calor);
+}
+
+.stats {
+    display: flex;
+    justify-content: end;
+    gap: 2rem;
+    margin-top: 20px;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat span {
+    display: block;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.stat small {
+    color: var(--font-color-bis);
+}
+
+
+
+.profile {
+    padding: 2%;
+}
+
+.tabs {
+    padding-left: 1rem;
+    display: flex;
+    gap: 2.5rem;
+    margin-bottom: 15px;
+}
+
+.tab {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    color: var(--font-color-bis);
+    font: inherit;
+}
+
+.tab.active {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    color: inherit;
+    font: bold;
+}
+
+.box {
+  display: none;
+  animation: fade .3s ease-in-out;
+}
+
+.box.active {
+  display: block;
+}
+
+@keyframes fade {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.form {
+    margin-top: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: .7rem;
+    max-width: 350px;
+}
+
+.form label {
+    font-size: .9rem;
+    color: var(--text-muted);
+}
+
+.form input {
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #333;
+    background: var(--bg-main);
+    color: var(--);
+}
+
+.btn {
+    padding: 8px 14px;
+    background: #ffb851;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: .5rem;
+}
+
+.btn:hover {
+    filter: brightness(1.15);
+}
+
+.btn.red {
+    background: #c73c3c;
+    color: white;
+}
