@@ -24,7 +24,7 @@ require_once __DIR__ . '/../DATA/DBConfig.php';
     </head>
     <body>
         <?php 
-    // Inclure le header (qui affichera ou non le lien ADMIN)
+    // Inclure le header (qui affichera ou non le lien ADMIN) .
     include __DIR__ . '/../INCLUDES/header.php'; 
     ?>
         <main>
