@@ -1,6 +1,6 @@
 <?php
 session_start();
-include '../DATA/DBConfig.php';
+
 
 
 require_once __DIR__ . '/../INCLUDES/track.php';
@@ -29,12 +29,10 @@ require_once __DIR__ . '/../DATA/DBConfig.php';
     ?>
         <main>
             <section class="profile-card">
-                <button class="edit-btn">
-                    <img src="../ICON/SVG/edit.svg" alt="Logo edit" width="30px">
-                </button>
+                
 
                 <div class="profile-info">
-                <img src="../ICON/iconProfil.svg" alt="avatar">
+                <img src="/../ICON/iconProfil.svg" alt="avatar">
                 <div class="name-bio">
                     <h2><?= htmlspecialchars($user['username']) ?></h2>
                     <p><?= htmlspecialchars($user['bio']) ?></p>
@@ -78,14 +76,14 @@ require_once __DIR__ . '/../DATA/DBConfig.php';
                 <section id="set" class="box">
                     <h2>Paramètres du compte</h2>
 
-                    <form action="../INCLUDES/update_email.php" method="POST" class="form">
+                    <form action="/../INCLUDES/update_email.php" method="POST" class="form">
                         <label for="email">Nouvel e-mail</label>
                         <input type="email" name="email" id="email" value="<?= htmlspecialchars($user['email']) ?>" required>
 
                         <button type="submit" class="btn">Modifier l'e-mail</button>
                     </form>
 
-                    <form action="../INCLUDES/update_mdp.php" method="POST" class="form">
+                    <form action="/../INCLUDES/update_mdp.php" method="POST" class="form">
                         <label for="old_mdp">Ancien mot de passe</label>
                         <input type="password" name="old_mdp" id="old_mdp" required>
                         <br>
@@ -101,5 +99,5 @@ require_once __DIR__ . '/../DATA/DBConfig.php';
 
             </section>
         </main>
-        <script src="../JS/PROFIL.js"></script>
+        <script src="/../JS/PROFIL.js"></script>
     </body>
