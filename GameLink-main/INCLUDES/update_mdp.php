@@ -1,23 +1,14 @@
 <?php
-require "dbconfig.php";
+
 session_start();
+require_once __DIR__ . '/../DATA/DBConfig.php';
 
-$id = $_SESSION['user_id'];
-$old = $_POST['old_mdp'];
-$new = $_POST['new_mdp'];
-
-$stmt = $pdo->prepare("SELECT password FROM users WHERE id = ?");
-$stmt->execute([$id]);
+// Récupérer les informations de l'utilisateur connecté
+$user_id = $_SESSION['user_id'];
+$stmt = $pdo->prepare("SELECT username, email, bio FROM users WHERE id = ?");
+$stmt->execute([$user_id]);
 $user = $stmt->fetch();
+?>
 
-if (!password_verify($old, $user['password'])) {
-    die("Mot de passe actuel incorrect");
-}
 
-$newHash = password_hash($new, PASSWORD_BCRYPT);
 
-$stmt = $pdo->prepare("UPDATE users SET password = ? WHERE id = ?");
-$stmt->execute([$newHash, $id]);
-
-header("Location: profile.php?success=mdp");
-exit;
