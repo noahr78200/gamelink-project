@@ -1,4 +1,5 @@
 <?php
+session_start();
 include '../DATA/DBConfig.php';
 
 $id = 1;
@@ -8,6 +9,13 @@ $user = $stmt->fetch();
 if (!$user) {
     die("Utilisateur introuvable !");
 }
+require_once __DIR__ . '/../INCLUDES/track.php';
+
+
+
+
+
+require_once __DIR__ . '/../DATA/DBConfig.php';
 ?>
 
 <!DOCTYPE html>
