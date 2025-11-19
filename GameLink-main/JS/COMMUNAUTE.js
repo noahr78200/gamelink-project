@@ -1,42 +1,35 @@
-// =====================================================
-// JAVASCRIPT DE LA PAGE COMMUNAUTÉ - VERSION SIMPLE
-// =====================================================
-// 
-// Ce fichier fait marcher tous les boutons !
-// 
-// =====================================================
+// ========================================
+// JAVASCRIPT PAGE COMMUNAUTE
+// Version super simple pour debutant
+// ========================================
 
-// ===== VARIABLES =====
-// (Des boîtes pour stocker des informations)
+// Variables globales (boites pour stocker des infos)
+let groupeActuel = null;
+let minuteur = null;
 
-let groupeActuel = null;  // Le groupe où je discute actuellement
-let minuteur = null;       // Pour recharger les messages automatiquement
-
-// ===== QUAND LA PAGE EST CHARGÉE =====
-// Attendre que tout soit prêt avant de faire marcher les boutons
-
+// Quand la page est chargee
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('✅ La page est chargée !');
+    console.log('Page chargee !');
     
-    // Trouver tous les boutons "Rejoindre" et leur dire quoi faire quand on clique
+    // Trouver tous les boutons Rejoindre
     let boutonsRejoindre = document.querySelectorAll('.rejoindre-groupe');
-    boutonsRejoindre.forEach(function(bouton) {
-        bouton.addEventListener('click', rejoindreGroupe);
-    });
+    for (let i = 0; i < boutonsRejoindre.length; i++) {
+        boutonsRejoindre[i].addEventListener('click', rejoindreGroupe);
+    }
     
-    // Trouver tous les boutons "Ouvrir le chat"
+    // Trouver tous les boutons Ouvrir le chat
     let boutonsChat = document.querySelectorAll('.ouvrir-chat');
-    boutonsChat.forEach(function(bouton) {
-        bouton.addEventListener('click', ouvrirChat);
-    });
+    for (let i = 0; i < boutonsChat.length; i++) {
+        boutonsChat[i].addEventListener('click', ouvrirChat);
+    }
     
-    // Trouver tous les boutons "Quitter"
+    // Trouver tous les boutons Quitter
     let boutonsQuitter = document.querySelectorAll('.quitter-groupe');
-    boutonsQuitter.forEach(function(bouton) {
-        bouton.addEventListener('click', quitterGroupe);
-    });
+    for (let i = 0; i < boutonsQuitter.length; i++) {
+        boutonsQuitter[i].addEventListener('click', quitterGroupe);
+    }
     
-    // Le bouton "Quitter" dans la bulle de chat
+    // Bouton Quitter dans la bulle
     let boutonQuitterChat = document.querySelector('.quitter-depuis-chat');
     if (boutonQuitterChat) {
         boutonQuitterChat.addEventListener('click', function() {
@@ -46,73 +39,59 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Le formulaire pour envoyer un message
+    // Formulaire pour envoyer un message
     let formulaire = document.getElementById('formulaire-message');
     if (formulaire) {
         formulaire.addEventListener('submit', envoyerMessage);
     }
 });
 
-// ===== FONCTION: REJOINDRE UN GROUPE =====
-// Quand tu cliques sur "Rejoindre"
-
+// FONCTION : Rejoindre un groupe
 function rejoindreGroupe(evenement) {
-    // Trouver quel groupe tu veux rejoindre
     let bouton = evenement.target;
     let idGroupe = bouton.dataset.groupeId;
     
-    console.log('🔵 Je veux rejoindre le groupe numéro', idGroupe);
+    console.log('Rejoindre groupe', idGroupe);
     
-    // Changer le texte du bouton pendant le chargement
     bouton.textContent = 'Chargement...';
-    bouton.disabled = true;  // Désactiver le bouton
+    bouton.disabled = true;
     
-    // Envoyer une demande au serveur
-    fetch('../INCLUDES/groupe_join.php', {
+    fetch('/INCLUDES/groupe_join.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'groupe_id=' + idGroupe
     })
     .then(function(reponse) {
-        // Transformer la réponse en JSON (format compréhensible)
         return reponse.json();
     })
     .then(function(data) {
-        console.log('Réponse du serveur:', data);
+        console.log('Reponse:', data);
         
         if (data.success) {
-            // ✅ Ça a marché !
-            console.log('✅ Groupe rejoint !');
-            location.reload();  // Recharger la page
+            console.log('Groupe rejoint !');
+            location.reload();
         } else {
-            // ❌ Ça n'a pas marché
             alert('Erreur : ' + data.message);
             bouton.textContent = '+ Rejoindre';
             bouton.disabled = false;
         }
     })
     .catch(function(erreur) {
-        // S'il y a un problème de connexion
-        console.error('❌ Erreur:', erreur);
-        alert('Impossible de se connecter au serveur');
+        console.error('Erreur:', erreur);
+        alert('Erreur de connexion');
         bouton.textContent = '+ Rejoindre';
         bouton.disabled = false;
     });
 }
 
-// ===== FONCTION: QUITTER UN GROUPE =====
-// Quand tu cliques sur "Quitter"
-
+// FONCTION : Quitter un groupe
 function quitterGroupe(evenement) {
     let bouton = evenement.target;
     let idGroupe = bouton.dataset.groupeId;
     
-    console.log('🔴 Je veux quitter le groupe numéro', idGroupe);
+    console.log('Quitter groupe', idGroupe);
     
-    // PAS DE CONFIRMATION - On quitte directement
-    
-    // Envoyer la demande au serveur
-    fetch('../INCLUDES/groupe_leave.php', {
+    fetch('/INCLUDES/groupe_leave.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'groupe_id=' + idGroupe
@@ -121,71 +100,59 @@ function quitterGroupe(evenement) {
         return reponse.json();
     })
     .then(function(data) {
-        console.log('Réponse du serveur:', data);
+        console.log('Reponse:', data);
         
         if (data.success) {
-            console.log('✅ Groupe quitté !');
+            console.log('Groupe quitte !');
             
-            // Si on était dans le chat, le fermer
             if (groupeActuel === idGroupe) {
                 fermerChat();
             }
             
-            location.reload();  // Recharger la page
+            location.reload();
         } else {
             alert('Erreur : ' + data.message);
         }
     })
     .catch(function(erreur) {
-        console.error('❌ Erreur:', erreur);
-        alert('Impossible de se connecter au serveur');
+        console.error('Erreur:', erreur);
+        alert('Erreur de connexion');
     });
 }
 
-// ===== FONCTION: OUVRIR LE CHAT =====
-// Quand tu cliques sur "Ouvrir le chat"
-
+// FONCTION : Ouvrir le chat
 function ouvrirChat(evenement) {
     let bouton = evenement.target;
     let idGroupe = bouton.dataset.groupeId;
     let nomGroupe = bouton.dataset.groupeNom;
     
-    console.log('💬 Ouverture du chat pour', nomGroupe);
+    console.log('Ouverture chat pour', nomGroupe);
     
-    // Sauvegarder le groupe actuel
     groupeActuel = idGroupe;
     
-    // Mettre le nom du groupe dans la bulle
     document.getElementById('nom-groupe-chat').textContent = nomGroupe;
     document.getElementById('id-groupe-actuel').value = idGroupe;
     
-    // Afficher la bulle et le fond sombre
     document.getElementById('bulle-chat').classList.add('ouverte');
     document.getElementById('fond-sombre').classList.add('visible');
     
-    // Charger les messages
     chargerMessages(idGroupe);
     
-    // Recharger les messages automatiquement toutes les 5 secondes
     if (minuteur) {
-        clearInterval(minuteur);  // Arrêter l'ancien minuteur
+        clearInterval(minuteur);
     }
     minuteur = setInterval(function() {
         chargerMessages(idGroupe);
-    }, 5000);  // 5000 millisecondes = 5 secondes
+    }, 5000);
 }
 
-// ===== FONCTION: FERMER LE CHAT =====
-// Quand tu cliques sur le X ou sur le fond sombre
-
+// FONCTION : Fermer le chat
 function fermerChat() {
-    console.log('❌ Fermeture du chat');
+    console.log('Fermeture chat');
     
-    // Cacher la bulle et le fond sombre
     document.getElementById('bulle-chat').classList.remove('ouverte');
     document.getElementById('fond-sombre').classList.remove('visible');
     
-    // Arrêter le minuteur
     if (minuteur) {
         clearInterval(minuteur);
         minuteur = null;
@@ -194,16 +161,13 @@ function fermerChat() {
     groupeActuel = null;
 }
 
-// ===== FONCTION: CHARGER LES MESSAGES =====
-// Va chercher les messages sur le serveur
-
+// FONCTION : Charger les messages
 function chargerMessages(idGroupe) {
-    console.log('📥 Chargement des messages du groupe', idGroupe);
+    console.log('Chargement messages groupe', idGroupe);
     
     let zoneMessages = document.getElementById('zone-messages');
     
-    // Demander les messages au serveur
-    fetch('../INCLUDES/groupe_messages.php?groupe_id=' + idGroupe)
+    fetch('/INCLUDES/group_messages.php?groupe_id=' + idGroupe)
         .then(function(reponse) {
             if (!reponse.ok) {
                 throw new Error('Erreur serveur');
@@ -211,35 +175,29 @@ function chargerMessages(idGroupe) {
             return reponse.json();
         })
         .then(function(data) {
-            console.log('Messages reçus:', data);
+            console.log('Messages recus:', data);
             
             if (data.success) {
-                // ✅ Afficher les messages
                 afficherMessages(data.messages);
             } else {
-                // ❌ Erreur
-                zoneMessages.innerHTML = '<p class="texte-centre">⚠️ ' + data.message + '</p>';
+                zoneMessages.innerHTML = '<p class="texte-centre">' + data.message + '</p>';
             }
         })
         .catch(function(erreur) {
-            console.error('❌ Erreur:', erreur);
-            zoneMessages.innerHTML = '<p class="texte-centre">❌ Impossible de charger les messages</p>';
+            console.error('Erreur:', erreur);
+            zoneMessages.innerHTML = '<p class="texte-centre">Erreur de chargement</p>';
         });
 }
 
-// ===== FONCTION: AFFICHER LES MESSAGES =====
-// Met les messages dans la bulle
-
+// FONCTION : Afficher les messages
 function afficherMessages(messages) {
     let zoneMessages = document.getElementById('zone-messages');
     
-    // S'il n'y a pas de messages
     if (!messages || messages.length === 0) {
-        zoneMessages.innerHTML = '<p class="texte-centre">📭 Aucun message pour le moment.<br>Sois le premier à écrire !</p>';
+        zoneMessages.innerHTML = '<p class="texte-centre">Aucun message. Sois le premier !</p>';
         return;
     }
     
-    // Créer le HTML pour chaque message
     let html = '';
     for (let i = 0; i < messages.length; i++) {
         let msg = messages[i];
@@ -253,36 +211,29 @@ function afficherMessages(messages) {
     }
     
     zoneMessages.innerHTML = html;
-    
-    // Scroller en bas pour voir le dernier message
     zoneMessages.scrollTop = zoneMessages.scrollHeight;
 }
 
-// ===== FONCTION: ENVOYER UN MESSAGE =====
-// Quand tu cliques sur "Envoyer"
-
+// FONCTION : Envoyer un message
 function envoyerMessage(evenement) {
-    evenement.preventDefault();  // Empêcher la page de recharger
+    evenement.preventDefault();
     
     let idGroupe = document.getElementById('id-groupe-actuel').value;
     let champMessage = document.getElementById('mon-message');
-    let message = champMessage.value.trim();  // Enlever les espaces avant/après
+    let message = champMessage.value.trim();
     
-    // Vérifier que le message n'est pas vide
     if (!message) {
-        alert('Écris un message avant d\'envoyer !');
+        alert('Ecris un message avant d\'envoyer !');
         return;
     }
     
-    console.log('📤 Envoi du message:', message);
+    console.log('Envoi message:', message);
     
-    // Trouver le bouton et le désactiver
     let bouton = evenement.target.querySelector('button[type="submit"]');
     bouton.disabled = true;
     bouton.textContent = 'Envoi...';
     
-    // Envoyer le message au serveur
-    fetch('../INCLUDES/groupe_message.php', {
+    fetch('/INCLUDES/group_message.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'groupe_id=' + idGroupe + '&message=' + encodeURIComponent(message)
@@ -294,42 +245,35 @@ function envoyerMessage(evenement) {
         return reponse.json();
     })
     .then(function(data) {
-        console.log('Réponse:', data);
+        console.log('Reponse:', data);
         
         if (data.success) {
-            // ✅ Message envoyé !
-            console.log('✅ Message envoyé !');
-            champMessage.value = '';  // Vider le champ
-            chargerMessages(idGroupe);  // Recharger les messages
+            console.log('Message envoye !');
+            champMessage.value = '';
+            chargerMessages(idGroupe);
         } else {
-            // ❌ Erreur
             alert('Erreur : ' + data.message);
         }
         
-        // Réactiver le bouton
         bouton.disabled = false;
         bouton.textContent = 'Envoyer';
     })
     .catch(function(erreur) {
-        console.error('❌ Erreur:', erreur);
-        alert('Impossible d\'envoyer le message');
+        console.error('Erreur:', erreur);
+        alert('Erreur d\'envoi');
         bouton.disabled = false;
         bouton.textContent = 'Envoyer';
     });
 }
 
-// ===== FONCTION: NETTOYER LE TEXTE =====
-// Éviter les problèmes de sécurité (enlever les balises HTML)
-
+// FONCTION : Nettoyer le texte (securite)
 function nettoyerTexte(texte) {
     let div = document.createElement('div');
     div.textContent = texte;
     return div.innerHTML;
 }
 
-// ===== FERMER AVEC LA TOUCHE ÉCHAP =====
-// Pratique pour fermer rapidement !
-
+// Fermer avec la touche Echap
 document.addEventListener('keydown', function(evenement) {
     if (evenement.key === 'Escape') {
         fermerChat();
