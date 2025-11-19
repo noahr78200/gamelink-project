@@ -56,10 +56,11 @@ try {
     <link rel="stylesheet" href="../CSS/STYLE_COMMUNAUTE.css">
     <link rel="icon" type="image/svg+xml" href="../ICON/LogoSimple.svg">
 </head>
+ <?php  include __DIR__ . '/../INCLUDES/header.php'; 
+    ?>
 <body>
     <!-- HEADER -->
-  <?php  include __DIR__ . '/../INCLUDES/header.php'; 
-    ?>
+ 
     <main class="communaute-container">
         
         <!-- SECTION GROUPES -->
