@@ -1,26 +1,14 @@
 /* =====================================================
-   STYLE DE LA PAGE COMMUNAUTÉ - VERSION SIMPLE
+   STYLE_COMMUNAUTE.css - VERSION CORRIGÉE
+   Pour la page COMMUNAUTE.php
    =====================================================
    
-   Ce fichier rend la page jolie !
+   Ce fichier utilise exactement les mêmes classes
+   et IDs que dans ton fichier PHP !
    
    ===================================================== */
 
-/* ========== LES COULEURS ========== */
-/* On définit les couleurs une seule fois, comme ça on peut les réutiliser */
-:root {
-    --couleur-violet: #667eea;
-    --couleur-violet-fonce: #764ba2;
-    --couleur-gris-clair: #f8f9fa;
-    --couleur-blanc: #ffffff;
-    --couleur-noir: #333333;
-    --couleur-gris: #666666;
-    --couleur-vert: #51cf66;
-    --couleur-rouge: #ff6b6b;
-}
-
 /* ========== RÉINITIALISATION ========== */
-/* On enlève les marges et paddings par défaut */
 * {
     margin: 0;
     padding: 0;
@@ -28,104 +16,119 @@
 }
 
 body {
-    font-family: Arial, sans-serif;  /* Police simple et jolie */
-    background-color: var(--couleur-gris-clair);
-    color: var(--couleur-noir);
+    font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #333333;
+    line-height: 1.6;
 }
 
 /* ========== LA PAGE PRINCIPALE ========== */
 .page-communaute {
-    max-width: 1200px;  /* Largeur maximale */
-    margin: 0 auto;     /* Centré */
-    padding: 30px 15px; /* Espace autour */
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
 }
 
 /* ========== LE TITRE ========== */
 .titre-section {
-    text-align: center;  /* Texte centré */
-    margin-bottom: 40px; /* Espace en bas */
+    text-align: center;
+    margin-bottom: 40px;
 }
 
 .titre-section h1 {
-    font-size: 2.5em;  /* Grande taille */
-    color: var(--couleur-violet);
+    font-size: 2.5em;
+    color: #667eea;
     margin-bottom: 10px;
+    font-weight: bold;
 }
 
 .titre-section p {
     font-size: 1.2em;
-    color: var(--couleur-gris);
+    color: #666666;
 }
 
 /* ========== LA GRILLE DES GROUPES ========== */
-/* On arrange les 6 cartes en grille (comme un tableau) */
 .grille-groupes {
-    display: grid;  /* Mode grille */
-    grid-template-columns: repeat(3, 1fr);  /* 3 colonnes égales */
-    gap: 25px;  /* Espace entre les cartes */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    margin-bottom: 40px;
 }
 
 /* ========== UNE CARTE DE GROUPE ========== */
 .carte-groupe {
-    background-color: var(--couleur-blanc);
-    border-radius: 15px;  /* Coins arrondis */
-    overflow: hidden;     /* Cache ce qui dépasse */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);  /* Ombre légère */
-    transition: transform 0.3s ease;  /* Animation douce */
+    background-color: #ffffff;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Quand on survole la carte avec la souris */
 .carte-groupe:hover {
-    transform: translateY(-5px);  /* Monte un peu */
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);  /* Ombre plus forte */
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
 }
 
 /* ========== IMAGE DU GROUPE ========== */
 .image-groupe {
     width: 100%;
-    height: 180px;
-    /* Dégradé violet par défaut (si pas d'image) */
-    background: linear-gradient(135deg, var(--couleur-violet) 0%, var(--couleur-violet-fonce) 100%);
+    height: 200px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    position: relative;
 }
 
 .image-groupe img {
     width: 100%;
     height: 100%;
-    object-fit: cover;  /* Remplit l'espace sans déformer */
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: transform 0.3s ease;
+}
+
+.carte-groupe:hover .image-groupe img {
+    transform: scale(1.05);
 }
 
 /* ========== INFOS DU GROUPE ========== */
 .info-groupe {
-    padding: 20px;  /* Espace intérieur */
+    padding: 20px;
+    flex-grow: 1;
 }
 
 .info-groupe h3 {
-    color: var(--couleur-violet);
-    font-size: 1.4em;
+    color: #667eea;
+    font-size: 1.5em;
     margin-bottom: 10px;
+    font-weight: bold;
 }
 
 .info-groupe p {
-    color: var(--couleur-gris);
+    color: #666666;
     font-size: 0.95em;
-    line-height: 1.5;  /* Espacement entre les lignes */
+    line-height: 1.6;
     margin-bottom: 10px;
 }
 
 .petit-texte {
     font-size: 0.9em !important;
-    color: var(--couleur-gris);
+    color: #999999;
+    font-weight: 500;
 }
 
 /* ========== BOUTONS DU GROUPE ========== */
 .boutons-groupe {
     padding: 0 20px 20px;
     display: flex;
-    gap: 10px;  /* Espace entre les boutons */
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
 /* ========== LES BOUTONS ========== */
@@ -135,84 +138,110 @@ body {
     border-radius: 8px;
     font-size: 1em;
     font-weight: bold;
-    cursor: pointer;  /* Petit doigt quand on survole */
-    transition: all 0.3s ease;  /* Animation douce */
-    flex: 1;  /* Prend toute la largeur disponible */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
 }
 
-/* Bouton bleu (ouvrir chat) */
+.bouton:hover {
+    transform: translateY(-2px);
+}
+
+.bouton:active {
+    transform: translateY(0);
+}
+
+/* Bouton bleu */
 .bouton.bleu {
-    background: linear-gradient(135deg, var(--couleur-violet), var(--couleur-violet-fonce));
+    background: linear-gradient(135deg, #667eea, #764ba2);
     color: white;
 }
 
 .bouton.bleu:hover {
-    transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
-/* Bouton vert (rejoindre) */
+/* Bouton vert */
 .bouton.vert {
-    background-color: var(--couleur-vert);
+    background-color: #51cf66;
     color: white;
 }
 
 .bouton.vert:hover {
     background-color: #45b85c;
-    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(81, 207, 102, 0.4);
 }
 
-/* Bouton rouge (quitter) */
+/* Bouton rouge */
 .bouton.rouge {
-    background-color: var(--couleur-rouge);
+    background-color: #ff6b6b;
     color: white;
 }
 
 .bouton.rouge:hover {
     background-color: #ff5252;
-    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
 }
 
 /* ========== LA BULLE DE CHAT ========== */
-.bulle-chat {
-    display: none;  /* Cachée par défaut */
-    position: fixed;  /* Reste au même endroit même si on scroll */
+#bulle-chat {
+    display: none;
+    position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);  /* Centre parfaitement */
+    transform: translate(-50%, -50%);
     width: 90%;
-    max-width: 600px;
-    max-height: 80vh;
-    background-color: var(--couleur-blanc);
+    max-width: 700px;
+    max-height: 85vh;
+    background-color: #ffffff;
     border-radius: 20px;
-    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
-    z-index: 1001;  /* Au-dessus de tout */
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.4);
+    z-index: 1001;
+    overflow: hidden;
 }
 
-/* Quand la bulle est ouverte */
-.bulle-chat.ouverte {
+#bulle-chat.ouverte {
     display: block;
+    animation: apparition 0.3s ease;
+}
+
+@keyframes apparition {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
 }
 
 /* ========== CONTENU DE LA BULLE ========== */
 .contenu-bulle {
     display: flex;
-    flex-direction: column;  /* En colonne (un au-dessus de l'autre) */
+    flex-direction: column;
     height: 100%;
 }
 
-/* ========== HAUT DE LA BULLE (titre) ========== */
+/* ========== HAUT DE LA BULLE ========== */
 .haut-bulle {
-    background: linear-gradient(135deg, var(--couleur-violet), var(--couleur-violet-fonce));
+    background: linear-gradient(135deg, #667eea, #764ba2);
     color: white;
-    padding: 20px;
-    border-radius: 20px 20px 0 0;
+    padding: 20px 25px;
     display: flex;
-    justify-content: space-between;  /* Espace entre titre et bouton */
+    justify-content: space-between;
     align-items: center;
 }
 
 .haut-bulle h3 {
+    margin: 0;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+#nom-groupe-chat {
     margin: 0;
     font-size: 1.5em;
 }
@@ -221,11 +250,14 @@ body {
     background: transparent;
     border: none;
     color: white;
-    font-size: 1.5em;
+    font-size: 1.8em;
     cursor: pointer;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;  /* Rond */
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
     transition: background 0.3s;
 }
 
@@ -234,119 +266,304 @@ body {
 }
 
 /* ========== ZONE DES MESSAGES ========== */
-.zone-messages {
-    flex: 1;  /* Prend tout l'espace disponible */
+#zone-messages {
+    flex: 1;
     padding: 20px;
-    background-color: var(--couleur-gris-clair);
-    overflow-y: auto;  /* Barre de scroll si beaucoup de messages */
+    background-color: #f8f9fa;
+    overflow-y: auto;
     min-height: 300px;
     max-height: 400px;
 }
 
 /* Un message */
 .message {
-    background-color: var(--couleur-blanc);
+    background-color: #ffffff;
     padding: 15px;
     border-radius: 10px;
     margin-bottom: 15px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    animation: glissement 0.3s ease;
+}
+
+@keyframes glissement {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .message-haut {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin-bottom: 8px;
 }
 
 .message-auteur {
     font-weight: bold;
-    color: var(--couleur-violet);
+    color: #667eea;
+    font-size: 1em;
 }
 
 .message-heure {
     font-size: 0.85em;
-    color: var(--couleur-gris);
+    color: #999999;
 }
 
 .message-texte {
-    color: var(--couleur-noir);
-    line-height: 1.5;
+    color: #333333;
+    line-height: 1.6;
+    word-wrap: break-word;
 }
 
-/* Texte centré (pour "Chargement...") */
+/* Texte centré */
 .texte-centre {
     text-align: center;
-    color: var(--couleur-gris);
-    padding: 40px;
+    color: #999999;
+    padding: 40px 20px;
+    font-size: 1.1em;
 }
 
 /* ========== FORMULAIRE D'ENVOI ========== */
-.formulaire-message {
+#formulaire-message {
     padding: 20px;
+    border-top: 1px solid #e0e0e0;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 }
 
-.formulaire-message textarea {
+#id-groupe-actuel {
+    display: none;
+}
+
+#mon-message {
     width: 100%;
     padding: 12px;
-    border: 2px solid var(--couleur-gris-clair);
+    border: 2px solid #e0e0e0;
     border-radius: 8px;
     font-family: inherit;
     font-size: 1em;
-    resize: vertical;  /* On peut agrandir en hauteur */
+    resize: vertical;
+    min-height: 80px;
+    transition: border-color 0.3s;
 }
 
-.formulaire-message textarea:focus {
+#mon-message:focus {
     outline: none;
-    border-color: var(--couleur-violet);
+    border-color: #667eea;
+}
+
+#formulaire-message button[type="submit"] {
+    align-self: flex-end;
+    min-width: 150px;
 }
 
 /* ========== BAS DE LA BULLE ========== */
 .bas-bulle {
-    padding: 20px;
-    border-top: 1px solid var(--couleur-gris-clair);
+    padding: 15px 20px;
+    border-top: 1px solid #e0e0e0;
     text-align: center;
 }
 
+.quitter-depuis-chat {
+    width: 100%;
+}
+
 /* ========== FOND SOMBRE ========== */
-.fond-sombre {
+#fond-sombre {
     display: none;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);  /* Noir transparent */
+    background-color: rgba(0, 0, 0, 0.6);
     z-index: 1000;
 }
 
-.fond-sombre.visible {
+#fond-sombre.visible {
     display: block;
+    animation: fondu 0.3s ease;
 }
 
-/* ========== RESPONSIVE (pour téléphone) ========== */
+@keyframes fondu {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* ========== SCROLLBAR PERSONNALISÉE ========== */
+#zone-messages::-webkit-scrollbar {
+    width: 8px;
+}
+
+#zone-messages::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+#zone-messages::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 10px;
+}
+
+#zone-messages::-webkit-scrollbar-thumb:hover {
+    background: #764ba2;
+}
+
+/* ========== RESPONSIVE TABLETTE ========== */
 @media (max-width: 768px) {
-    /* Sur tablette : 2 colonnes au lieu de 3 */
-    .grille-groupes {
-        grid-template-columns: repeat(2, 1fr);
+    .page-communaute {
+        padding: 30px 15px;
     }
-}
 
-@media (max-width: 480px) {
-    /* Sur téléphone : 1 seule colonne */
-    .grille-groupes {
-        grid-template-columns: 1fr;
-    }
-    
     .titre-section h1 {
         font-size: 2em;
     }
-    
-    .bulle-chat {
+
+    .grille-groupes {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .image-groupe {
+        height: 150px;
+    }
+
+    #bulle-chat {
+        width: 95%;
+        max-height: 90vh;
+    }
+
+    #zone-messages {
+        max-height: 350px;
+    }
+}
+
+/* ========== RESPONSIVE MOBILE ========== */
+@media (max-width: 480px) {
+    .page-communaute {
+        padding: 20px 10px;
+    }
+
+    .titre-section h1 {
+        font-size: 1.8em;
+    }
+
+    .titre-section p {
+        font-size: 1em;
+    }
+
+    .grille-groupes {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .image-groupe {
+        height: 180px;
+    }
+
+    .info-groupe {
+        padding: 15px;
+    }
+
+    .boutons-groupe {
+        flex-direction: column;
+        padding: 0 15px 15px;
+    }
+
+    .bouton {
+        width: 100%;
+        min-width: auto;
+    }
+
+    #bulle-chat {
         width: 100%;
         max-width: 100%;
+        height: 100%;
+        max-height: 100vh;
         border-radius: 0;
+    }
+
+    .haut-bulle {
+        padding: 15px 20px;
+    }
+
+    .haut-bulle h3 {
+        font-size: 1.2em;
+    }
+
+    #zone-messages {
+        min-height: 250px;
+        max-height: 300px;
+        padding: 15px;
+    }
+
+    #formulaire-message {
+        padding: 15px;
+    }
+
+    #mon-message {
+        min-height: 70px;
+        font-size: 16px; /* Empêche le zoom sur iPhone */
+    }
+}
+
+/* ========== ÉTATS DES BOUTONS ========== */
+.bouton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.bouton:disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* ========== ANIMATIONS SUPPLÉMENTAIRES ========== */
+.carte-groupe {
+    animation: apparitionCarte 0.5s ease backwards;
+}
+
+.carte-groupe:nth-child(1) { animation-delay: 0.1s; }
+.carte-groupe:nth-child(2) { animation-delay: 0.2s; }
+.carte-groupe:nth-child(3) { animation-delay: 0.3s; }
+.carte-groupe:nth-child(4) { animation-delay: 0.4s; }
+.carte-groupe:nth-child(5) { animation-delay: 0.5s; }
+.carte-groupe:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes apparitionCarte {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========== ACCESSIBILITÉ ========== */
+.bouton:focus,
+#mon-message:focus,
+.bouton-fermer:focus {
+    outline: 3px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* ========== IMPRESSION ========== */
+@media print {
+    #bulle-chat,
+    #fond-sombre,
+    .boutons-groupe {
+        display: none !important;
     }
 }
