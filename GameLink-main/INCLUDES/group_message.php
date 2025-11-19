@@ -1,21 +1,39 @@
 <?php
-// INCLUDES/groupe_message.php - Envoyer un message dans un groupe
+/*
+ * ========================================
+ * ENVOYER UN MESSAGE - VERSION SIMPLE
+ * ========================================
+ * 
+ * Ce fichier permet d'envoyer un message dans un groupe
+ * 
+ */
+
+// ÉTAPE 1 : Démarrer la session
 session_start();
+
+// ÉTAPE 2 : Dire qu'on envoie du JSON
 header('Content-Type: application/json');
 
-// Vérifier que l'utilisateur est connecté
+// ÉTAPE 3 : Vérifier que tu es connecté
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'message' => 'Tu dois être connecté']);
     exit;
 }
 
+// ÉTAPE 4 : Se connecter à la base de données
 require_once __DIR__ . '/../DATA/DBConfig.php';
 
-$user_id = $_SESSION['user_id'];
-$groupe_id = isset($_POST['groupe_id']) ? (int)$_POST['groupe_id'] : 0;
+// ÉTAPE 5 : Récupérer les infos
+$mon_id = $_SESSION['user_id'];
+$id_groupe = isset($_POST['groupe_id']) ? (int)$_POST['groupe_id'] : 0;
 $message = isset($_POST['message']) ? trim($_POST['message']) : '';
 
-// Vérifications
+// ÉTAPE 6 : Vérifier que tout est OK
+if ($id_groupe <= 0) {
+    echo json_encode(['success' => false, 'message' => 'Groupe invalide']);
+    exit;
+}
+
 if (empty($message)) {
     echo json_encode(['success' => false, 'message' => 'Le message ne peut pas être vide']);
     exit;
@@ -27,33 +45,38 @@ if (strlen($message) > 1000) {
 }
 
 try {
-    // Vérifier que l'utilisateur est membre du groupe
-    $stmt = $pdo->prepare("
-        SELECT id_joueur 
+    // ÉTAPE 7 : Vérifier que je suis membre du groupe
+    $requete = $pdo->prepare("
+        SELECT id_adhesion 
         FROM adhesion 
         WHERE id_joueur = ? AND id_communaute = ? AND statut = 'actif'
     ");
-    $stmt->execute([$user_id, $groupe_id]);
+    $requete->execute([$mon_id, $id_groupe]);
     
-    if (!$stmt->fetch()) {
-        echo json_encode(['success' => false, 'message' => 'Tu dois être membre du groupe pour envoyer un message']);
+    if (!$requete->fetch()) {
+        // Je ne suis pas membre
+        echo json_encode(['success' => false, 'message' => 'Tu dois être membre pour envoyer un message']);
         exit;
     }
     
-    // Insérer le message
-    $stmt = $pdo->prepare("
+    // ÉTAPE 8 : Enregistrer le message dans la base de données
+    $requete = $pdo->prepare("
         INSERT INTO publication (id_joueur, id_communaute, titre, contenu, date_creation) 
         VALUES (?, ?, NULL, ?, NOW())
     ");
-    $stmt->execute([$user_id, $groupe_id, $message]);
+    $requete->execute([$mon_id, $id_groupe, $message]);
     
+    // Récupérer l'ID du message créé
+    $id_message = $pdo->lastInsertId();
+    
+    // ÉTAPE 9 : Répondre que c'est bon
     echo json_encode([
         'success' => true, 
         'message' => 'Message envoyé !',
-        'message_id' => $pdo->lastInsertId()
+        'id_message' => $id_message
     ]);
     
-} catch (PDOException $e) {
-    error_log("Erreur envoi message : " . $e->getMessage());
+} catch (Exception $erreur) {
+    // Problème
     echo json_encode(['success' => false, 'message' => 'Erreur serveur']);
 }

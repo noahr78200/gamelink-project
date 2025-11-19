@@ -1,62 +1,84 @@
 <?php
-// INCLUDES/groupe_messages.php - Récupérer les messages d'un groupe
+/*
+ * ========================================
+ * RÉCUPÉRER LES MESSAGES - VERSION SIMPLE
+ * ========================================
+ * 
+ * Ce fichier récupère tous les messages d'un groupe
+ * 
+ */
+
+// ÉTAPE 1 : Démarrer la session
 session_start();
+
+// ÉTAPE 2 : Dire qu'on envoie du JSON
 header('Content-Type: application/json');
 
-// Vérifier que l'utilisateur est connecté
+// ÉTAPE 3 : Vérifier que tu es connecté
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'message' => 'Tu dois être connecté']);
     exit;
 }
 
+// ÉTAPE 4 : Se connecter à la base de données
 require_once __DIR__ . '/../DATA/DBConfig.php';
 
-$user_id = $_SESSION['user_id'];
-$groupe_id = isset($_GET['groupe_id']) ? (int)$_GET['groupe_id'] : 0;
+// ÉTAPE 5 : Récupérer les infos
+$mon_id = $_SESSION['user_id'];
+$id_groupe = isset($_GET['groupe_id']) ? (int)$_GET['groupe_id'] : 0;
+
+// Vérifier que l'ID du groupe est valide
+if ($id_groupe <= 0) {
+    echo json_encode(['success' => false, 'message' => 'Groupe invalide']);
+    exit;
+}
 
 try {
-    // Vérifier que l'utilisateur est membre du groupe
-    $stmt = $pdo->prepare("
-        SELECT id_joueur 
+    // ÉTAPE 6 : Vérifier que je suis membre du groupe
+    $requete = $pdo->prepare("
+        SELECT id_adhesion 
         FROM adhesion 
         WHERE id_joueur = ? AND id_communaute = ? AND statut = 'actif'
     ");
-    $stmt->execute([$user_id, $groupe_id]);
+    $requete->execute([$mon_id, $id_groupe]);
     
-    if (!$stmt->fetch()) {
+    if (!$requete->fetch()) {
+        // Je ne suis pas membre
         echo json_encode(['success' => false, 'message' => 'Tu dois être membre pour voir les messages']);
         exit;
     }
     
-    // Récupérer les messages (les 50 derniers)
-    $stmt = $pdo->prepare("
+    // ÉTAPE 7 : Récupérer les 50 derniers messages
+    $requete = $pdo->prepare("
         SELECT p.id_publication, p.contenu, p.date_creation, j.pseudo
         FROM publication p
         JOIN joueur j ON p.id_joueur = j.id_joueur
-        WHERE p.id_communaute = ?
+        WHERE p.id_communaute = ? AND p.titre IS NULL
         ORDER BY p.date_creation ASC
         LIMIT 50
     ");
-    $stmt->execute([$groupe_id]);
-    $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $requete->execute([$id_groupe]);
+    $messages_bruts = $requete->fetchAll();
     
-    // Formater les messages avec l'heure
-    $messages_formated = [];
-    foreach ($messages as $msg) {
-        $messages_formated[] = [
+    // ÉTAPE 8 : Mettre en forme les messages
+    $messages = [];
+    foreach ($messages_bruts as $msg) {
+        $messages[] = [
             'id' => $msg['id_publication'],
             'pseudo' => $msg['pseudo'],
             'contenu' => $msg['contenu'],
-            'heure' => date('H:i', strtotime($msg['date_creation']))
+            'heure' => date('H:i', strtotime($msg['date_creation']))  // Juste l'heure (ex: 14:30)
         ];
     }
     
+    // ÉTAPE 9 : Envoyer les messages
     echo json_encode([
         'success' => true,
-        'messages' => $messages_formated
+        'messages' => $messages,
+        'nombre' => count($messages)
     ]);
     
-} catch (PDOException $e) {
-    error_log("Erreur récupération messages : " . $e->getMessage());
+} catch (Exception $erreur) {
+    // Problème
     echo json_encode(['success' => false, 'message' => 'Erreur serveur']);
 }

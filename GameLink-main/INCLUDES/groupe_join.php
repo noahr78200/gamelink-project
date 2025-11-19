@@ -1,51 +1,69 @@
 <?php
-// INCLUDES/groupe_join.php - Rejoindre un groupe
+/*
+ * ========================================
+ * REJOINDRE UN GROUPE - VERSION SIMPLE
+ * ========================================
+ * 
+ * Ce fichier permet de rejoindre un groupe
+ * 
+ */
+
+// ÉTAPE 1 : Démarrer la session
 session_start();
+
+// ÉTAPE 2 : Dire au navigateur qu'on envoie du JSON
 header('Content-Type: application/json');
 
-// Vérifier que l'utilisateur est connecté
+// ÉTAPE 3 : Vérifier que tu es connecté
 if (!isset($_SESSION['user_id'])) {
+    // Si tu n'es pas connecté, on arrête
     echo json_encode(['success' => false, 'message' => 'Tu dois être connecté']);
     exit;
 }
 
+// ÉTAPE 4 : Se connecter à la base de données
 require_once __DIR__ . '/../DATA/DBConfig.php';
 
-$user_id = $_SESSION['user_id'];
-$groupe_id = isset($_POST['groupe_id']) ? (int)$_POST['groupe_id'] : 0;
+// ÉTAPE 5 : Récupérer les informations
+$mon_id = $_SESSION['user_id'];           // Mon ID
+$id_groupe = isset($_POST['groupe_id']) ? (int)$_POST['groupe_id'] : 0;  // ID du groupe
 
-// Vérifier que le groupe existe
+// ÉTAPE 6 : Vérifier que le groupe existe
 try {
-    $stmt = $pdo->prepare("SELECT id_communaute FROM communaute WHERE id_communaute = ?");
-    $stmt->execute([$groupe_id]);
+    // Demander à la base de données si le groupe existe
+    $requete = $pdo->prepare("SELECT id_communaute FROM communaute WHERE id_communaute = ?");
+    $requete->execute([$id_groupe]);
     
-    if (!$stmt->fetch()) {
+    if (!$requete->fetch()) {
+        // Le groupe n'existe pas
         echo json_encode(['success' => false, 'message' => 'Ce groupe n\'existe pas']);
         exit;
     }
     
-    // Vérifier si l'utilisateur n'est pas déjà membre
-    $stmt = $pdo->prepare("SELECT id_joueur FROM adhesion WHERE id_joueur = ? AND id_communaute = ? AND statut = 'actif'");
-    $stmt->execute([$user_id, $groupe_id]);
+    // ÉTAPE 7 : Vérifier que je ne suis pas déjà membre
+    $requete = $pdo->prepare("SELECT id_adhesion FROM adhesion WHERE id_joueur = ? AND id_communaute = ?");
+    $requete->execute([$mon_id, $id_groupe]);
     
-    if ($stmt->fetch()) {
+    if ($requete->fetch()) {
+        // Je suis déjà membre
         echo json_encode(['success' => false, 'message' => 'Tu es déjà membre de ce groupe']);
         exit;
     }
     
-    // Ajouter l'utilisateur au groupe
-    $stmt = $pdo->prepare("
+    // ÉTAPE 8 : M'ajouter au groupe
+    $requete = $pdo->prepare("
         INSERT INTO adhesion (id_joueur, id_communaute, role, statut, date_entree) 
         VALUES (?, ?, 'membre', 'actif', NOW())
     ");
-    $stmt->execute([$user_id, $groupe_id]);
+    $requete->execute([$mon_id, $id_groupe]);
     
+    // ÉTAPE 9 : Répondre que c'est bon
     echo json_encode([
         'success' => true, 
-        'message' => 'Tu as rejoint le groupe avec succès !'
+        'message' => 'Tu as rejoint le groupe !'
     ]);
     
-} catch (PDOException $e) {
-    error_log("Erreur rejoindre groupe : " . $e->getMessage());
+} catch (Exception $erreur) {
+    // S'il y a un problème
     echo json_encode(['success' => false, 'message' => 'Erreur serveur']);
 }

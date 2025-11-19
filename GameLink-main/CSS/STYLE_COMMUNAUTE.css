@@ -1,23 +1,26 @@
-/* ==========================================
-   STYLE_COMMUNAUTE.css
-   Style pour la page Communauté de GameLink
-   ========================================== */
+/* =====================================================
+   STYLE DE LA PAGE COMMUNAUTÉ - VERSION SIMPLE
+   =====================================================
+   
+   Ce fichier rend la page jolie !
+   
+   ===================================================== */
 
-/* VARIABLES DE COULEURS (style GameLink) */
+/* ========== LES COULEURS ========== */
+/* On définit les couleurs une seule fois, comme ça on peut les réutiliser */
 :root {
-    --primary-color: #667eea;
-    --secondary-color: #764ba2;
-    --bg-light: #f8f9fa;
-    --bg-white: #ffffff;
-    --text-dark: #333333;
-    --text-light: #666666;
-    --border-color: #e0e0e0;
-    --success-color: #51cf66;
-    --danger-color: #ff6b6b;
-    --warning-color: #ffa500;
+    --couleur-violet: #667eea;
+    --couleur-violet-fonce: #764ba2;
+    --couleur-gris-clair: #f8f9fa;
+    --couleur-blanc: #ffffff;
+    --couleur-noir: #333333;
+    --couleur-gris: #666666;
+    --couleur-vert: #51cf66;
+    --couleur-rouge: #ff6b6b;
 }
 
-/* RESET ET BASE */
+/* ========== RÉINITIALISATION ========== */
+/* On enlève les marges et paddings par défaut */
 * {
     margin: 0;
     padding: 0;
@@ -25,542 +28,325 @@
 }
 
 body {
-    font-family: 'Roboto', 'Segoe UI', sans-serif;
-    background-color: var(--bg-light);
-    color: var(--text-dark);
-    line-height: 1.6;
+    font-family: Arial, sans-serif;  /* Police simple et jolie */
+    background-color: var(--couleur-gris-clair);
+    color: var(--couleur-noir);
 }
 
-/* CONTAINER PRINCIPAL */
-.communaute-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 40px 20px;
+/* ========== LA PAGE PRINCIPALE ========== */
+.page-communaute {
+    max-width: 1200px;  /* Largeur maximale */
+    margin: 0 auto;     /* Centré */
+    padding: 30px 15px; /* Espace autour */
 }
 
-/* ===== HEADERS DE SECTIONS ===== */
-.section-header {
-    margin-bottom: 30px;
+/* ========== LE TITRE ========== */
+.titre-section {
+    text-align: center;  /* Texte centré */
+    margin-bottom: 40px; /* Espace en bas */
+}
+
+.titre-section h1 {
+    font-size: 2.5em;  /* Grande taille */
+    color: var(--couleur-violet);
+    margin-bottom: 10px;
+}
+
+.titre-section p {
+    font-size: 1.2em;
+    color: var(--couleur-gris);
+}
+
+/* ========== LA GRILLE DES GROUPES ========== */
+/* On arrange les 6 cartes en grille (comme un tableau) */
+.grille-groupes {
+    display: grid;  /* Mode grille */
+    grid-template-columns: repeat(3, 1fr);  /* 3 colonnes égales */
+    gap: 25px;  /* Espace entre les cartes */
+}
+
+/* ========== UNE CARTE DE GROUPE ========== */
+.carte-groupe {
+    background-color: var(--couleur-blanc);
+    border-radius: 15px;  /* Coins arrondis */
+    overflow: hidden;     /* Cache ce qui dépasse */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);  /* Ombre légère */
+    transition: transform 0.3s ease;  /* Animation douce */
+}
+
+/* Quand on survole la carte avec la souris */
+.carte-groupe:hover {
+    transform: translateY(-5px);  /* Monte un peu */
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);  /* Ombre plus forte */
+}
+
+/* ========== IMAGE DU GROUPE ========== */
+.image-groupe {
+    width: 100%;
+    height: 180px;
+    /* Dégradé violet par défaut (si pas d'image) */
+    background: linear-gradient(135deg, var(--couleur-violet) 0%, var(--couleur-violet-fonce) 100%);
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
+    justify-content: center;
+    overflow: hidden;
 }
 
-.section-header h1,
-.section-header h2 {
-    color: var(--primary-color);
-    font-size: 2em;
+.image-groupe img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;  /* Remplit l'espace sans déformer */
 }
 
-.section-header p {
-    color: var(--text-light);
-    margin-top: 5px;
+/* ========== INFOS DU GROUPE ========== */
+.info-groupe {
+    padding: 20px;  /* Espace intérieur */
 }
 
-/* ===== BOUTONS ===== */
-.btn {
-    padding: 12px 24px;
+.info-groupe h3 {
+    color: var(--couleur-violet);
+    font-size: 1.4em;
+    margin-bottom: 10px;
+}
+
+.info-groupe p {
+    color: var(--couleur-gris);
+    font-size: 0.95em;
+    line-height: 1.5;  /* Espacement entre les lignes */
+    margin-bottom: 10px;
+}
+
+.petit-texte {
+    font-size: 0.9em !important;
+    color: var(--couleur-gris);
+}
+
+/* ========== BOUTONS DU GROUPE ========== */
+.boutons-groupe {
+    padding: 0 20px 20px;
+    display: flex;
+    gap: 10px;  /* Espace entre les boutons */
+}
+
+/* ========== LES BOUTONS ========== */
+.bouton {
+    padding: 12px 20px;
     border: none;
     border-radius: 8px;
     font-size: 1em;
     font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-block;
+    cursor: pointer;  /* Petit doigt quand on survole */
+    transition: all 0.3s ease;  /* Animation douce */
+    flex: 1;  /* Prend toute la largeur disponible */
 }
 
-.btn-primary {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+/* Bouton bleu (ouvrir chat) */
+.bouton.bleu {
+    background: linear-gradient(135deg, var(--couleur-violet), var(--couleur-violet-fonce));
     color: white;
 }
 
-.btn-primary:hover {
+.bouton.bleu:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
-.btn-secondary {
-    background-color: var(--bg-white);
-    color: var(--primary-color);
-    border: 2px solid var(--primary-color);
-}
-
-.btn-secondary:hover {
-    background-color: var(--primary-color);
+/* Bouton vert (rejoindre) */
+.bouton.vert {
+    background-color: var(--couleur-vert);
     color: white;
 }
 
-.btn-danger {
-    background-color: var(--danger-color);
+.bouton.vert:hover {
+    background-color: #45b85c;
+    transform: translateY(-2px);
+}
+
+/* Bouton rouge (quitter) */
+.bouton.rouge {
+    background-color: var(--couleur-rouge);
     color: white;
 }
 
-.btn-danger:hover {
+.bouton.rouge:hover {
     background-color: #ff5252;
+    transform: translateY(-2px);
 }
 
-/* ===== SECTION GROUPES ===== */
-.groupes-section {
-    margin-bottom: 60px;
-}
-
-.groupes-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 25px;
-}
-
-/* CARTE DE GROUPE */
-.groupe-card {
-    background: var(--bg-white);
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    display: flex;
-    flex-direction: column;
-}
-
-.groupe-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
-}
-
-/* IMAGE du groupe */
-.groupe-image {
-    width: 100%;
-    height: 200px;
-    overflow: hidden;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-}
-
-.groupe-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.groupe-card:hover .groupe-image img {
-    transform: scale(1.05);
-}
-
-/* INFO du groupe */
-.groupe-info {
-    padding: 20px;
-    flex-grow: 1;
-}
-
-.groupe-info h3 {
-    color: var(--primary-color);
-    font-size: 1.5em;
-    margin-bottom: 10px;
-}
-
-.groupe-desc {
-    color: var(--text-light);
-    font-size: 0.95em;
-    margin-bottom: 15px;
-    line-height: 1.5;
-}
-
-.groupe-stats {
-    display: flex;
-    gap: 15px;
-    color: var(--text-light);
-    font-size: 0.9em;
-}
-
-/* ACTIONS du groupe */
-.groupe-actions {
-    padding: 0 20px 20px;
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.groupe-actions .btn {
-    flex: 1;
-    min-width: 120px;
-    text-align: center;
-}
-
-/* ===== SECTION FORUMS ===== */
-.forums-section {
-    margin-bottom: 60px;
-}
-
-.forums-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-/* ITEM DE FORUM */
-.forum-item {
-    background: var(--bg-white);
-    border-radius: 10px;
-    padding: 25px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-}
-
-.forum-item:hover {
-    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
-    transform: translateX(5px);
-}
-
-.forum-content h3 {
-    margin-bottom: 10px;
-}
-
-.forum-content h3 a {
-    color: var(--primary-color);
-    text-decoration: none;
-    font-size: 1.3em;
-    transition: color 0.3s;
-}
-
-.forum-content h3 a:hover {
-    color: var(--secondary-color);
-    text-decoration: underline;
-}
-
-.forum-preview {
-    color: var(--text-light);
-    margin-bottom: 15px;
-    line-height: 1.6;
-}
-
-.forum-meta {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    font-size: 0.9em;
-    color: var(--text-light);
-}
-
-.forum-author {
-    font-weight: bold;
-    color: var(--primary-color);
-}
-
-/* ===== MODAL CHAT (LA BULLE) ===== */
-.modal {
-    display: none; /* Caché par défaut */
-    position: fixed;
+/* ========== LA BULLE DE CHAT ========== */
+.bulle-chat {
+    display: none;  /* Cachée par défaut */
+    position: fixed;  /* Reste au même endroit même si on scroll */
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%) scale(0.9);
+    transform: translate(-50%, -50%);  /* Centre parfaitement */
     width: 90%;
-    max-width: 700px;
-    max-height: 85vh;
-    background: var(--bg-white);
+    max-width: 600px;
+    max-height: 80vh;
+    background-color: var(--couleur-blanc);
     border-radius: 20px;
     box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
-    z-index: 1001;
-    opacity: 0;
-    transition: all 0.3s ease;
+    z-index: 1001;  /* Au-dessus de tout */
 }
 
-.modal.active {
+/* Quand la bulle est ouverte */
+.bulle-chat.ouverte {
     display: block;
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
 }
 
-/* OVERLAY (fond sombre) */
-.modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
+/* ========== CONTENU DE LA BULLE ========== */
+.contenu-bulle {
+    display: flex;
+    flex-direction: column;  /* En colonne (un au-dessus de l'autre) */
     height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 1000;
-    opacity: 0;
-    transition: opacity 0.3s ease;
 }
 
-.modal-overlay.active {
-    display: block;
-    opacity: 1;
-}
-
-/* HEADER du modal */
-.modal-header {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+/* ========== HAUT DE LA BULLE (titre) ========== */
+.haut-bulle {
+    background: linear-gradient(135deg, var(--couleur-violet), var(--couleur-violet-fonce));
     color: white;
-    padding: 20px 25px;
+    padding: 20px;
     border-radius: 20px 20px 0 0;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between;  /* Espace entre titre et bouton */
     align-items: center;
 }
 
-.modal-header h3 {
+.haut-bulle h3 {
     margin: 0;
     font-size: 1.5em;
 }
 
-.btn-close {
+.bouton-fermer {
     background: transparent;
     border: none;
     color: white;
-    font-size: 2em;
+    font-size: 1.5em;
     cursor: pointer;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;  /* Rond */
     transition: background 0.3s;
 }
 
-.btn-close:hover {
+.bouton-fermer:hover {
     background: rgba(255, 255, 255, 0.2);
 }
 
-/* BODY du modal */
-.modal-body {
-    padding: 25px;
-    max-height: 60vh;
-    overflow-y: auto;
-}
-
-/* MESSAGES du chat */
-.chat-messages {
+/* ========== ZONE DES MESSAGES ========== */
+.zone-messages {
+    flex: 1;  /* Prend tout l'espace disponible */
+    padding: 20px;
+    background-color: var(--couleur-gris-clair);
+    overflow-y: auto;  /* Barre de scroll si beaucoup de messages */
     min-height: 300px;
     max-height: 400px;
-    overflow-y: auto;
-    margin-bottom: 20px;
-    padding: 15px;
-    background: var(--bg-light);
-    border-radius: 10px;
 }
 
-/* Message individuel */
-.message-item {
-    background: var(--bg-white);
+/* Un message */
+.message {
+    background-color: var(--couleur-blanc);
     padding: 15px;
     border-radius: 10px;
     margin-bottom: 15px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
-.message-header {
+.message-haut {
     display: flex;
     justify-content: space-between;
-    align-items: center;
     margin-bottom: 8px;
 }
 
-.message-author {
+.message-auteur {
     font-weight: bold;
-    color: var(--primary-color);
+    color: var(--couleur-violet);
 }
 
-.message-time {
+.message-heure {
     font-size: 0.85em;
-    color: var(--text-light);
+    color: var(--couleur-gris);
 }
 
-.message-content {
-    color: var(--text-dark);
+.message-texte {
+    color: var(--couleur-noir);
     line-height: 1.5;
-    word-wrap: break-word;
 }
 
-/* Loading */
-.loading {
+/* Texte centré (pour "Chargement...") */
+.texte-centre {
     text-align: center;
-    color: var(--text-light);
+    color: var(--couleur-gris);
     padding: 40px;
 }
 
-/* Pas de messages */
-.no-messages {
-    text-align: center;
-    color: var(--text-light);
-    padding: 40px;
-}
-
-/* FORMULAIRE du chat */
-.chat-form {
+/* ========== FORMULAIRE D'ENVOI ========== */
+.formulaire-message {
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 10px;
 }
 
-.chat-form textarea {
+.formulaire-message textarea {
     width: 100%;
     padding: 12px;
-    border: 2px solid var(--border-color);
+    border: 2px solid var(--couleur-gris-clair);
     border-radius: 8px;
     font-family: inherit;
     font-size: 1em;
-    resize: vertical;
-    transition: border-color 0.3s;
+    resize: vertical;  /* On peut agrandir en hauteur */
 }
 
-.chat-form textarea:focus {
+.formulaire-message textarea:focus {
     outline: none;
-    border-color: var(--primary-color);
+    border-color: var(--couleur-violet);
 }
 
-.chat-form button {
-    align-self: flex-end;
-}
-
-/* FOOTER du modal */
-.modal-footer {
-    padding: 20px 25px;
-    border-top: 1px solid var(--border-color);
+/* ========== BAS DE LA BULLE ========== */
+.bas-bulle {
+    padding: 20px;
+    border-top: 1px solid var(--couleur-gris-clair);
     text-align: center;
 }
 
-/* ===== EMPTY STATE ===== */
-.empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--text-light);
+/* ========== FOND SOMBRE ========== */
+.fond-sombre {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);  /* Noir transparent */
+    z-index: 1000;
 }
 
-.empty-state p {
-    font-size: 1.1em;
+.fond-sombre.visible {
+    display: block;
 }
 
-/* ===== RESPONSIVE ===== */
-
-/* TABLETTE */
+/* ========== RESPONSIVE (pour téléphone) ========== */
 @media (max-width: 768px) {
-    .communaute-container {
-        padding: 20px 15px;
-    }
-
-    .section-header h1,
-    .section-header h2 {
-        font-size: 1.5em;
-    }
-
-    .groupes-grid {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
-    }
-
-    .groupe-image {
-        height: 150px;
-    }
-
-    .modal {
-        width: 95%;
-        max-height: 90vh;
-    }
-
-    .modal-body {
-        padding: 15px;
-    }
-
-    .chat-messages {
-        max-height: 300px;
+    /* Sur tablette : 2 colonnes au lieu de 3 */
+    .grille-groupes {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
-/* MOBILE */
 @media (max-width: 480px) {
-    .communaute-container {
-        padding: 15px 10px;
-    }
-
-    .section-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .section-header h1,
-    .section-header h2 {
-        font-size: 1.3em;
-    }
-
-    .groupes-grid {
+    /* Sur téléphone : 1 seule colonne */
+    .grille-groupes {
         grid-template-columns: 1fr;
     }
-
-    .groupe-actions {
-        flex-direction: column;
+    
+    .titre-section h1 {
+        font-size: 2em;
     }
-
-    .groupe-actions .btn {
-        width: 100%;
-    }
-
-    .forum-meta {
-        flex-direction: column;
-        gap: 5px;
-    }
-
-    .modal {
+    
+    .bulle-chat {
         width: 100%;
         max-width: 100%;
         border-radius: 0;
-        max-height: 100vh;
     }
-
-    .modal-header {
-        border-radius: 0;
-    }
-
-    .chat-messages {
-        min-height: 200px;
-        max-height: 250px;
-    }
-
-    .btn {
-        padding: 10px 20px;
-        font-size: 0.95em;
-    }
-}
-
-/* ===== SCROLLBAR PERSONNALISÉE ===== */
-.chat-messages::-webkit-scrollbar,
-.modal-body::-webkit-scrollbar {
-    width: 8px;
-}
-
-.chat-messages::-webkit-scrollbar-track,
-.modal-body::-webkit-scrollbar-track {
-    background: var(--bg-light);
-    border-radius: 10px;
-}
-
-.chat-messages::-webkit-scrollbar-thumb,
-.modal-body::-webkit-scrollbar-thumb {
-    background: var(--primary-color);
-    border-radius: 10px;
-}
-
-.chat-messages::-webkit-scrollbar-thumb:hover,
-.modal-body::-webkit-scrollbar-thumb:hover {
-    background: var(--secondary-color);
-}
-
-/* ===== ANIMATIONS ===== */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.message-item {
-    animation: fadeIn 0.3s ease;
 }

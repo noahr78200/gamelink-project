@@ -1,177 +1,191 @@
 <?php
-// PAGE/COMMUNAUTE.php - Page communauté avec groupes et forums
+/*
+ * ========================================
+ * PAGE COMMUNAUTÉ - VERSION DÉBUTANT
+ * ========================================
+ * 
+ * Cette page affiche :
+ * - Les 6 groupes de jeux (comme des clubs)
+ * - Une bulle de chat pour parler dans un groupe
+ * 
+ */
+
+// ÉTAPE 1 : Démarrer la session
+// (C'est comme se connecter, pour que le site sache qui tu es)
 session_start();
 
-// Protection : Redirection si non connecté
+// ÉTAPE 2 : Vérifier si tu es connecté
+// Si tu n'es pas connecté, retour à la page d'accueil
 if (!isset($_SESSION['user_id'])) {
-    header('Location: ../index.php?login_required=1');
+    header('Location: ../index.php');
     exit;
 }
 
+// ÉTAPE 3 : Se connecter à la base de données
+// (La base de données, c'est comme un grand classeur avec toutes les infos)
 require_once __DIR__ . '/../DATA/DBConfig.php';
 
-$user_id = $_SESSION['user_id'];
-$user_pseudo = $_SESSION['user_pseudo'];
+// ÉTAPE 4 : Récupérer tes informations
+$mon_id = $_SESSION['user_id'];        // Ton numéro d'identification
+$mon_pseudo = $_SESSION['user_pseudo'];  // Ton pseudo
 
-// Récupérer les 6 groupes par défaut
+// ÉTAPE 5 : Récupérer les 6 groupes
+$groupes = []; // On crée un panier vide pour mettre les groupes dedans
+
 try {
-    $stmt = $pdo->query("
-        SELECT c.*, 
-               (SELECT COUNT(*) FROM adhesion WHERE id_communaute = c.id_communaute AND statut = 'actif') as nb_membres,
-               (SELECT COUNT(*) FROM adhesion WHERE id_communaute = c.id_communaute AND id_joueur = $user_id AND statut = 'actif') as is_member
-        FROM communaute c
-        ORDER BY c.id_communaute
-        LIMIT 6
+    // On demande à la base de données : "Donne-moi les 6 groupes"
+    $resultat = $pdo->query("
+        SELECT 
+            id_communaute as id,
+            nom,
+            description,
+            (SELECT COUNT(*) FROM adhesion WHERE id_communaute = communaute.id_communaute) as nb_membres,
+            (SELECT COUNT(*) FROM adhesion WHERE id_communaute = communaute.id_communaute AND id_joueur = $mon_id) as je_suis_membre
+        FROM communaute
+        WHERE id_communaute <= 6
+        ORDER BY id_communaute
     ");
-    $groupes = $stmt->fetchAll();
-} catch (PDOException $e) {
+    
+    // On met les groupes dans notre panier
+    $groupes = $resultat->fetchAll();
+    
+} catch (Exception $erreur) {
+    // Si ça marche pas, on laisse le panier vide
     $groupes = [];
-    error_log("Erreur récupération groupes : " . $e->getMessage());
 }
 
-// Récupérer les derniers sujets de forum
-try {
-    $stmt = $pdo->query("
-        SELECT p.*, j.pseudo, 
-               (SELECT COUNT(*) FROM commentaire WHERE id_publication = p.id_publication) as nb_commentaires
-        FROM publication p
-        JOIN joueur j ON p.id_joueur = j.id_joueur
-        WHERE p.id_communaute IS NULL
-        ORDER BY p.date_creation DESC
-        LIMIT 10
-    ");
-    $forums = $stmt->fetchAll();
-} catch (PDOException $e) {
-    $forums = [];
-    error_log("Erreur récupération forums : " . $e->getMessage());
-}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Communauté | GameLink</title>
+    <title>Communauté - GameLink</title>
+    
+    <!-- Les styles CSS (pour que ce soit joli) -->
     <link rel="stylesheet" href="../CSS/HEADER.css">
     <link rel="stylesheet" href="../CSS/STYLE_COMMUNAUTE.css">
-    <link rel="icon" type="image/svg+xml" href="../ICON/LogoSimple.svg">
 </head>
- <?php  include __DIR__ . '/../INCLUDES/header.php'; 
-    ?>
 <body>
-    <!-- HEADER -->
- 
-    <main class="communaute-container">
+
+    <!-- =================== EN-TÊTE =================== -->
+    <header>
+        <nav class="Menu">
+            <a href="../index.php">
+                <img class="logo" src="../ICON/LogoComplet.svg" alt="GameLink">
+            </a>
+            <a href="ACCUEIL.php">MON ESPACE</a>
+            <a href="COMMUNAUTE.php" class="active">COMMUNAUTÉ</a>
+        </nav>
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <span style="color: white; font-weight: bold;">Bonjour <?= $mon_pseudo ?> !</span>
+            <a href="../INCLUDES/logout.php">
+                <img src="../ICON/iconProfil.svg" alt="Déconnexion" width="40">
+            </a>
+        </div>
+    </header>
+
+    <!-- =================== CONTENU PRINCIPAL =================== -->
+    <main class="page-communaute">
         
-        <!-- SECTION GROUPES -->
-        <section class="groupes-section">
-            <div class="section-header">
-                <h1>🎮 Groupes de Jeux</h1>
-                <p>Rejoins un groupe et discute avec d'autres joueurs passionnés !</p>
-            </div>
+        <!-- TITRE -->
+        <div class="titre-section">
+            <h1>🎮 Groupes de Jeux</h1>
+            <p>Rejoins un groupe pour discuter avec d'autres joueurs !</p>
+        </div>
 
-            <div class="groupes-grid">
-                <?php foreach ($groupes as $groupe): ?>
-                    <div class="groupe-card" data-groupe-id="<?= $groupe['id_communaute'] ?>">
-                        <!-- IMAGE du groupe (à personnaliser) -->
-                        <div class="groupe-image">
-                            <img src="../IMAGES/groupes/groupe_<?= $groupe['id_communaute'] ?>.jpg" 
-                                 alt="<?= htmlspecialchars($groupe['nom']) ?>"
-                                 onerror="this.src='../IMAGES/groupes/default.jpg'">
-                        </div>
-                        
-                        <!-- INFO du groupe -->
-                        <div class="groupe-info">
-                            <h3><?= htmlspecialchars($groupe['nom']) ?></h3>
-                            <p class="groupe-desc"><?= htmlspecialchars($groupe['description']) ?></p>
-                            <div class="groupe-stats">
-                                <span>👥 <?= $groupe['nb_membres'] ?> membres</span>
-                            </div>
-                        </div>
-
-                        <!-- BOUTON -->
-                        <div class="groupe-actions">
-                            <?php if ($groupe['is_member']): ?>
-                                <button class="btn btn-secondary btn-quitter" data-groupe-id="<?= $groupe['id_communaute'] ?>">
-                                    ✓ Membre
-                                </button>
-                                <button class="btn btn-primary btn-ouvrir-chat" data-groupe-id="<?= $groupe['id_communaute'] ?>">
-                                    💬 Ouvrir le chat
-                                </button>
-                            <?php else: ?>
-                                <button class="btn btn-primary btn-rejoindre" data-groupe-id="<?= $groupe['id_communaute'] ?>">
-                                    + Rejoindre
-                                </button>
-                            <?php endif; ?>
-                        </div>
+        <!-- LES 6 GROUPES (comme 6 boîtes) -->
+        <div class="grille-groupes">
+            
+            <?php
+            // Pour chaque groupe, on affiche une carte
+            foreach ($groupes as $groupe):
+            ?>
+            
+                <div class="carte-groupe">
+                    
+                    <!-- IMAGE DU GROUPE (avec un joli dégradé violet si pas d'image) -->
+                    <div class="image-groupe">
+                        <img src="../IMAGES/groupes/groupe_<?= $groupe['id'] ?>.jpg" 
+                             alt="<?= $groupe['nom'] ?>"
+                             onerror="this.style.display='none';">
                     </div>
-                <?php endforeach; ?>
-            </div>
-        </section>
-
-        <!-- SECTION FORUMS -->
-        <section class="forums-section">
-            <div class="section-header">
-                <h2>💬 Forums</h2>
-                <a href="forum_creer.php" class="btn btn-primary">+ Créer un sujet</a>
-            </div>
-
-            <div class="forums-list">
-                <?php if (empty($forums)): ?>
-                    <div class="empty-state">
-                        <p>Aucun sujet pour le moment. Sois le premier à créer un sujet !</p>
+                    
+                    <!-- INFORMATIONS DU GROUPE -->
+                    <div class="info-groupe">
+                        <h3><?= $groupe['nom'] ?></h3>
+                        <p><?= $groupe['description'] ?></p>
+                        <p class="petit-texte">👥 <?= $groupe['nb_membres'] ?> membres</p>
                     </div>
-                <?php else: ?>
-                    <?php foreach ($forums as $forum): ?>
-                        <div class="forum-item">
-                            <div class="forum-content">
-                                <h3><a href="forum_detail.php?id=<?= $forum['id_publication'] ?>"><?= htmlspecialchars($forum['titre']) ?></a></h3>
-                                <p class="forum-preview"><?= htmlspecialchars(substr($forum['contenu'], 0, 150)) ?>...</p>
-                                <div class="forum-meta">
-                                    <span class="forum-author">Par <?= htmlspecialchars($forum['pseudo']) ?></span>
-                                    <span class="forum-date"><?= date('d/m/Y à H:i', strtotime($forum['date_creation'])) ?></span>
-                                    <span class="forum-comments">💬 <?= $forum['nb_commentaires'] ?> réponses</span>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </div>
-        </section>
-
+                    
+                    <!-- BOUTONS -->
+                    <div class="boutons-groupe">
+                        <?php if ($groupe['je_suis_membre'] > 0): ?>
+                            <!-- Si je suis membre : afficher "Ouvrir le chat" -->
+                            <button class="bouton bleu ouvrir-chat" 
+                                    data-groupe-id="<?= $groupe['id'] ?>"
+                                    data-groupe-nom="<?= $groupe['nom'] ?>">
+                                💬 Ouvrir le chat
+                            </button>
+                            <button class="bouton rouge quitter-groupe" 
+                                    data-groupe-id="<?= $groupe['id'] ?>">
+                                Quitter
+                            </button>
+                        <?php else: ?>
+                            <!-- Si je ne suis pas membre : afficher "Rejoindre" -->
+                            <button class="bouton vert rejoindre-groupe" 
+                                    data-groupe-id="<?= $groupe['id'] ?>">
+                                + Rejoindre
+                            </button>
+                        <?php endif; ?>
+                    </div>
+                    
+                </div>
+                
+            <?php endforeach; ?>
+            
+        </div>
+        
     </main>
 
-    <!-- MODAL CHAT (Bulle qui s'ouvre) -->
-    <div id="chatModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="chatGroupeNom">Nom du groupe</h3>
-                <button class="btn-close" onclick="fermerChat()">×</button>
+    <!-- =================== BULLE DE CHAT (cachée au début) =================== -->
+    <div id="bulle-chat" class="bulle-chat">
+        <div class="contenu-bulle">
+            
+            <!-- EN-TÊTE DE LA BULLE -->
+            <div class="haut-bulle">
+                <h3 id="nom-groupe-chat">Nom du groupe</h3>
+                <button class="bouton-fermer" onclick="fermerChat()">✖</button>
             </div>
             
-            <div class="modal-body">
-                <!-- Messages du groupe -->
-                <div id="chatMessages" class="chat-messages">
-                    <div class="loading">Chargement des messages...</div>
-                </div>
-
-                <!-- Formulaire d'envoi -->
-                <form id="chatForm" class="chat-form">
-                    <input type="hidden" id="chatGroupeId" name="groupe_id">
-                    <textarea id="chatInput" name="message" placeholder="Écris ton message..." rows="3" required></textarea>
-                    <button type="submit" class="btn btn-primary">Envoyer</button>
-                </form>
+            <!-- MESSAGES -->
+            <div id="zone-messages" class="zone-messages">
+                <p class="texte-centre">Chargement des messages...</p>
             </div>
-
-            <div class="modal-footer">
-                <button class="btn btn-danger btn-quitter-modal" id="btnQuitterGroupe">Quitter le groupe</button>
+            
+            <!-- FORMULAIRE POUR ENVOYER UN MESSAGE -->
+            <form id="formulaire-message" class="formulaire-message">
+                <input type="hidden" id="id-groupe-actuel">
+                <textarea id="mon-message" 
+                          placeholder="Écris ton message ici..." 
+                          rows="3" 
+                          required></textarea>
+                <button type="submit" class="bouton bleu">Envoyer</button>
+            </form>
+            
+            <!-- BOUTON QUITTER LE GROUPE -->
+            <div class="bas-bulle">
+                <button class="bouton rouge quitter-depuis-chat">Quitter ce groupe</button>
             </div>
+            
         </div>
     </div>
 
-    <!-- OVERLAY (fond sombre derrière le modal) -->
-    <div id="modalOverlay" class="modal-overlay" onclick="fermerChat()"></div>
+    <!-- FOND SOMBRE DERRIÈRE LA BULLE -->
+    <div id="fond-sombre" class="fond-sombre" onclick="fermerChat()"></div>
 
+    <!-- LE JAVASCRIPT (pour faire marcher les boutons) -->
     <script src="../JS/COMMUNAUTE.js"></script>
+
 </body>
 </html>
