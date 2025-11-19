@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_id'])) {
     header('Location: ../index.php');
     exit;
 }
-
+require_once __DIR__ . '/../INCLUDES/check_admin.php';
 require_once __DIR__ . '/../DATA/DBConfig.php';
 
 $mon_id = $_SESSION['user_id'];
@@ -70,12 +70,12 @@ try {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Communaute - GameLink</title>
-    <link rel="stylesheet" href="/CSS/HEADER.css">
-    <link rel="stylesheet" href="/CSS/STYLE_COMMUNAUTE.css">
+    <link rel="stylesheet" href="../CSS/HEADER.css">
+    <link rel="stylesheet" href="../CSS/STYLE_COMMUNAUTE.css">
     <link rel="icon" type="image/svg+xml" href="/ICON/LogoSimple.svg">
 </head>
  
-        <?php include_once __DIR__ . '/../INCLUDES/HEADER.php'; ?>
+<?php include_once __DIR__ . '/../INCLUDES/HEADER.php'; ?>
     
 <body>
 
