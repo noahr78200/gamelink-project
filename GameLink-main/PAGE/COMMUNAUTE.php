@@ -66,11 +66,11 @@ try {
 
     <link rel="icon" type="image/svg+xml" href="../ICON/LogoSimple.svg">
 </head>
-
-<body>
-    <header>
+ <header>
     <?php include_once __DIR__ . '/../INCLUDES/HEADER.php'; ?>
 </header>
+<body>
+   
 
     <!-- =================== EN-TÊTE =================== -->
    
