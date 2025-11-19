@@ -61,8 +61,6 @@ try {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Communauté - GameLink</title>
-    
-    <!-- Les styles CSS (pour que ce soit joli) -->
     <link rel="stylesheet" href="../CSS/HEADER.css" type="text/css">
     <link rel="stylesheet" href="../CSS/STYLE_COMMUNAUTE.css" type="text/css">
 </head>
