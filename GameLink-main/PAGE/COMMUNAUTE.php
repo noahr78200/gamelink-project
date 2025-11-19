@@ -20,6 +20,8 @@ if (!isset($_SESSION['user_id'])) {
     header('Location: ../index.php');
     exit;
 }
+require_once __DIR__ . '/../INCLUDES/check_admin.php';
+require_once __DIR__ . '/../INCLUDES/track.php';
 
 // ÉTAPE 3 : Se connecter à la base de données
 // (La base de données, c'est comme un grand classeur avec toutes les infos)
