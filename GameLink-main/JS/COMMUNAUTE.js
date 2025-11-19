@@ -1,35 +1,30 @@
-// ========================================
-// JAVASCRIPT PAGE COMMUNAUTE
-// Version super simple pour debutant
-// ========================================
+// COMMUNAUTE.js - COMPLET (Groupes + Forum)
 
-// Variables globales (boites pour stocker des infos)
+// Variables globales
 let groupeActuel = null;
 let minuteur = null;
+let discussionActuelle = null;
 
 // Quand la page est chargee
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Page chargee !');
     
-    // Trouver tous les boutons Rejoindre
+    // BOUTONS GROUPES
     let boutonsRejoindre = document.querySelectorAll('.rejoindre-groupe');
     for (let i = 0; i < boutonsRejoindre.length; i++) {
         boutonsRejoindre[i].addEventListener('click', rejoindreGroupe);
     }
     
-    // Trouver tous les boutons Ouvrir le chat
     let boutonsChat = document.querySelectorAll('.ouvrir-chat');
     for (let i = 0; i < boutonsChat.length; i++) {
         boutonsChat[i].addEventListener('click', ouvrirChat);
     }
     
-    // Trouver tous les boutons Quitter
     let boutonsQuitter = document.querySelectorAll('.quitter-groupe');
     for (let i = 0; i < boutonsQuitter.length; i++) {
         boutonsQuitter[i].addEventListener('click', quitterGroupe);
     }
     
-    // Bouton Quitter dans la bulle
     let boutonQuitterChat = document.querySelector('.quitter-depuis-chat');
     if (boutonQuitterChat) {
         boutonQuitterChat.addEventListener('click', function() {
@@ -39,14 +34,60 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Formulaire pour envoyer un message
+    // FORMULAIRE CHAT GROUPES
     let formulaire = document.getElementById('formulaire-message');
     if (formulaire) {
         formulaire.addEventListener('submit', envoyerMessage);
     }
+    
+    // FORMULAIRE CREER DISCUSSION
+    let formCreer = document.getElementById('form-creer-discussion');
+    if (formCreer) {
+        formCreer.addEventListener('submit', creerDiscussion);
+    }
+    
+    // FORMULAIRE REPONDRE DISCUSSION
+    let formRepondre = document.getElementById('form-repondre-discussion');
+    if (formRepondre) {
+        formRepondre.addEventListener('submit', repondreDiscussion);
+    }
+    
+    // FERMER POPUP SI CLIC SUR FOND
+    let fondSombre = document.getElementById('fond-sombre');
+    if (fondSombre) {
+        fondSombre.addEventListener('click', function() {
+            fermerChat();
+            fermerPopupCreerDiscussion();
+            fermerDiscussion();
+        });
+    }
 });
 
-// FONCTION : Rejoindre un groupe
+// ========== ONGLETS ==========
+function afficherOnglet(nomOnglet) {
+    // Cacher tous les onglets
+    let tousOnglets = document.querySelectorAll('.contenu-onglet');
+    for (let i = 0; i < tousOnglets.length; i++) {
+        tousOnglets[i].classList.remove('actif');
+    }
+    
+    // Desactiver tous les boutons
+    let tousBoutons = document.querySelectorAll('.onglet');
+    for (let i = 0; i < tousBoutons.length; i++) {
+        tousBoutons[i].classList.remove('actif');
+    }
+    
+    // Afficher l'onglet choisi
+    if (nomOnglet === 'groupes') {
+        document.getElementById('onglet-groupes').classList.add('actif');
+        tousBoutons[0].classList.add('actif');
+    } else if (nomOnglet === 'forum') {
+        document.getElementById('onglet-forum').classList.add('actif');
+        tousBoutons[1].classList.add('actif');
+    }
+}
+
+// ========== GROUPES (EXISTANT) ==========
 function rejoindreGroupe(evenement) {
     let bouton = evenement.target;
     let idGroupe = bouton.dataset.groupeId;
@@ -65,10 +106,7 @@ function rejoindreGroupe(evenement) {
         return reponse.json();
     })
     .then(function(data) {
-        console.log('Reponse:', data);
-        
         if (data.success) {
-            console.log('Groupe rejoint !');
             location.reload();
         } else {
             alert('Erreur : ' + data.message);
@@ -84,7 +122,6 @@ function rejoindreGroupe(evenement) {
     });
 }
 
-// FONCTION : Quitter un groupe
 function quitterGroupe(evenement) {
     let bouton = evenement.target;
     let idGroupe = bouton.dataset.groupeId;
@@ -100,15 +137,10 @@ function quitterGroupe(evenement) {
         return reponse.json();
     })
     .then(function(data) {
-        console.log('Reponse:', data);
-        
         if (data.success) {
-            console.log('Groupe quitte !');
-            
             if (groupeActuel === idGroupe) {
                 fermerChat();
             }
-            
             location.reload();
         } else {
             alert('Erreur : ' + data.message);
@@ -120,7 +152,6 @@ function quitterGroupe(evenement) {
     });
 }
 
-// FONCTION : Ouvrir le chat
 function ouvrirChat(evenement) {
     let bouton = evenement.target;
     let idGroupe = bouton.dataset.groupeId;
@@ -146,10 +177,7 @@ function ouvrirChat(evenement) {
     }, 5000);
 }
 
-// FONCTION : Fermer le chat
 function fermerChat() {
-    console.log('Fermeture chat');
-    
     document.getElementById('bulle-chat').classList.remove('ouverte');
     document.getElementById('fond-sombre').classList.remove('visible');
     
@@ -161,10 +189,7 @@ function fermerChat() {
     groupeActuel = null;
 }
 
-// FONCTION : Charger les messages
 function chargerMessages(idGroupe) {
-    console.log('Chargement messages groupe', idGroupe);
-    
     let zoneMessages = document.getElementById('zone-messages');
     
     fetch('/INCLUDES/group_messages.php?groupe_id=' + idGroupe)
@@ -175,8 +200,6 @@ function chargerMessages(idGroupe) {
             return reponse.json();
         })
         .then(function(data) {
-            console.log('Messages recus:', data);
-            
             if (data.success) {
                 afficherMessages(data.messages);
             } else {
@@ -189,12 +212,11 @@ function chargerMessages(idGroupe) {
         });
 }
 
-// FONCTION : Afficher les messages
 function afficherMessages(messages) {
     let zoneMessages = document.getElementById('zone-messages');
     
     if (!messages || messages.length === 0) {
-        zoneMessages.innerHTML = '<p class="texte-centre">Aucun message. Sois le premier !</p>';
+        zoneMessages.innerHTML = '<p class="texte-centre">Aucun message.</p>';
         return;
     }
     
@@ -214,7 +236,6 @@ function afficherMessages(messages) {
     zoneMessages.scrollTop = zoneMessages.scrollHeight;
 }
 
-// FONCTION : Envoyer un message
 function envoyerMessage(evenement) {
     evenement.preventDefault();
     
@@ -223,11 +244,9 @@ function envoyerMessage(evenement) {
     let message = champMessage.value.trim();
     
     if (!message) {
-        alert('Ecris un message avant d\'envoyer !');
+        alert('Ecris un message !');
         return;
     }
-    
-    console.log('Envoi message:', message);
     
     let bouton = evenement.target.querySelector('button[type="submit"]');
     bouton.disabled = true;
@@ -245,10 +264,7 @@ function envoyerMessage(evenement) {
         return reponse.json();
     })
     .then(function(data) {
-        console.log('Reponse:', data);
-        
         if (data.success) {
-            console.log('Message envoye !');
             champMessage.value = '';
             chargerMessages(idGroupe);
         } else {
@@ -266,16 +282,240 @@ function envoyerMessage(evenement) {
     });
 }
 
-// FONCTION : Nettoyer le texte (securite)
+// ========== FORUM ==========
+function ouvrirPopupCreerDiscussion() {
+    document.getElementById('popup-creer-discussion').classList.add('visible');
+    document.getElementById('fond-sombre').classList.add('visible');
+}
+
+function fermerPopupCreerDiscussion() {
+    document.getElementById('popup-creer-discussion').classList.remove('visible');
+    document.getElementById('fond-sombre').classList.remove('visible');
+    document.getElementById('form-creer-discussion').reset();
+}
+
+function creerDiscussion(evenement) {
+    evenement.preventDefault();
+    
+    let titre = document.getElementById('discussion-titre').value.trim();
+    let contenu = document.getElementById('discussion-contenu').value.trim();
+    
+    if (!titre || !contenu) {
+        alert('Remplis tous les champs !');
+        return;
+    }
+    
+    let bouton = evenement.target.querySelector('button[type="submit"]');
+    bouton.disabled = true;
+    bouton.textContent = 'Publication...';
+    
+    fetch('/INCLUDES/forum_create.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'titre=' + encodeURIComponent(titre) + '&contenu=' + encodeURIComponent(contenu)
+    })
+    .then(function(reponse) {
+        return reponse.json();
+    })
+    .then(function(data) {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Erreur : ' + data.message);
+            bouton.disabled = false;
+            bouton.textContent = 'Publier';
+        }
+    })
+    .catch(function(erreur) {
+        console.error('Erreur:', erreur);
+        alert('Erreur de connexion');
+        bouton.disabled = false;
+        bouton.textContent = 'Publier';
+    });
+}
+
+function ouvrirDiscussion(idDiscussion) {
+    discussionActuelle = idDiscussion;
+    
+    document.getElementById('popup-voir-discussion').classList.add('visible');
+    document.getElementById('fond-sombre').classList.add('visible');
+    
+    chargerDiscussion(idDiscussion);
+}
+
+function fermerDiscussion() {
+    document.getElementById('popup-voir-discussion').classList.remove('visible');
+    document.getElementById('fond-sombre').classList.remove('visible');
+    document.getElementById('form-repondre-discussion').reset();
+    discussionActuelle = null;
+}
+
+function chargerDiscussion(idDiscussion) {
+    fetch('/INCLUDES/forum_get.php?discussion_id=' + idDiscussion)
+        .then(function(reponse) {
+            return reponse.json();
+        })
+        .then(function(data) {
+            if (data.success) {
+                afficherDiscussion(data.discussion, data.reponses);
+            } else {
+                alert('Erreur : ' + data.message);
+            }
+        })
+        .catch(function(erreur) {
+            console.error('Erreur:', erreur);
+            alert('Erreur de chargement');
+        });
+}
+
+function afficherDiscussion(discussion, reponses) {
+    document.getElementById('discussion-titre-complet').textContent = discussion.titre;
+    
+    let htmlPost = '<div class="post-header">';
+    htmlPost += '<span class="post-auteur">' + nettoyerTexte(discussion.auteur) + '</span>';
+    htmlPost += '<span class="post-date">' + discussion.date + '</span>';
+    htmlPost += '</div>';
+    htmlPost += '<div class="post-contenu">' + nettoyerTexte(discussion.contenu) + '</div>';
+    
+    if (discussion.est_auteur) {
+        htmlPost += '<div class="post-actions">';
+        htmlPost += '<button class="bouton rouge" onclick="supprimerDiscussion(' + discussion.id + ')">Supprimer</button>';
+        htmlPost += '</div>';
+    }
+    
+    document.getElementById('discussion-post-original').innerHTML = htmlPost;
+    
+    let htmlReponses = '';
+    if (reponses.length === 0) {
+        htmlReponses = '<p class="texte-centre">Aucune reponse. Sois le premier !</p>';
+    } else {
+        for (let i = 0; i < reponses.length; i++) {
+            let rep = reponses[i];
+            htmlReponses += '<div class="reponse">';
+            htmlReponses += '<div class="reponse-header">';
+            htmlReponses += '<span class="reponse-auteur">' + nettoyerTexte(rep.auteur) + '</span>';
+            htmlReponses += '<span class="reponse-date">' + rep.date + '</span>';
+            htmlReponses += '</div>';
+            htmlReponses += '<div class="reponse-contenu">' + nettoyerTexte(rep.contenu) + '</div>';
+            
+            if (rep.est_auteur) {
+                htmlReponses += '<div class="reponse-actions">';
+                htmlReponses += '<button class="bouton rouge" onclick="supprimerReponse(' + rep.id + ')">Supprimer</button>';
+                htmlReponses += '</div>';
+            }
+            
+            htmlReponses += '</div>';
+        }
+    }
+    
+    document.getElementById('discussion-reponses').innerHTML = htmlReponses;
+}
+
+function repondreDiscussion(evenement) {
+    evenement.preventDefault();
+    
+    let contenu = document.getElementById('reponse-contenu').value.trim();
+    
+    if (!contenu) {
+        alert('Ecris une reponse !');
+        return;
+    }
+    
+    let bouton = evenement.target.querySelector('button[type="submit"]');
+    bouton.disabled = true;
+    bouton.textContent = 'Envoi...';
+    
+    fetch('/INCLUDES/forum_reply.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'discussion_id=' + discussionActuelle + '&contenu=' + encodeURIComponent(contenu)
+    })
+    .then(function(reponse) {
+        return reponse.json();
+    })
+    .then(function(data) {
+        if (data.success) {
+            document.getElementById('reponse-contenu').value = '';
+            chargerDiscussion(discussionActuelle);
+        } else {
+            alert('Erreur : ' + data.message);
+        }
+        
+        bouton.disabled = false;
+        bouton.textContent = 'Repondre';
+    })
+    .catch(function(erreur) {
+        console.error('Erreur:', erreur);
+        alert('Erreur d\'envoi');
+        bouton.disabled = false;
+        bouton.textContent = 'Repondre';
+    });
+}
+
+function supprimerDiscussion(idDiscussion) {
+    if (!confirm('Supprimer cette discussion ?')) {
+        return;
+    }
+    
+    fetch('/INCLUDES/forum_delete.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'discussion_id=' + idDiscussion
+    })
+    .then(function(reponse) {
+        return reponse.json();
+    })
+    .then(function(data) {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Erreur : ' + data.message);
+        }
+    })
+    .catch(function(erreur) {
+        console.error('Erreur:', erreur);
+        alert('Erreur');
+    });
+}
+
+function supprimerReponse(idReponse) {
+    if (!confirm('Supprimer cette reponse ?')) {
+        return;
+    }
+    
+    fetch('/INCLUDES/forum_delete_reply.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'reponse_id=' + idReponse
+    })
+    .then(function(reponse) {
+        return reponse.json();
+    })
+    .then(function(data) {
+        if (data.success) {
+            chargerDiscussion(discussionActuelle);
+        } else {
+            alert('Erreur : ' + data.message);
+        }
+    })
+    .catch(function(erreur) {
+        console.error('Erreur:', erreur);
+        alert('Erreur');
+    });
+}
+
+// ========== UTILITAIRE ==========
 function nettoyerTexte(texte) {
     let div = document.createElement('div');
     div.textContent = texte;
     return div.innerHTML;
 }
 
-// Fermer avec la touche Echap
+// Fermer avec Echap
 document.addEventListener('keydown', function(evenement) {
     if (evenement.key === 'Escape') {
         fermerChat();
+        fermerPopupCreerDiscussion();
+        fermerDiscussion();
     }
 });
