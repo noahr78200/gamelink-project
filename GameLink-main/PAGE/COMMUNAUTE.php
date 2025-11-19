@@ -61,10 +61,10 @@ try {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Communauté - GameLink</title>
-   <link rel="stylesheet" href="/CSS/HEADER.css">
-<link rel="stylesheet" href="/CSS/STYLE_COMMUNAUTE.css">
+     <link rel="stylesheet" href="/CSS/HEADER.css">
+    <link rel="stylesheet" href="/CSS/STYLE_COMMUNAUTE.css">
 
-<link rel="icon" type="image/svg+xml" href="../ICON/LogoSimple.svg">
+    <link rel="icon" type="image/svg+xml" href="../ICON/LogoSimple.svg">
 </head>
 
 <body>
@@ -174,7 +174,7 @@ try {
     <div id="fond-sombre" class="fond-sombre" onclick="fermerChat()"></div>
 
     <!-- LE JAVASCRIPT (pour faire marcher les boutons) -->
-    <script src="../JS/COMMUNAUTE.js"></script>
+    <!-- <script src="../JS/COMMUNAUTE.js"></script> -->
 
 </body>
 </html>
