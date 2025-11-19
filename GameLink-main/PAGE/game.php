@@ -87,7 +87,10 @@ if (!empty($game['platforms'])) {
 <head>
     <meta charset="utf-8">
     <title><?php echo htmlspecialchars($name); ?> | GameLink</title>
+    <link rel="icon" type="image/svg+xml" href="../ICON/LogoSimple.svg">
+     <link rel="stylesheet" href="../CSS/HEADER.css">
     <link rel="stylesheet" href="../CSS/STYLE_GAME.css">
+
 </head>
  <?php 
     // Inclure le header (qui affichera ou non le lien ADMIN)
