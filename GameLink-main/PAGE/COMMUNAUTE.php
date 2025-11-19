@@ -62,12 +62,13 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Communauté - GameLink</title>
     <link rel="stylesheet" href="../CSS/HEADER.css" type="text/css">
-    <link rel="stylesheet" href="/../CSS/STYLE_COMMUNAUTE.css" type="text/css">
+    <link rel="stylesheet" href="../CSS/STYLE_COMMUNAUTE.css" type="text/css">
 </head>
-<header>
+
+<body>
+    <header>
     <?php include_once __DIR__ . '/../INCLUDES/HEADER.php'; ?>
 </header>
-<body>
 
     <!-- =================== EN-TÊTE =================== -->
    
