@@ -74,11 +74,12 @@ try {
     <link rel="stylesheet" href="/CSS/STYLE_COMMUNAUTE.css">
     <link rel="icon" type="image/svg+xml" href="/ICON/LogoSimple.svg">
 </head>
+ 
+        <?php include_once __DIR__ . '/../INCLUDES/HEADER.php'; ?>
+    
 <body>
 
-    <header>
-        <?php include_once __DIR__ . '/../INCLUDES/HEADER.php'; ?>
-    </header>
+   
 
     <!-- ONGLETS -->
     <div class="onglets-container">
