@@ -75,12 +75,18 @@ try {
     <link rel="icon" type="image/svg+xml" href="/ICON/LogoSimple.svg">
 </head>
  
-<?php include_once __DIR__ . '/../INCLUDES/HEADER.php'; ?>
+
     
 <body>
 
    
+ <?php 
+    // Inclure le header (qui affichera ou non le lien ADMIN) .
+    include __DIR__ . '/../INCLUDES/header.php'; 
+    ?>
 
+
+<main>
     <!-- ONGLETS -->
     <div class="onglets-container">
         <button class="onglet actif" onclick="afficherOnglet('groupes')">
@@ -254,6 +260,6 @@ try {
     <div id="fond-sombre" class="fond-sombre"></div>
 
     <script src="/JS/COMMUNAUTE.js"></script>
-
+</main>
 </body>
 </html>
