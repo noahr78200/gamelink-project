@@ -63,28 +63,13 @@ try {
     <title>Communauté - GameLink</title>
     
     <!-- Les styles CSS (pour que ce soit joli) -->
-    <link rel="stylesheet" href="../CSS/HEADER.css">
-    <link rel="stylesheet" href="../CSS/STYLE_COMMUNAUTE.css">
+    <link rel="stylesheet" href="../CSS/HEADER.css" type="text/css">
+    <link rel="stylesheet" href="../CSS/STYLE_COMMUNAUTE.css" type="text/css">
 </head>
 <body>
 
     <!-- =================== EN-TÊTE =================== -->
-    <header>
-        <nav class="Menu">
-            <a href="../index.php">
-                <img class="logo" src="../ICON/LogoComplet.svg" alt="GameLink">
-            </a>
-            <a href="ACCUEIL.php">MON ESPACE</a>
-            <a href="COMMUNAUTE.php" class="active">COMMUNAUTÉ</a>
-        </nav>
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <span style="color: white; font-weight: bold;">Bonjour <?= $mon_pseudo ?> !</span>
-            <a href="../INCLUDES/logout.php">
-                <img src="../ICON/iconProfil.svg" alt="Déconnexion" width="40">
-            </a>
-        </div>
-    </header>
-
+    <?php include __DIR__ . '/../INCLUDES/HEADER.php'; ?>
     <!-- =================== CONTENU PRINCIPAL =================== -->
     <main class="page-communaute">
         
