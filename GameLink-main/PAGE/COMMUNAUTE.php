@@ -58,23 +58,8 @@ try {
 </head>
 <body>
     <!-- HEADER -->
-    <header>
-        <nav class="Menu">
-            <a href="../index.php">
-                <img class="logo" src="../ICON/LogoComplet.svg" alt="Logo GameLink">
-            </a>
-            <a href="ACCUEIL.php">MON ESPACE</a>
-            <a href="RECHERCHE.php">RECHERCHE</a>
-            <a href="COMMUNAUTE.php" class="active">COMMUNAUTÉ</a>
-        </nav>
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <span style="color: white; font-weight: bold;"><?= htmlspecialchars($user_pseudo) ?></span>
-            <a href="../INCLUDES/logout.php" title="Se déconnecter">
-                <img src="../ICON/iconProfil.svg" alt="Profil" width="40">
-            </a>
-        </div>
-    </header>
-
+  <?php  include __DIR__ . '/../INCLUDES/header.php'; 
+    ?>
     <main class="communaute-container">
         
         <!-- SECTION GROUPES -->
