@@ -73,7 +73,7 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Communaute - GameLink</title>
     <link rel="stylesheet" href="../CSS/HEADER.css">
-    <link rel="stylesheet" href="../CSS/COMMUNAUTE.css">
+    <link rel="stylesheet" href="../CSS/STYLE_COMMUNAUTE.css">
     <link rel="icon" type="image/svg+xml" href="/ICON/LogoSimple.svg">
 </head>
  
