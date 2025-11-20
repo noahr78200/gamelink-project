@@ -250,6 +250,8 @@
     height: 200%;
     background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
     animation: rotation 20s linear infinite;
+    z-index: 0; /* EN-DESSOUS du contenu ! */
+    pointer-events: none; /* Ne bloque pas les clics ! */
 }
 
 @keyframes rotation {
@@ -260,9 +262,7 @@
 .titre-section h1 {
     font-size: 3.2em;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    background-clip: text;
     -webkit-background-clip: text;
-    color: transparent;
     -webkit-text-fill-color: transparent;
     margin-bottom: 15px;
     font-weight: 900;
@@ -279,6 +279,13 @@
     position: relative;
     z-index: 1;
     line-height: 1.6;
+}
+
+/* S'assurer que les boutons dans titre-section sont cliquables */
+.titre-section .bouton {
+    position: relative;
+    z-index: 2; /* AU-DESSUS de tout dans titre-section ! */
+    pointer-events: auto; /* Toujours cliquable ! */
 }
 
 /* ========== GROUPES ========== */
