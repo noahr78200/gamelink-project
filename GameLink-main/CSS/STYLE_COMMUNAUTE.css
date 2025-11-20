@@ -81,6 +81,8 @@ main {
 .container-avec-sidebar {
     display: flex;
     gap: 35px;
+    max-width: 1600px;
+    margin: 0 auto;
 }
 
 .contenu-principal {
@@ -278,7 +280,6 @@ main {
 .titre-section h1 {
     font-size: 3em;
     background: linear-gradient(135deg, var(--violet-principal) 0%, var(--violet-fonce) 100%);
-    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 15px;
@@ -727,8 +728,9 @@ main {
 /* ========== CHAT BULLE ========== */
 .bulle-chat {
     position: fixed;
-    bottom: 30px;
-    right: 30px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 420px;
     max-height: 650px;
     background: linear-gradient(145deg, #1e2433 0%, #1a1f2e 100%);
@@ -742,7 +744,18 @@ main {
 
 .bulle-chat.ouverte {
     display: flex;
-    animation: slideUp 0.4s ease;
+    animation: zoomIn 0.4s ease;
+}
+
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
 }
 
 .contenu-bulle {
@@ -908,8 +921,7 @@ main {
 
     .bulle-chat {
         width: calc(100% - 30px);
-        right: 15px;
-        bottom: 15px;
+        max-width: 420px;
     }
 
     .onglets-container {
