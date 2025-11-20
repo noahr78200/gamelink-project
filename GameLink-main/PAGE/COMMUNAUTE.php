@@ -202,7 +202,7 @@ try {
                         <?php foreach ($groupes as $groupe): ?>
                             <div class="carte-groupe">
                                 <div class="image-groupe">
-                                    <img src="../ICON/fifa.jpg<?= $groupe['id'] ?>.jpg" 
+                                    <img src="../ICON/groupe/groupe_<?= $groupe['id'] ?>.jpg" 
                                          alt="<?= htmlspecialchars($groupe['nom']) ?>"
                                          onerror="this.style.display='none';">
                                 </div>
