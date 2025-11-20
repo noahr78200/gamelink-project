@@ -81,7 +81,7 @@ main {
     display: flex;
     gap: 40px;
     max-width: 1600px;
-    margin: 0 auto; /* ← CENTRE TOUT ! */
+    margin: 100px; /* ← CENTRE TOUT ! */
     justify-content: center; /* ← CENTRE AUSSI ! */
 }
 
