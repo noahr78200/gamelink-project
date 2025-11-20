@@ -179,10 +179,10 @@ try {
     <!-- ONGLETS -->
     <div class="onglets-container">
         <button class="onglet actif" onclick="afficherOnglet('groupes')">
-            &#128188; GROUPES
+             GROUPES
         </button>
         <button class="onglet" onclick="afficherOnglet('forum')">
-            &#128172; FORUM
+             FORUM
         </button>
     </div>
 
@@ -194,7 +194,7 @@ try {
             <div class="contenu-principal">
                 <div class="page-communaute">
                     <div class="titre-section">
-                        <h1>&#127918; Groupes de Jeux</h1>
+                        <h1> Groupes de Jeux</h1>
                         <p>Rejoins un groupe pour discuter avec d'autres joueurs !</p>
                     </div>
 
@@ -313,7 +313,7 @@ try {
             <div class="contenu-principal">
                 <div class="page-forum">
                     <div class="titre-section">
-                        <h1>&#128172; Forum de Discussion</h1>
+                        <h1> Forum de Discussion</h1>
                         <p>Partage tes idees avec la communaute !</p>
                         <button class="bouton bleu" onclick="ouvrirPopupCreerDiscussion()">
                             &#10010; Creer une discussion
@@ -323,7 +323,7 @@ try {
                     <div class="liste-discussions">
                         <?php if (empty($discussions)): ?>
                             <div class="aucune-discussion">
-                                <p>&#128269; Aucune discussion pour le moment.</p>
+                                <p>Aucune discussion pour le moment.</p>
                                 <p>Sois le premier a en creer une !</p>
                             </div>
                         <?php else: ?>
@@ -387,7 +387,7 @@ try {
 
                 <!-- ACTIVITÉ RÉCENTE -->
                 <div class="sidebar-widget">
-                    <div class="widget-titre">📅 Activité Récente</div>
+                    <div class="widget-titre"> Activité Récente</div>
                     <?php if (empty($activites)): ?>
                         <p class="sidebar-vide">Aucune activité récente.</p>
                     <?php else: ?>
