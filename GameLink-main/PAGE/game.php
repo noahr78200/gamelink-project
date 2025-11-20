@@ -1,247 +1,146 @@
 <?php
-// On démarre la session pour savoir qui est connecté
 session_start();
 
-
-// On inclut le fichier qui contient la connexion à la base de données
+// Connexion BDD
 require __DIR__ . '/../DATA/DBConfig.php';
 require_once __DIR__ . '/../INCLUDES/track.php';
 require_once __DIR__ . '/../INCLUDES/check_admin.php';
 
+// On inclut TON fichier igdb actuel sans rien modifier
+require __DIR__ . '/../API/igdb.php';
 
+// Fonction sécuriser texte
+function h($x) { return htmlspecialchars($x, ENT_QUOTES, 'UTF-8'); }
 
-// Connexion à la base avec PDO (comme en cours)
-try {
-    $pdo = new PDO($dsn, $user, $pass, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-    ]);
-} catch (Exception $e) {
-    die("Erreur de base de données");
+// ID du jeu (ID IGDB)
+if (!isset($_GET['id'])) {
+    header("Location: ../index.php");
+    exit;
 }
+$gameId = (int)$_GET['id'];
 
-// On récupère l'id du jeu dans l'URL : game.php?id=1 par exemple
-if (isset($_GET['id'])) {
-    $id_jeu = (int)$_GET['id'];
-} else {
-    // Si pas d'id, on retourne à l'accueil
+// Récupère le jeu depuis TON igdb.php
+$game = getGameById($gameId); // ⚠️ Ton fichier utilise sûrement getGameById()
+if (!$game) {
     header("Location: ../index.php");
     exit;
 }
 
-// On regarde si un joueur est connecté
-$id_joueur_connecte = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : null;
+// Infos importantes
+$title  = $game['name'] ?? "Sans titre";
+$cover  = isset($game['cover']['url']) ? $game['cover']['url'] : "../IMG/placeholder.jpg";
+$genres = isset($game['genres']) ? implode(", ", array_column($game['genres'], 'name')) : "Inconnu";
+$summary = $game['summary'] ?? "Aucune description";
 
-// ---------------------------------------------------------------------
-// 1) TRAITER LES FORMULAIRES (NOTE + COMMENTAIRE)
-// ---------------------------------------------------------------------
+// Joueur connecté
+$userId = $_SESSION['user_id'] ?? null;
 
-// Si quelqu'un envoie une note (formulaire)
+// Connexion PDO
+$pdo = new PDO($dsn, $user, $pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+
+// -----------------------------------------------------
+// 1) SAUVEGARDE DES NOTES
+// -----------------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rating'])) {
-
-    // Il faut être connecté pour noter
-    if ($id_joueur_connecte === null) {
+    if (!$userId) {
         header("Location: AUTH.php");
         exit;
     }
 
-    // On récupère la note choisie (1 à 5)
-    $note = (int)$_POST['rating'];
-    if ($note < 1) $note = 1;
-    if ($note > 5) $note = 5;
+    $rating = max(1, min(5, (int)$_POST['rating']));
+    $now = date("Y-m-d H:i:s");
 
-    // On regarde si ce joueur a déjà mis un avis sur ce jeu
-    $sql = "SELECT * FROM avis WHERE id_joueur = :id_joueur AND id_jeu = :id_jeu";
+    $sql = "INSERT INTO avis (id_joueur, id_jeu, valeur, date_notation)
+            VALUES (:u, :g, :v, :d)
+            ON DUPLICATE KEY UPDATE valeur = :v, date_notation = :d";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
-        ':id_joueur' => $id_joueur_connecte,
-        ':id_jeu'    => $id_jeu
+        ':u' => $userId,
+        ':g' => $gameId,
+        ':v' => $rating,
+        ':d' => $now
     ]);
-    $avis_existant = $stmt->fetch();
 
-    $date_maintenant = date("Y-m-d H:i:s");
-
-    if ($avis_existant) {
-        // Il a déjà un avis -> on met à jour la note
-        $sql = "UPDATE avis
-                SET valeur = :valeur, date_notation = :date_notation
-                WHERE id_joueur = :id_joueur AND id_jeu = :id_jeu";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            ':valeur'        => $note,
-            ':date_notation' => $date_maintenant,
-            ':id_joueur'     => $id_joueur_connecte,
-            ':id_jeu'        => $id_jeu
-        ]);
-    } else {
-        // Pas encore d'avis -> on en crée un
-        $sql = "INSERT INTO avis (id_joueur, id_jeu, valeur, date_notation)
-                VALUES (:id_joueur, :id_jeu, :valeur, :date_notation)";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            ':id_joueur'     => $id_joueur_connecte,
-            ':id_jeu'        => $id_jeu,
-            ':valeur'        => $note,
-            ':date_notation' => $date_maintenant
-        ]);
-    }
-
-    // On recharge la page pour voir la nouvelle note
-    header("Location: game.php?id=" . $id_jeu);
+    header("Location: game.php?id=" . $gameId);
     exit;
 }
 
-// Si quelqu'un envoie un commentaire (formulaire)
+// -----------------------------------------------------
+// 2) SAUVEGARDE DES COMMENTAIRES
+// -----------------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_text'])) {
-
-    // Il faut être connecté pour commenter
-    if ($id_joueur_connecte === null) {
+    if (!$userId) {
         header("Location: AUTH.php");
         exit;
     }
 
-    // On récupère le texte du commentaire
-    $commentaire = trim($_POST['comment_text']);
+    $comment = trim($_POST['comment_text']);
+    $now = date("Y-m-d H:i:s");
 
-    if ($commentaire !== "") {
-        // On regarde si ce joueur a déjà une ligne dans avis pour ce jeu
-        $sql = "SELECT * FROM avis WHERE id_joueur = :id_joueur AND id_jeu = :id_jeu";
+    if ($comment !== "") {
+        $sql = "INSERT INTO avis (id_joueur, id_jeu, texte_commentaire, date_commentaire)
+                VALUES (:u, :g, :t, :d)
+                ON DUPLICATE KEY UPDATE texte_commentaire = :t, date_commentaire = :d";
+
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
-            ':id_joueur' => $id_joueur_connecte,
-            ':id_jeu'    => $id_jeu
+            ':u' => $userId,
+            ':g' => $gameId,
+            ':t' => $comment,
+            ':d' => $now
         ]);
-        $avis_existant = $stmt->fetch();
-
-        $date_maintenant = date("Y-m-d H:i:s");
-
-        if ($avis_existant) {
-            // On met à jour le commentaire
-            $sql = "UPDATE avis
-                    SET texte_commentaire = :texte_commentaire, date_commentaire = :date_commentaire
-                    WHERE id_joueur = :id_joueur AND id_jeu = :id_jeu";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([
-                ':texte_commentaire' => $commentaire,
-                ':date_commentaire'  => $date_maintenant,
-                ':id_joueur'         => $id_joueur_connecte,
-                ':id_jeu'            => $id_jeu
-            ]);
-        } else {
-            // On crée la ligne avec juste le commentaire
-            $sql = "INSERT INTO avis (id_joueur, id_jeu, texte_commentaire, date_commentaire)
-                    VALUES (:id_joueur, :id_jeu, :texte_commentaire, :date_commentaire)";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([
-                ':id_joueur'         => $id_joueur_connecte,
-                ':id_jeu'            => $id_jeu,
-                ':texte_commentaire' => $commentaire,
-                ':date_commentaire'  => $date_maintenant
-            ]);
-        }
     }
 
-    // On recharge la page pour voir le commentaire
-    header("Location: game.php?id=" . $id_jeu);
+    header("Location: game.php?id=" . $gameId);
     exit;
 }
 
-// ---------------------------------------------------------------------
-// 2) CHARGER LES INFOS DU JEU
-// ---------------------------------------------------------------------
-
-// On récupère le jeu
-$sql = "SELECT j.*, e.nom AS nom_editeur
-        FROM jeu j
-        LEFT JOIN editeur e ON e.id_editeur = j.id_editeur
-        WHERE j.id_jeu = :id_jeu";
+// -----------------------------------------------------
+// 3) RECUP NOTES
+// -----------------------------------------------------
+$sql = "SELECT valeur FROM avis WHERE id_jeu = :id AND valeur IS NOT NULL";
 $stmt = $pdo->prepare($sql);
-$stmt->execute([':id_jeu' => $id_jeu]);
-$jeu = $stmt->fetch();
+$stmt->execute([':id' => $gameId]);
+$notes = $stmt->fetchAll();
 
-if (!$jeu) {
-    // Si le jeu n'existe pas, on retourne à l'accueil
-    header("Location: ../index.php");
-    exit;
+$count = count($notes);
+$avg = 0;
+if ($count > 0) {
+    $sum = 0;
+    foreach ($notes as $n) $sum += (int)$n['valeur'];
+    $avg = round($sum / $count, 1);
 }
 
-// On récupère les genres du jeu
-$sql = "SELECT g.nom
-        FROM genre g
-        JOIN jeu_genre jg ON jg.id_genre = g.id_genre
-        WHERE jg.id_jeu = :id_jeu";
-$stmt = $pdo->prepare($sql);
-$stmt->execute([':id_jeu' => $id_jeu]);
-$genres = $stmt->fetchAll();
-$liste_genres = [];
-foreach ($genres as $g) {
-    $liste_genres[] = $g['nom'];
-}
-$texte_genres = implode(", ", $liste_genres);
-
-// ---------------------------------------------------------------------
-// 3) CHARGER LES NOTES + MOYENNE
-// ---------------------------------------------------------------------
-$sql = "SELECT valeur FROM avis WHERE id_jeu = :id_jeu AND valeur IS NOT NULL";
-$stmt = $pdo->prepare($sql);
-$stmt->execute([':id_jeu' => $id_jeu]);
-$toutes_les_notes = $stmt->fetchAll();
-
-$nombre_notes = count($toutes_les_notes);
-$note_moyenne = 0;
-$distribution = [0,0,0,0,0,0]; // index 0 à 5, on utilisera 1 à 5
-
-if ($nombre_notes > 0) {
-    $somme = 0;
-    foreach ($toutes_les_notes as $row) {
-        $val = (int)$row['valeur'];
-        $somme += $val;
-        if ($val >=1 && $val <=5) {
-            $distribution[$val] = $distribution[$val] + 1;
-        }
-    }
-    $note_moyenne = round($somme / $nombre_notes, 1);
-}
-
-// La note du joueur connecté (si connecté)
-$ma_note = null;
-if ($id_joueur_connecte !== null) {
-    $sql = "SELECT valeur FROM avis WHERE id_joueur = :id_joueur AND id_jeu = :id_jeu AND valeur IS NOT NULL";
+// -----------------------------------------------------
+// 4) MA NOTE
+// -----------------------------------------------------
+$myRating = null;
+if ($userId) {
+    $sql = "SELECT valeur FROM avis WHERE id_joueur = :u AND id_jeu = :g";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        ':id_joueur' => $id_joueur_connecte,
-        ':id_jeu'    => $id_jeu
-    ]);
-    $ma_note = $stmt->fetchColumn();
+    $stmt->execute([':u' => $userId, ':g' => $gameId]);
+    $myRating = $stmt->fetchColumn();
 }
 
-// ---------------------------------------------------------------------
-// 4) CHARGER LES COMMENTAIRES
-// ---------------------------------------------------------------------
+// -----------------------------------------------------
+// 5) COMMENTAIRES
+// -----------------------------------------------------
 $sql = "SELECT a.texte_commentaire, a.date_commentaire, j.pseudo
         FROM avis a
         JOIN joueur j ON j.id_joueur = a.id_joueur
-        WHERE a.id_jeu = :id_jeu
-          AND a.texte_commentaire IS NOT NULL
-        ORDER BY a.date_commentaire DESC";
+        WHERE a.id_jeu = :g AND texte_commentaire IS NOT NULL
+        ORDER BY date_commentaire DESC";
 $stmt = $pdo->prepare($sql);
-$stmt->execute([':id_jeu' => $id_jeu]);
-$commentaires = $stmt->fetchAll();
-
-// Petite fonction pour sécuriser le texte (comme htmlspecialchars)
-function h($texte) {
-    return htmlspecialchars($texte, ENT_QUOTES, 'UTF-8');
-}
+$stmt->execute([':g' => $gameId]);
+$comments = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
-    <title><?= h($jeu['titre']) ?> | GameLink</title>
-    <!-- On lie notre fichier CSS séparé -->
+    <title><?= h($title) ?></title>
     <link rel="stylesheet" href="../CSS/STYLE_GAME.css">
-    <link rel="stylesheet" href="../CSS/HEADER.css">
-    <link rel="icon" type="image/svg+xml" href="../ICON/LogoSimple.svg">
 
 </head>
  <?php 
@@ -250,121 +149,72 @@ function h($texte) {
     ?>
 <body>
 
-<a class="back-link" href="ACCUEIL.php">← Retour</a>
+<a href="ACCUEIL.php" class="back">← Retour</a>
 
-<div class="game-page">
+<div class="page">
 
-    <!-- Colonne gauche : image du jeu -->
-    <div class="game-left">
-        <img src="<?= h($jeu['cover_url']) ?>" alt="<?= h($jeu['titre']) ?>" class="game-cover">
+    <div class="left">
+        <img src="<?= h($cover) ?>" class="cover">
     </div>
 
-    <!-- Colonne droite : infos + notes + commentaires -->
-    <div class="game-right">
-        <h1><?= h($jeu['titre']) ?></h1>
-        <p class="game-genres"><?= h($texte_genres) ?></p>
+    <div class="right">
 
-        <!-- Bloc de note -->
-        <h2>Avis des joueurs</h2>
+        <h1><?= h($title) ?></h1>
+        <p class="genres"><?= h($genres) ?></p>
 
-        <div class="rating-block">
-            <p>Note moyenne : <strong><?= $note_moyenne ?></strong> / 5 (<?= $nombre_notes ?> avis)</p>
+        <h2>Note moyenne : <?= $avg ?> / 5</h2>
 
-            <!-- On affiche des étoiles remplies ou vides pour la moyenne -->
-            <p>
-                <?php
-                $moy_arrondie = round($note_moyenne); // pour l'affichage
-                for ($i = 1; $i <= 5; $i++) {
-                    if ($i <= $moy_arrondie) {
-                        echo "★";
-                    } else {
-                        echo "☆";
-                    }
-                }
-                ?>
-            </p>
+        <p>
+            <?php for ($i=1; $i<=5; $i++): ?>
+                <?= ($i <= round($avg)) ? "★" : "☆" ?>
+            <?php endfor; ?>
+        </p>
 
-            <!-- Distribution simple : combien de notes 5, 4, 3, 2, 1 -->
-            <div class="rating-distribution">
-                <?php for ($i = 5; $i >= 1; $i--): ?>
-                    <div class="rating-row">
-                        <span><?= $i ?>★</span>
-                        <div class="rating-bar">
-                            <?php
-                            if ($nombre_notes > 0) {
-                                $pourcentage = ($distribution[$i] / $nombre_notes) * 100;
-                            } else {
-                                $pourcentage = 0;
-                            }
-                            ?>
-                            <div class="rating-bar-fill" style="width: <?= $pourcentage ?>%;"></div>
-                        </div>
-                        <span><?= $distribution[$i] ?></span>
-                    </div>
-                <?php endfor; ?>
-            </div>
-
-            <!-- Formulaire pour donner une note (1 à 5) avec des boutons étoile -->
-            <?php if ($id_joueur_connecte !== null): ?>
-                <p>Ta note actuelle :
-                    <?php
-                    if ($ma_note === null) {
-                        echo "aucune pour l'instant.";
-                    } else {
-                        echo $ma_note . " / 5";
-                    }
-                    ?>
-                </p>
-
-                <form method="post" class="rating-form">
-                    <p>Donner une note :</p>
-                    <!-- Chaque bouton envoie une note différente -->
-                    <button type="submit" name="rating" value="1">★</button>
-                    <button type="submit" name="rating" value="2">★★</button>
-                    <button type="submit" name="rating" value="3">★★★</button>
-                    <button type="submit" name="rating" value="4">★★★★</button>
-                    <button type="submit" name="rating" value="5">★★★★★</button>
-                </form>
-            <?php else: ?>
-                <p class="info-text">Connecte-toi pour pouvoir noter ce jeu.</p>
-            <?php endif; ?>
-        </div>
-
-        <!-- Description du jeu -->
-        <h2>Description</h2>
-        <p class="game-description"><?= nl2br(h($jeu['description'])) ?></p>
-
-        <!-- Commentaires -->
-        <h2>Commentaires</h2>
-
-        <?php if ($id_joueur_connecte !== null): ?>
-            <form method="post" class="comment-form">
-                <textarea name="comment_text" placeholder="Écris ton avis sur ce jeu..." required></textarea>
-                <button type="submit">Envoyer le commentaire</button>
-            </form>
+        <!-- Donner une note -->
+        <?php if ($userId): ?>
+        <form method="post">
+            <button name="rating" value="1">★</button>
+            <button name="rating" value="2">★★</button>
+            <button name="rating" value="3">★★★</button>
+            <button name="rating" value="4">★★★★</button>
+            <button name="rating" value="5">★★★★★</button>
+        </form>
         <?php else: ?>
-            <p class="info-text">Connecte-toi pour écrire un commentaire.</p>
+            <p>Connecte-toi pour noter.</p>
         <?php endif; ?>
 
-        <div class="comments-list">
-            <?php if (empty($commentaires)): ?>
-                <p class="info-text">Pas encore de commentaires.</p>
-            <?php else: ?>
-                <?php foreach ($commentaires as $c): ?>
-                    <div class="comment-item">
-                        <div class="comment-header">
-                            <strong><?= h($c['pseudo']) ?></strong>
-                            <span class="comment-date"><?= h($c['date_commentaire']) ?></span>
-                        </div>
-                        <p class="comment-text"><?= nl2br(h($c['texte_commentaire'])) ?></p>
-                    </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </div>
+        <h2>Description</h2>
+        <p><?= nl2br(h($summary)) ?></p>
+
+        <h2>Commentaires</h2>
+
+        <!-- Form commentaire -->
+        <?php if ($userId): ?>
+        <form method="post">
+            <textarea name="comment_text" required></textarea>
+            <button>Envoyer</button>
+        </form>
+        <?php else: ?>
+            <p>Connecte-toi pour commenter.</p>
+        <?php endif; ?>
+
+        <!-- Liste -->
+        <?php if (empty($comments)): ?>
+            <p>Aucun commentaire pour l'instant.</p>
+        <?php else: ?>
+            <?php foreach ($comments as $c): ?>
+                <div class="comment">
+                    <strong><?= h($c['pseudo']) ?></strong>
+                    <small><?= h($c['date_commentaire']) ?></small>
+                    <p><?= nl2br(h($c['texte_commentaire'])) ?></p>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
 
     </div>
 
 </div>
 
 </body>
+
 </html>
