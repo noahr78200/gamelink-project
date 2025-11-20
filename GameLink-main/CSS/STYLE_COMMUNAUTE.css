@@ -14,7 +14,7 @@
 
 /* ========== LAYOUT PRINCIPAL ========== */
 main {
-    padding: 30px;
+    padding: 100px;
     max-width: 1800px;
     margin: 0 auto;
 }
@@ -280,7 +280,9 @@ main {
 .titre-section h1 {
     font-size: 3em;
     background: linear-gradient(135deg, var(--violet-principal) 0%, var(--violet-fonce) 100%);
+    background-clip: text;
     -webkit-background-clip: text;
+    color: transparent;
     -webkit-text-fill-color: transparent;
     margin-bottom: 15px;
     font-weight: 800;
