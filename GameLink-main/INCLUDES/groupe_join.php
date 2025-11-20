@@ -32,12 +32,12 @@ try {
         exit;
     }
     
-    // Verifier que je ne suis pas deja membre
-    $requete = $pdo->prepare("SELECT id_adhesion FROM adhesion WHERE id_joueur = ? AND id_communaute = ?");
+    // Verifier que je ne suis pas deja membre (en comptant les lignes)
+    $requete = $pdo->prepare("SELECT COUNT(*) as nb FROM adhesion WHERE id_joueur = ? AND id_communaute = ?");
     $requete->execute([$mon_id, $id_groupe]);
-    $adhesion = $requete->fetch();
+    $resultat = $requete->fetch();
     
-    if ($adhesion) {
+    if ($resultat['nb'] > 0) {
         echo json_encode(['success' => false, 'message' => 'Deja membre']);
         exit;
     }

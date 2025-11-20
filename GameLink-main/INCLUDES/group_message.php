@@ -34,16 +34,16 @@ if (strlen($message) > 1000) {
 }
 
 try {
-    // Verifier que je suis membre
+    // Verifier que je suis membre (en comptant les lignes)
     $requete = $pdo->prepare("
-        SELECT id_adhesion 
+        SELECT COUNT(*) as nb
         FROM adhesion 
         WHERE id_joueur = ? AND id_communaute = ? AND statut = 'actif'
     ");
     $requete->execute([$mon_id, $id_groupe]);
-    $adhesion = $requete->fetch();
+    $resultat = $requete->fetch();
     
-    if (!$adhesion) {
+    if ($resultat['nb'] == 0) {
         echo json_encode(['success' => false, 'message' => 'Pas membre de ce groupe']);
         exit;
     }
