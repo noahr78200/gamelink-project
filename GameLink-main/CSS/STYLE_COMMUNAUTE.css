@@ -87,7 +87,7 @@ main {
 
 .contenu-principal {
     flex: 1;
-    max-width: 1000px; /* Limite la largeur */
+    max-width: 500px; /* Limite la largeur */
 }
 
 /* ========== SIDEBAR ========== */
