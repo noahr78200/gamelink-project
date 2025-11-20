@@ -20,14 +20,14 @@ try {
     die("Erreur de base de données");
 }
 
-// On récupère l'id du jeu dans l'URL : game.php?id=1 par exemple
-if (isset($_GET['id'])) {
-    $id_jeu = (int)$_GET['id'];
-} else {
-    // Si pas d'id, on retourne à l'accueil
-    header("Location: ../index.php");
-    exit;
-}
+// // On récupère l'id du jeu dans l'URL : game.php?id=1 par exemple
+// if (isset($_GET['id'])) {
+//     $id_jeu = (int)$_GET['id'];
+// } else {
+//     // Si pas d'id, on retourne à l'accueil
+//     header("Location: ../index.php");
+//     exit;
+// }
 
 // On regarde si un joueur est connecté
 $id_joueur_connecte = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : null;
