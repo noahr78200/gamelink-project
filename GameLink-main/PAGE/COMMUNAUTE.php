@@ -9,6 +9,7 @@ if (!isset($_SESSION['user_id'])) {
     header('Location: ../index.php');
     exit;
 }
+// TRACKING AUTOMATIQUE - Ne touche plus jamais à cette ligne !
 require_once __DIR__ . '/../INCLUDES/track.php';
 require_once __DIR__ . '/../INCLUDES/check_admin.php';
 require_once __DIR__ . '/../DATA/DBConfig.php';
@@ -174,185 +175,263 @@ try {
     ?>
 
 
-<main class="container-avec-sidebar">
-    <div class="contenu-principal">
-        <!-- ONGLETS -->
-        <div class="onglets-container">
-            <button class="onglet actif" onclick="afficherOnglet('groupes')">
-                &#128188; GROUPES
-            </button>
-            <button class="onglet" onclick="afficherOnglet('forum')">
-                &#128172; FORUM
-            </button>
-        </div>
+<main>
+    <!-- ONGLETS -->
+    <div class="onglets-container">
+        <button class="onglet actif" onclick="afficherOnglet('groupes')">
+            &#128188; GROUPES
+        </button>
+        <button class="onglet" onclick="afficherOnglet('forum')">
+            &#128172; FORUM
+        </button>
+    </div>
 
-        <!-- ONGLET GROUPES -->
-        <div id="onglet-groupes" class="contenu-onglet actif">
-            <main class="page-communaute">
-                <div class="titre-section">
-                    <h1>&#127918; Groupes de Jeux</h1>
-                    <p>Rejoins un groupe pour discuter avec d'autres joueurs !</p>
-                </div>
+    <!-- ========== ONGLET GROUPES ========== -->
+    <div id="onglet-groupes" class="contenu-onglet actif">
+        <!-- CONTAINER AVEC SIDEBAR -->
+        <div class="container-avec-sidebar">
+            <!-- CONTENU PRINCIPAL GROUPES -->
+            <div class="contenu-principal">
+                <div class="page-communaute">
+                    <div class="titre-section">
+                        <h1>&#127918; Groupes de Jeux</h1>
+                        <p>Rejoins un groupe pour discuter avec d'autres joueurs !</p>
+                    </div>
 
-                <div class="grille-groupes">
-                    <?php foreach ($groupes as $groupe): ?>
-                        <div class="carte-groupe">
-                            <div class="image-groupe">
-                                <img src="/IMAGES/groupes/groupe_<?= $groupe['id'] ?>.jpg" 
-                                     alt="<?= htmlspecialchars($groupe['nom']) ?>"
-                                     onerror="this.style.display='none';">
+                    <div class="grille-groupes">
+                        <?php foreach ($groupes as $groupe): ?>
+                            <div class="carte-groupe">
+                                <div class="image-groupe">
+                                    <img src="/IMAGES/groupes/groupe_<?= $groupe['id'] ?>.jpg" 
+                                         alt="<?= htmlspecialchars($groupe['nom']) ?>"
+                                         onerror="this.style.display='none';">
+                                </div>
+                                <div class="info-groupe">
+                                    <h3><?= htmlspecialchars($groupe['nom']) ?></h3>
+                                    <p><?= htmlspecialchars($groupe['description']) ?></p>
+                                    <p class="petit-texte">&#128101; <?= $groupe['nb_membres'] ?> membres</p>
+                                </div>
+                                <div class="boutons-groupe">
+                                    <?php if ($groupe['je_suis_membre'] > 0): ?>
+                                        <button class="bouton bleu ouvrir-chat" 
+                                                data-groupe-id="<?= $groupe['id'] ?>"
+                                                data-groupe-nom="<?= htmlspecialchars($groupe['nom']) ?>">
+                                            &#128172; Ouvrir le chat
+                                        </button>
+                                        <button class="bouton rouge quitter-groupe" 
+                                                data-groupe-id="<?= $groupe['id'] ?>">
+                                            Quitter
+                                        </button>
+                                    <?php else: ?>
+                                        <button class="bouton vert rejoindre-groupe" 
+                                                data-groupe-id="<?= $groupe['id'] ?>">
+                                            + Rejoindre
+                                        </button>
+                                    <?php endif; ?>
+                                </div>
                             </div>
-                            <div class="info-groupe">
-                                <h3><?= htmlspecialchars($groupe['nom']) ?></h3>
-                                <p><?= htmlspecialchars($groupe['description']) ?></p>
-                                <p class="petit-texte">&#128101; <?= $groupe['nb_membres'] ?> membres</p>
-                            </div>
-                            <div class="boutons-groupe">
-                                <?php if ($groupe['je_suis_membre'] > 0): ?>
-                                    <button class="bouton bleu ouvrir-chat" 
-                                            data-groupe-id="<?= $groupe['id'] ?>"
-                                            data-groupe-nom="<?= htmlspecialchars($groupe['nom']) ?>">
-                                        &#128172; Ouvrir le chat
-                                    </button>
-                                    <button class="bouton rouge quitter-groupe" 
-                                            data-groupe-id="<?= $groupe['id'] ?>">
-                                        Quitter
-                                    </button>
-                                <?php else: ?>
-                                    <button class="bouton vert rejoindre-groupe" 
-                                            data-groupe-id="<?= $groupe['id'] ?>">
-                                        + Rejoindre
-                                    </button>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
-            </main>
-        </div>
+            </div>
 
-        <!-- ONGLET FORUM -->
-        <div id="onglet-forum" class="contenu-onglet">
-            <main class="page-forum">
-                <div class="titre-section">
-                    <h1>&#128172; Forum de Discussion</h1>
-                    <p>Partage tes idees avec la communaute !</p>
-                    <button class="bouton bleu" onclick="ouvrirPopupCreerDiscussion()">
-                        &#10010; Creer une discussion
-                    </button>
-                </div>
-
-                <div class="liste-discussions">
-                    <?php if (empty($discussions)): ?>
-                        <div class="aucune-discussion">
-                            <p>&#128269; Aucune discussion pour le moment.</p>
-                            <p>Sois le premier a en creer une !</p>
-                        </div>
+            <!-- SIDEBAR POUR GROUPES -->
+            <aside class="sidebar">
+                <!-- DISCUSSIONS TENDANCES -->
+                <div class="sidebar-widget">
+                    <div class="widget-titre">🔥 Tendances</div>
+                    <?php if (empty($tendances)): ?>
+                        <p class="sidebar-vide">Aucune discussion tendance pour le moment.</p>
                     <?php else: ?>
-                        <?php foreach ($discussions as $discussion): ?>
-                            <div class="carte-discussion" onclick="ouvrirDiscussion(<?= $discussion['id'] ?>)">
-                                <div class="discussion-titre">
-                                    <h3>&#128172; <?= htmlspecialchars($discussion['titre']) ?></h3>
+                        <?php foreach ($tendances as $tendance): ?>
+                            <div class="tendance-item" onclick="ouvrirDiscussion(<?= $tendance['id'] ?>)">
+                                <div class="tendance-titre">
+                                    <span class="fire-icon">🔥</span>
+                                    <?= htmlspecialchars($tendance['titre']) ?>
                                 </div>
-                                <div class="discussion-info">
-                                    <span class="auteur">Par: <?= htmlspecialchars($discussion['auteur']) ?></span>
-                                    <span class="date">
-                                        <?php
-                                        $temps = strtotime($discussion['date_creation']);
-                                        $diff = time() - $temps;
-                                        if ($diff < 3600) {
-                                            echo 'Il y a ' . floor($diff / 60) . ' min';
-                                        } elseif ($diff < 86400) {
-                                            echo 'Il y a ' . floor($diff / 3600) . 'h';
-                                        } else {
-                                            echo date('d/m/Y', $temps);
-                                        }
-                                        ?>
-                                    </span>
-                                    <span class="reponses"><?= $discussion['nb_reponses'] ?> reponses</span>
-                                </div>
-                                <div class="discussion-extrait">
-                                    <?php
-                                    $extrait = substr($discussion['contenu'], 0, 150);
-                                    if (strlen($discussion['contenu']) > 150) $extrait .= '...';
-                                    echo htmlspecialchars($extrait);
-                                    ?>
+                                <div class="tendance-meta">
+                                    <span><?= $tendance['nb_commentaires'] ?> 💬</span>
                                 </div>
                             </div>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
-            </main>
+
+                <!-- ACTIVITÉ RÉCENTE -->
+                <div class="sidebar-widget">
+                    <div class="widget-titre">📅 Activité Récente</div>
+                    <?php if (empty($activites)): ?>
+                        <p class="sidebar-vide">Aucune activité récente.</p>
+                    <?php else: ?>
+                        <?php foreach ($activites as $activite): ?>
+                            <?php
+                            // Calculer le temps écoulé
+                            $temps = strtotime($activite['date_creation']);
+                            $diff = time() - $temps;
+                            if ($diff < 60) {
+                                $temps_affiche = 'A l\'instant';
+                            } elseif ($diff < 3600) {
+                                $temps_affiche = 'Il y a ' . floor($diff / 60) . ' min';
+                            } elseif ($diff < 86400) {
+                                $temps_affiche = 'Il y a ' . floor($diff / 3600) . 'h';
+                            } else {
+                                $temps_affiche = 'Il y a ' . floor($diff / 86400) . 'j';
+                            }
+                            
+                            // Déterminer le texte et la couleur selon le type
+                            $couleur = '#10b981';
+                            if ($activite['type'] == 'discussion') {
+                                $texte = 'a créé une discussion';
+                                $couleur = '#10b981';
+                            } elseif ($activite['type'] == 'commentaire') {
+                                $texte = 'a répondu à "' . htmlspecialchars(substr($activite['titre'], 0, 30)) . '..."';
+                                $couleur = '#667eea';
+                            } else {
+                                $texte = 'a rejoint le groupe ' . htmlspecialchars($activite['titre']);
+                                $couleur = '#f59e0b';
+                            }
+                            ?>
+                            <div class="activite-item" style="border-left-color: <?= $couleur ?>;">
+                                <div class="activite-texte">
+                                    <span class="activite-user"><?= htmlspecialchars($activite['pseudo']) ?></span>
+                                    <?= $texte ?>
+                                </div>
+                                <div class="activite-temps"><?= $temps_affiche ?></div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+            </aside>
         </div>
     </div>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <!-- DISCUSSIONS TENDANCES -->
-        <div class="sidebar-widget">
-            <div class="widget-titre">🔥 Tendances</div>
-            <?php if (empty($tendances)): ?>
-                <p class="sidebar-vide">Aucune discussion tendance pour le moment.</p>
-            <?php else: ?>
-                <?php foreach ($tendances as $tendance): ?>
-                    <div class="tendance-item" onclick="ouvrirDiscussion(<?= $tendance['id'] ?>)">
-                        <div class="tendance-titre">
-                            <span class="fire-icon">🔥</span>
-                            <?= htmlspecialchars($tendance['titre']) ?>
-                        </div>
-                        <div class="tendance-meta">
-                            <span><?= $tendance['nb_commentaires'] ?> 💬</span>
-                        </div>
+    <!-- ========== ONGLET FORUM ========== -->
+    <div id="onglet-forum" class="contenu-onglet">
+        <!-- CONTAINER AVEC SIDEBAR -->
+        <div class="container-avec-sidebar">
+            <!-- CONTENU PRINCIPAL FORUM -->
+            <div class="contenu-principal">
+                <div class="page-forum">
+                    <div class="titre-section">
+                        <h1>&#128172; Forum de Discussion</h1>
+                        <p>Partage tes idees avec la communaute !</p>
+                        <button class="bouton bleu" onclick="ouvrirPopupCreerDiscussion()">
+                            &#10010; Creer une discussion
+                        </button>
                     </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </div>
 
-        <!-- ACTIVITÉ RÉCENTE -->
-        <div class="sidebar-widget">
-            <div class="widget-titre">📅 Activité Récente</div>
-            <?php if (empty($activites)): ?>
-                <p class="sidebar-vide">Aucune activité récente.</p>
-            <?php else: ?>
-                <?php foreach ($activites as $activite): ?>
-                    <?php
-                    // Calculer le temps écoulé
-                    $temps = strtotime($activite['date_creation']);
-                    $diff = time() - $temps;
-                    if ($diff < 60) {
-                        $temps_affiche = 'A l\'instant';
-                    } elseif ($diff < 3600) {
-                        $temps_affiche = 'Il y a ' . floor($diff / 60) . ' min';
-                    } elseif ($diff < 86400) {
-                        $temps_affiche = 'Il y a ' . floor($diff / 3600) . 'h';
-                    } else {
-                        $temps_affiche = 'Il y a ' . floor($diff / 86400) . 'j';
-                    }
-                    
-                    // Déterminer le texte et la couleur selon le type
-                    $couleur = '#10b981';
-                    if ($activite['type'] == 'discussion') {
-                        $texte = 'a créé une discussion';
-                        $couleur = '#10b981';
-                    } elseif ($activite['type'] == 'commentaire') {
-                        $texte = 'a répondu à "' . htmlspecialchars(substr($activite['titre'], 0, 30)) . '..."';
-                        $couleur = '#667eea';
-                    } else {
-                        $texte = 'a rejoint le groupe ' . htmlspecialchars($activite['titre']);
-                        $couleur = '#f59e0b';
-                    }
-                    ?>
-                    <div class="activite-item" style="border-left-color: <?= $couleur ?>;">
-                        <div class="activite-texte">
-                            <span class="activite-user"><?= htmlspecialchars($activite['pseudo']) ?></span>
-                            <?= $texte ?>
-                        </div>
-                        <div class="activite-temps"><?= $temps_affiche ?></div>
+                    <div class="liste-discussions">
+                        <?php if (empty($discussions)): ?>
+                            <div class="aucune-discussion">
+                                <p>&#128269; Aucune discussion pour le moment.</p>
+                                <p>Sois le premier a en creer une !</p>
+                            </div>
+                        <?php else: ?>
+                            <?php foreach ($discussions as $discussion): ?>
+                                <div class="carte-discussion" onclick="ouvrirDiscussion(<?= $discussion['id'] ?>)">
+                                    <div class="discussion-titre">
+                                        <h3>&#128172; <?= htmlspecialchars($discussion['titre']) ?></h3>
+                                    </div>
+                                    <div class="discussion-info">
+                                        <span class="auteur">Par: <?= htmlspecialchars($discussion['auteur']) ?></span>
+                                        <span class="date">
+                                            <?php
+                                            $temps = strtotime($discussion['date_creation']);
+                                            $diff = time() - $temps;
+                                            if ($diff < 3600) {
+                                                echo 'Il y a ' . floor($diff / 60) . ' min';
+                                            } elseif ($diff < 86400) {
+                                                echo 'Il y a ' . floor($diff / 3600) . 'h';
+                                            } else {
+                                                echo date('d/m/Y', $temps);
+                                            }
+                                            ?>
+                                        </span>
+                                        <span class="reponses"><?= $discussion['nb_reponses'] ?> reponses</span>
+                                    </div>
+                                    <div class="discussion-extrait">
+                                        <?php
+                                        $extrait = substr($discussion['contenu'], 0, 150);
+                                        if (strlen($discussion['contenu']) > 150) $extrait .= '...';
+                                        echo htmlspecialchars($extrait);
+                                        ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
+                </div>
+            </div>
+
+            <!-- SIDEBAR POUR FORUM -->
+            <aside class="sidebar">
+                <!-- DISCUSSIONS TENDANCES -->
+                <div class="sidebar-widget">
+                    <div class="widget-titre">🔥 Tendances</div>
+                    <?php if (empty($tendances)): ?>
+                        <p class="sidebar-vide">Aucune discussion tendance pour le moment.</p>
+                    <?php else: ?>
+                        <?php foreach ($tendances as $tendance): ?>
+                            <div class="tendance-item" onclick="ouvrirDiscussion(<?= $tendance['id'] ?>)">
+                                <div class="tendance-titre">
+                                    <span class="fire-icon">🔥</span>
+                                    <?= htmlspecialchars($tendance['titre']) ?>
+                                </div>
+                                <div class="tendance-meta">
+                                    <span><?= $tendance['nb_commentaires'] ?> 💬</span>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+
+                <!-- ACTIVITÉ RÉCENTE -->
+                <div class="sidebar-widget">
+                    <div class="widget-titre">📅 Activité Récente</div>
+                    <?php if (empty($activites)): ?>
+                        <p class="sidebar-vide">Aucune activité récente.</p>
+                    <?php else: ?>
+                        <?php foreach ($activites as $activite): ?>
+                            <?php
+                            // Calculer le temps écoulé
+                            $temps = strtotime($activite['date_creation']);
+                            $diff = time() - $temps;
+                            if ($diff < 60) {
+                                $temps_affiche = 'A l\'instant';
+                            } elseif ($diff < 3600) {
+                                $temps_affiche = 'Il y a ' . floor($diff / 60) . ' min';
+                            } elseif ($diff < 86400) {
+                                $temps_affiche = 'Il y a ' . floor($diff / 3600) . 'h';
+                            } else {
+                                $temps_affiche = 'Il y a ' . floor($diff / 86400) . 'j';
+                            }
+                            
+                            // Déterminer le texte et la couleur selon le type
+                            $couleur = '#10b981';
+                            if ($activite['type'] == 'discussion') {
+                                $texte = 'a créé une discussion';
+                                $couleur = '#10b981';
+                            } elseif ($activite['type'] == 'commentaire') {
+                                $texte = 'a répondu à "' . htmlspecialchars(substr($activite['titre'], 0, 30)) . '..."';
+                                $couleur = '#667eea';
+                            } else {
+                                $texte = 'a rejoint le groupe ' . htmlspecialchars($activite['titre']);
+                                $couleur = '#f59e0b';
+                            }
+                            ?>
+                            <div class="activite-item" style="border-left-color: <?= $couleur ?>;">
+                                <div class="activite-texte">
+                                    <span class="activite-user"><?= htmlspecialchars($activite['pseudo']) ?></span>
+                                    <?= $texte ?>
+                                </div>
+                                <div class="activite-temps"><?= $temps_affiche ?></div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+            </aside>
         </div>
-    </aside>
+    </div>
 
     <!-- POPUP CREER DISCUSSION -->
     <div id="popup-creer-discussion" class="popup-overlay">
