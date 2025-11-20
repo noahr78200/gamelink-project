@@ -262,9 +262,8 @@
 .titre-section h1 {
     font-size: 3.2em;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 15px;
+    background-clip: text;
+   
     font-weight: 900;
     letter-spacing: -1px;
     position: relative;
