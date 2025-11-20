@@ -239,14 +239,14 @@ try {
             <aside class="sidebar">
                 <!-- DISCUSSIONS TENDANCES -->
                 <div class="sidebar-widget">
-                    <div class="widget-titre">🔥 Tendances</div>
+                    <div class="widget-titre"> Tendances</div>
                     <?php if (empty($tendances)): ?>
                         <p class="sidebar-vide">Aucune discussion tendance pour le moment.</p>
                     <?php else: ?>
                         <?php foreach ($tendances as $tendance): ?>
                             <div class="tendance-item" onclick="ouvrirDiscussion(<?= $tendance['id'] ?>)">
                                 <div class="tendance-titre">
-                                    <span class="fire-icon">🔥</span>
+                                    <span class="fire-icon"></span>
                                     <?= htmlspecialchars($tendance['titre']) ?>
                                 </div>
                                 <div class="tendance-meta">
@@ -259,7 +259,7 @@ try {
 
                 <!-- ACTIVITÉ RÉCENTE -->
                 <div class="sidebar-widget">
-                    <div class="widget-titre">📅 Activité Récente</div>
+                    <div class="widget-titre"> Activité Récente</div>
                     <?php if (empty($activites)): ?>
                         <p class="sidebar-vide">Aucune activité récente.</p>
                     <?php else: ?>
@@ -367,14 +367,14 @@ try {
             <aside class="sidebar">
                 <!-- DISCUSSIONS TENDANCES -->
                 <div class="sidebar-widget">
-                    <div class="widget-titre">🔥 Tendances</div>
+                    <div class="widget-titre"> Tendances</div>
                     <?php if (empty($tendances)): ?>
                         <p class="sidebar-vide">Aucune discussion tendance pour le moment.</p>
                     <?php else: ?>
                         <?php foreach ($tendances as $tendance): ?>
                             <div class="tendance-item" onclick="ouvrirDiscussion(<?= $tendance['id'] ?>)">
                                 <div class="tendance-titre">
-                                    <span class="fire-icon">🔥</span>
+                                    <span class="fire-icon"></span>
                                     <?= htmlspecialchars($tendance['titre']) ?>
                                 </div>
                                 <div class="tendance-meta">
