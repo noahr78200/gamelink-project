@@ -1,99 +1,75 @@
-/* CSS/COMMUNAUTE.css - Tout centré et beau ! */
+/* CSS/COMMUNAUTE.css - Design Ultra Esthétique */
 
-/* ========== COULEURS (pour pouvoir les réutiliser facilement) ========== */
+/* ========== VARIABLES (couleurs et styles réutilisables) ========== */
 :root {
-    --violet: #667eea;
+    --violet-principal: #667eea;
     --violet-fonce: #764ba2;
-    --vert: #10b981;
-    --rouge: #ef4444;
-    --orange: #f59e0b;
+    --vert-succes: #10b981;
+    --rouge-danger: #ef4444;
+    --orange-alerte: #f59e0b;
+    --bleu-info: #3b82f6;
+    --gris-texte: #b0b3b8;
+    --gris-clair: #8b92a8;
 }
 
-/* ========== TOUTE LA PAGE CENTRÉE ========== */
+/* ========== LAYOUT PRINCIPAL ========== */
 main {
     padding: 30px;
-    max-width: 1600px;
-    margin: 0 auto; /* ← Ça centre TOUT ! */
+    max-width: 1800px;
+    margin: 0 auto;
 }
 
-/* ========== BOUTONS ONGLETS SUPER AMÉLIORÉS ========== */
+/* ========== ONGLETS (les boutons en haut) ========== */
 .onglets-container {
     display: flex;
-    gap: 25px;
+    gap: 20px;
     justify-content: center;
-    margin-bottom: 50px;
-    padding: 20px;
+    margin-bottom: 40px;
 }
 
 .onglet {
-    padding: 20px 50px; /* Plus gros ! */
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
-    border: 3px solid rgba(255, 255, 255, 0.2);
-    border-radius: 18px;
+    padding: 15px 40px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
     cursor: pointer;
-    transition: all 0.4s ease;
-    font-size: 1.3em; /* Plus gros texte ! */
-    font-weight: 800; /* Plus gras ! */
-    color: #8b92a8;
+    transition: all 0.3s ease;
+    font-size: 1.1em;
+    font-weight: 700;
+    color: var(--gris-clair);
     text-transform: uppercase;
-    letter-spacing: 2px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-    position: relative;
-    overflow: hidden;
-}
-
-/* Effet brillant qui bouge */
-.onglet::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    transform: rotate(45deg);
-    transition: all 0.6s ease;
-}
-
-.onglet:hover::before {
-    left: 100%;
+    letter-spacing: 1px;
 }
 
 .onglet:hover {
-    background: linear-gradient(145deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.15) 100%);
-    border-color: var(--violet);
-    color: var(--violet);
-    transform: translateY(-5px) scale(1.05); /* Monte et grossit ! */
-    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+    background: rgba(102, 126, 234, 0.15);
+    border-color: var(--violet-principal);
+    color: var(--violet-principal);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
 }
 
 .onglet.actif {
-    background: linear-gradient(135deg, var(--violet) 0%, var(--violet-fonce) 100%);
+    background: linear-gradient(135deg, var(--violet-principal) 0%, var(--violet-fonce) 100%);
     border-color: transparent;
     color: white;
-    box-shadow: 0 15px 50px rgba(102, 126, 234, 0.7);
-    transform: scale(1.1); /* Plus gros quand actif ! */
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
 }
 
-/* Animation quand on clique */
-.onglet:active {
-    transform: scale(0.95);
-}
-
-/* ========== CONTENU ONGLETS ========== */
+/* ========== CONTENU ONGLETS (cachés/affichés) ========== */
 .contenu-onglet {
     display: none;
 }
 
 .contenu-onglet.actif {
     display: block;
-    animation: apparition 0.5s ease;
+    animation: fadeIn 0.4s ease;
 }
 
-@keyframes apparition {
+@keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(30px);
+        transform: translateY(20px);
     }
     to {
         opacity: 1;
@@ -101,13 +77,12 @@ main {
     }
 }
 
-/* ========== LAYOUT AVEC SIDEBAR (TOUT CENTRÉ) ========== */
+/* ========== LAYOUT AVEC SIDEBAR ========== */
 .container-avec-sidebar {
     display: flex;
-    gap: 40px;
+    gap: 35px;
     max-width: 1600px;
-    margin: 0 auto; /* ← Centre le contenu */
-    padding: 0 20px;
+    margin: 0 auto;
 }
 
 .contenu-principal {
@@ -115,7 +90,7 @@ main {
     min-width: 0;
 }
 
-/* ========== SIDEBAR ========== */
+/* ========== SIDEBAR (la barre à droite) ========== */
 .sidebar {
     width: 400px;
     display: flex;
@@ -141,6 +116,7 @@ main {
     box-shadow: 0 15px 50px rgba(102, 126, 234, 0.2);
 }
 
+/* Scrollbar personnalisée pour la sidebar */
 .sidebar-widget::-webkit-scrollbar {
     width: 10px;
 }
@@ -148,14 +124,21 @@ main {
 .sidebar-widget::-webkit-scrollbar-track {
     background: rgba(255, 255, 255, 0.03);
     border-radius: 10px;
+    margin: 10px 0;
 }
 
 .sidebar-widget::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, var(--violet) 0%, var(--violet-fonce) 100%);
+    background: linear-gradient(180deg, var(--violet-principal) 0%, var(--violet-fonce) 100%);
     border-radius: 10px;
     border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
+.sidebar-widget::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--violet-fonce) 0%, var(--violet-principal) 100%);
+    box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+}
+
+/* Titre de chaque widget */
 .widget-titre {
     font-size: 1.4em;
     margin-bottom: 25px;
@@ -172,32 +155,36 @@ main {
     content: '';
     width: 5px;
     height: 28px;
-    background: linear-gradient(180deg, var(--violet) 0%, var(--violet-fonce) 100%);
+    background: linear-gradient(180deg, var(--violet-principal) 0%, var(--violet-fonce) 100%);
     border-radius: 3px;
     box-shadow: 0 0 15px rgba(102, 126, 234, 0.6);
 }
 
 .sidebar-vide {
-    color: #8b92a8;
+    color: var(--gris-clair);
     text-align: center;
     padding: 30px 20px;
     font-style: italic;
+    font-size: 0.95em;
+    line-height: 1.6;
 }
 
 /* ========== TENDANCES ========== */
 .tendance-item {
     padding: 15px;
-    background: rgba(255, 255, 255, 0.05);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
     border-radius: 12px;
     margin-bottom: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
+    border-left: 4px solid transparent;
     border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .tendance-item:hover {
-    background: rgba(245, 158, 11, 0.15);
-    border-left: 4px solid var(--orange);
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(251, 146, 60, 0.1) 100%);
+    border-left-color: var(--orange-alerte);
+    border-color: rgba(245, 158, 11, 0.3);
     transform: translateX(8px);
     box-shadow: 0 5px 20px rgba(245, 158, 11, 0.2);
 }
@@ -210,54 +197,73 @@ main {
     display: flex;
     align-items: center;
     gap: 10px;
+    line-height: 1.4;
 }
 
 .fire-icon {
-    color: var(--orange);
+    color: var(--orange-alerte);
     font-size: 1.3em;
-    animation: flamme 2s infinite;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6));
+    animation: pulse 2s infinite;
 }
 
-@keyframes flamme {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
 }
 
 .tendance-meta {
     font-size: 0.85em;
-    color: #8b92a8;
+    color: var(--gris-clair);
+    display: flex;
+    gap: 15px;
+    align-items: center;
     padding-left: 35px;
 }
 
 /* ========== ACTIVITÉ RÉCENTE ========== */
 .activite-item {
     padding: 15px;
-    background: rgba(255, 255, 255, 0.05);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
     border-radius: 12px;
     margin-bottom: 12px;
-    border-left: 4px solid var(--vert);
+    border-left: 4px solid var(--vert-succes);
     transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .activite-item:hover {
     background: rgba(255, 255, 255, 0.08);
     transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .activite-texte {
-    color: #b0b3b8;
+    color: var(--gris-texte);
     font-size: 0.95em;
     margin-bottom: 6px;
+    line-height: 1.5;
 }
 
 .activite-user {
-    color: var(--violet);
+    color: var(--violet-principal);
     font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.activite-user:hover {
+    text-decoration: underline;
+    color: var(--violet-fonce);
 }
 
 .activite-temps {
     font-size: 0.8em;
-    color: #8b92a8;
+    color: var(--gris-clair);
     font-style: italic;
 }
 
@@ -273,20 +279,24 @@ main {
 
 .titre-section h1 {
     font-size: 3em;
-    background: linear-gradient(135deg, var(--violet) 0%, var(--violet-fonce) 100%);
+    background: linear-gradient(135deg, var(--violet-principal) 0%, var(--violet-fonce) 100%);
+    background-clip: text;
     -webkit-background-clip: text;
+    color: transparent;
     -webkit-text-fill-color: transparent;
     margin-bottom: 15px;
     font-weight: 800;
+    letter-spacing: -1px;
 }
 
 .titre-section p {
-    color: #8b92a8;
+    color: var(--gris-clair);
     font-size: 1.2em;
     margin-bottom: 25px;
+    line-height: 1.6;
 }
 
-/* ========== GROUPES ========== */
+/* ========== GROUPES (les cartes) ========== */
 .grille-groupes {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -305,13 +315,24 @@ main {
 .carte-groupe:hover {
     transform: translateY(-10px) scale(1.02);
     box-shadow: 0 20px 50px rgba(102, 126, 234, 0.4);
-    border-color: var(--violet);
+    border-color: var(--violet-principal);
 }
 
 .image-groupe {
     height: 200px;
-    background: linear-gradient(135deg, var(--violet) 0%, var(--violet-fonce) 100%);
+    background: linear-gradient(135deg, var(--violet-principal) 0%, var(--violet-fonce) 100%);
     overflow: hidden;
+    position: relative;
+}
+
+.image-groupe::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.4) 100%);
 }
 
 .image-groupe img {
@@ -337,14 +358,15 @@ main {
 }
 
 .info-groupe p {
-    color: #b0b3b8;
+    color: var(--gris-texte);
     line-height: 1.6;
     margin-bottom: 12px;
+    font-size: 0.95em;
 }
 
 .petit-texte {
     font-size: 0.9em;
-    color: #8b92a8;
+    color: var(--gris-clair);
     font-weight: 600;
 }
 
@@ -366,10 +388,30 @@ main {
     flex: 1;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.bouton::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.bouton:hover::before {
+    width: 300px;
+    height: 300px;
 }
 
 .bouton.bleu {
-    background: linear-gradient(135deg, var(--violet) 0%, var(--violet-fonce) 100%);
+    background: linear-gradient(135deg, var(--violet-principal) 0%, var(--violet-fonce) 100%);
     color: white;
     box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
 }
@@ -380,7 +422,7 @@ main {
 }
 
 .bouton.vert {
-    background: linear-gradient(135deg, var(--vert) 0%, #059669 100%);
+    background: linear-gradient(135deg, var(--vert-succes) 0%, #059669 100%);
     color: white;
     box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
 }
@@ -391,7 +433,7 @@ main {
 }
 
 .bouton.rouge {
-    background: linear-gradient(135deg, var(--rouge) 0%, #dc2626 100%);
+    background: linear-gradient(135deg, var(--rouge-danger) 0%, #dc2626 100%);
     color: white;
     box-shadow: 0 5px 20px rgba(239, 68, 68, 0.4);
 }
@@ -409,9 +451,10 @@ main {
 
 .bouton.gris:hover {
     background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
 }
 
-/* ========== FORUM ========== */
+/* ========== FORUM (les discussions) ========== */
 .liste-discussions {
     display: flex;
     flex-direction: column;
@@ -430,42 +473,48 @@ main {
 
 .carte-discussion:hover {
     background: linear-gradient(145deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.1) 100%);
-    border-color: var(--violet);
+    border-color: var(--violet-principal);
     transform: translateX(8px);
     box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
 }
 
 .discussion-titre h3 {
     font-size: 1.4em;
-    color: var(--violet);
+    color: var(--violet-principal);
     margin-bottom: 12px;
     font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.carte-discussion:hover .discussion-titre h3 {
+    color: var(--violet-fonce);
 }
 
 .discussion-info {
     display: flex;
     gap: 25px;
     font-size: 0.9em;
-    color: #8b92a8;
+    color: var(--gris-clair);
     margin-bottom: 12px;
     flex-wrap: wrap;
 }
 
 .discussion-info .auteur {
-    color: #b0b3b8;
+    color: var(--gris-texte);
     font-weight: 600;
 }
 
 .discussion-extrait {
-    color: #b0b3b8;
+    color: var(--gris-texte);
     line-height: 1.7;
+    font-size: 0.95em;
 }
 
 .aucune-discussion {
     text-align: center;
     padding: 80px 20px;
-    color: #8b92a8;
-    background: rgba(255, 255, 255, 0.03);
+    color: var(--gris-clair);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
     border-radius: 20px;
     border: 2px dashed rgba(255, 255, 255, 0.1);
 }
@@ -492,7 +541,7 @@ main {
 
 .popup-overlay.visible {
     display: flex;
-    animation: apparition 0.3s ease;
+    animation: fadeIn 0.3s ease;
 }
 
 .popup-contenu {
@@ -504,17 +553,17 @@ main {
     overflow-y: auto;
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-    animation: zoomIn 0.4s ease;
+    animation: slideUp 0.4s ease;
 }
 
-@keyframes zoomIn {
+@keyframes slideUp {
     from {
         opacity: 0;
-        transform: scale(0.8);
+        transform: translateY(50px);
     }
     to {
         opacity: 1;
-        transform: scale(1);
+        transform: translateY(0);
     }
 }
 
@@ -540,7 +589,7 @@ main {
 .bouton-fermer {
     background: rgba(239, 68, 68, 0.2);
     border: 1px solid rgba(239, 68, 68, 0.3);
-    color: var(--rouge);
+    color: var(--rouge-danger);
     font-size: 1.5em;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -553,9 +602,10 @@ main {
 }
 
 .bouton-fermer:hover {
-    background: var(--rouge);
+    background: var(--rouge-danger);
     color: white;
-    transform: rotate(90deg);
+    transform: rotate(90deg) scale(1.1);
+    box-shadow: 0 5px 20px rgba(239, 68, 68, 0.5);
 }
 
 .popup-contenu form {
@@ -571,6 +621,7 @@ main {
     color: #fff;
     margin-bottom: 10px;
     font-weight: 700;
+    font-size: 1.05em;
 }
 
 .form-groupe input,
@@ -589,7 +640,7 @@ main {
 .form-groupe input:focus,
 .form-groupe textarea:focus {
     outline: none;
-    border-color: var(--violet);
+    border-color: var(--violet-principal);
     background: rgba(255, 255, 255, 0.08);
     box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
 }
@@ -618,14 +669,14 @@ main {
 
 .post-auteur,
 .reponse-auteur {
-    color: var(--violet);
+    color: var(--violet-principal);
     font-weight: 700;
     font-size: 1.2em;
 }
 
 .post-date,
 .reponse-date {
-    color: #8b92a8;
+    color: var(--gris-clair);
     font-size: 0.9em;
 }
 
@@ -634,6 +685,7 @@ main {
     color: #fff;
     line-height: 1.9;
     margin-bottom: 20px;
+    font-size: 1.05em;
 }
 
 .reponse {
@@ -641,12 +693,19 @@ main {
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 20px;
-    border-left: 4px solid var(--violet);
+    border-left: 4px solid var(--violet-principal);
+    transition: all 0.3s ease;
+}
+
+.reponse:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-left-color: var(--violet-fonce);
 }
 
 .form-repondre {
     padding: 30px;
     border-top: 2px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.02);
 }
 
 .form-repondre textarea {
@@ -659,20 +718,27 @@ main {
     font-size: 1em;
     font-family: inherit;
     margin-bottom: 15px;
+    transition: all 0.3s ease;
 }
 
-/* ========== GROSSE BULLE DE CHAT IMPORTANTE ! ========== */
+.form-repondre textarea:focus {
+    outline: none;
+    border-color: var(--violet-principal);
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+}
+
+/* ========== CHAT BULLE ========== */
 .bulle-chat {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 700px; /* BEAUCOUP PLUS LARGE ! */
-    height: 800px; /* BEAUCOUP PLUS HAUTE ! */
+    width: 420px;
+    max-height: 650px;
     background: linear-gradient(145deg, #1e2433 0%, #1a1f2e 100%);
-    border-radius: 25px;
-    border: 3px solid rgba(102, 126, 234, 0.5); /* Bordure plus visible */
-    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8); /* Ombre plus forte */
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
     display: none;
     flex-direction: column;
     z-index: 900;
@@ -680,13 +746,13 @@ main {
 
 .bulle-chat.ouverte {
     display: flex;
-    animation: grossirChat 0.5s ease;
+    animation: zoomIn 0.4s ease;
 }
 
-@keyframes grossirChat {
+@keyframes zoomIn {
     from {
         opacity: 0;
-        transform: translate(-50%, -50%) scale(0.5);
+        transform: translate(-50%, -50%) scale(0.8);
     }
     to {
         opacity: 1;
@@ -704,110 +770,94 @@ main {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 30px; /* Plus d'espace */
-    border-bottom: 3px solid rgba(255, 255, 255, 0.15);
-    background: linear-gradient(135deg, var(--violet) 0%, var(--violet-fonce) 100%);
-    border-radius: 25px 25px 0 0;
-    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);
+    padding: 25px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, var(--violet-principal) 0%, var(--violet-fonce) 100%);
+    border-radius: 20px 20px 0 0;
 }
 
 .haut-bulle h3 {
     color: white;
-    font-size: 1.6em; /* Plus gros titre */
-    font-weight: 800;
+    font-size: 1.3em;
+    font-weight: 700;
 }
 
 .zone-messages {
     flex: 1;
     overflow-y: auto;
-    padding: 30px;
-    background: rgba(0, 0, 0, 0.2);
-}
-
-.zone-messages::-webkit-scrollbar {
-    width: 12px;
-}
-
-.zone-messages::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.zone-messages::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, var(--violet) 0%, var(--violet-fonce) 100%);
-    border-radius: 10px;
+    padding: 25px;
+    min-height: 350px;
+    max-height: 450px;
 }
 
 .message {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
-    border-radius: 15px;
-    padding: 20px; /* Plus d'espace */
-    margin-bottom: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
 }
 
 .message:hover {
-    background: rgba(255, 255, 255, 0.12);
-    transform: translateX(5px);
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .message-haut {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .message-auteur {
-    color: var(--violet);
+    color: var(--violet-principal);
     font-weight: 700;
-    font-size: 1.1em; /* Plus gros */
+    font-size: 1em;
 }
 
 .message-heure {
-    color: #8b92a8;
-    font-size: 0.95em;
+    color: var(--gris-clair);
+    font-size: 0.85em;
 }
 
 .message-texte {
     color: #fff;
-    line-height: 1.7;
-    font-size: 1.05em; /* Plus gros texte */
+    line-height: 1.6;
 }
 
 .formulaire-message {
-    padding: 25px;
-    border-top: 3px solid rgba(255, 255, 255, 0.15);
-    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.02);
 }
 
 .formulaire-message textarea {
     width: 100%;
-    padding: 18px; /* Plus d'espace */
-    background: rgba(255, 255, 255, 0.08);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 15px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
     color: #fff;
-    font-size: 1.1em; /* Plus gros texte */
+    font-size: 1em;
     font-family: inherit;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
     resize: none;
     transition: all 0.3s ease;
 }
 
 .formulaire-message textarea:focus {
     outline: none;
-    border-color: var(--violet);
-    box-shadow: 0 0 25px rgba(102, 126, 234, 0.5);
-    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--violet-principal);
+    box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
 }
 
 .bas-bulle {
-    padding: 0 25px 25px;
+    padding: 0 20px 20px;
 }
 
 .texte-centre {
     text-align: center;
-    color: #8b92a8;
+    color: var(--gris-clair);
     padding: 30px;
     font-style: italic;
 }
@@ -820,17 +870,23 @@ main {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(5px);
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(3px);
     z-index: 800;
 }
 
 .fond-sombre.visible {
     display: block;
-    animation: apparition 0.3s ease;
+    animation: fadeIn 0.3s ease;
 }
 
 /* ========== RESPONSIVE (pour mobile et tablette) ========== */
+@media (max-width: 1400px) {
+    .sidebar {
+        width: 350px;
+    }
+}
+
 @media (max-width: 1200px) {
     .container-avec-sidebar {
         flex-direction: column;
@@ -838,12 +894,13 @@ main {
 
     .sidebar {
         width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
     }
 
-    .bulle-chat {
-        width: 90%;
-        max-width: 700px;
-        height: 90vh;
+    .sidebar-widget {
+        min-width: 380px;
+        max-height: none;
     }
 }
 
@@ -856,14 +913,28 @@ main {
         grid-template-columns: 1fr;
     }
 
-    .onglet {
-        padding: 15px 30px;
-        font-size: 1.1em;
+    .sidebar {
+        flex-direction: column;
+    }
+
+    .sidebar-widget {
+        min-width: auto;
     }
 
     .bulle-chat {
-        width: 95%;
-        height: 85vh;
+        width: calc(100% - 30px);
+        max-width: 420px;
+    }
+
+    .onglets-container {
+        flex-wrap: wrap;
+    }
+
+    .onglet {
+        flex: 1;
+        min-width: 140px;
+        padding: 12px 20px;
+        font-size: 0.95em;
     }
 
     .titre-section h1 {
@@ -876,12 +947,7 @@ main {
         flex-direction: column;
     }
 
-    .onglets-container {
-        gap: 15px;
-    }
-
-    .onglet {
-        padding: 12px 20px;
-        font-size: 1em;
+    .bouton {
+        width: 100%;
     }
 }
