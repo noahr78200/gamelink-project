@@ -148,37 +148,62 @@
     color: #8b92a8;
 }
 
-/* ========== ONGLETS ========== */
+/* ========== ONGLETS AMÉLIORÉS (À GAUCHE) ========== */
 .onglets-container {
     display: flex;
-    gap: 15px;
-    justify-content: center;
-    margin-bottom: 30px;
+    gap: 20px;
+    justify-content: flex-start; /* ← À GAUCHE ! */
+    margin-bottom: 40px;
+    padding-left: 20px;
 }
 
 .onglet {
-    padding: 12px 30px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    padding: 18px 45px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 1em;
-    font-weight: 600;
+    transition: all 0.4s ease;
+    font-size: 1.2em;
+    font-weight: 800;
     color: #8b92a8;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Effet brillant */
+.onglet::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transform: rotate(45deg);
+    transition: all 0.6s ease;
+}
+
+.onglet:hover::before {
+    left: 100%;
 }
 
 .onglet:hover {
-    background: rgba(102, 126, 234, 0.2);
+    background: linear-gradient(145deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.15) 100%);
     border-color: #667eea;
     color: #667eea;
-    transform: translateY(-2px);
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.5);
 }
 
 .onglet.actif {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-color: transparent;
     color: white;
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.7);
 }
 
 /* ========== CONTENU ONGLETS ========== */
@@ -188,26 +213,70 @@
 
 .contenu-onglet.actif {
     display: block;
+    animation: apparition 0.5s ease;
 }
 
-/* ========== TITRE SECTION ========== */
+@keyframes apparition {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========== TITRE SECTION AMÉLIORÉ ========== */
 .titre-section {
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 50px;
+    padding: 40px 30px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+    border-radius: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Effet de brillance en fond */
+.titre-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+    animation: rotation 20s linear infinite;
+}
+
+@keyframes rotation {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .titre-section h1 {
-    font-size: 2.5em;
+    font-size: 3.2em;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
- 
+    -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 0 30px rgba(102, 126, 234, 0.3);
 }
 
 .titre-section p {
-    color: #8b92a8;
-    font-size: 1.1em;
-    margin-bottom: 20px;
+    color: #b0b3b8;
+    font-size: 1.3em;
+    margin-bottom: 25px;
+    position: relative;
+    z-index: 1;
+    line-height: 1.6;
 }
 
 /* ========== GROUPES ========== */
@@ -379,7 +448,7 @@
     margin-bottom: 10px;
 }
 
-/* ========== POPUPS ========== */
+/* ========== POPUPS (STYLE FORUM) ========== */
 .popup-overlay {
     display: none;
     position: fixed;
@@ -387,7 +456,8 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(5px);
     z-index: 1000;
     align-items: center;
     justify-content: center;
@@ -395,93 +465,122 @@
 
 .popup-overlay.visible {
     display: flex;
+    animation: apparition 0.3s ease;
 }
 
 .popup-contenu {
-    background: #1a1f2e;
-    border-radius: 15px;
+    background: linear-gradient(145deg, #1e2433 0%, #1a1f2e 100%);
+    border-radius: 25px;
     width: 90%;
-    max-width: 600px;
-    max-height: 90vh;
+    max-width: 700px;
+    max-height: 85vh;
     overflow-y: auto;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 3px solid rgba(102, 126, 234, 0.5);
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8);
+    animation: zoomIn 0.5s ease;
+}
+
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 .popup-contenu.grande {
-    max-width: 800px;
+    max-width: 900px;
 }
 
 .popup-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 25px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    border-bottom: 3px solid rgba(255, 255, 255, 0.15);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 25px 25px 0 0;
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);
 }
 
 .popup-header h3 {
     color: #fff;
-    font-size: 1.5em;
+    font-size: 1.6em;
+    font-weight: 800;
 }
 
 .bouton-fermer {
-    background: none;
-    border: none;
-    color: #8b92a8;
+    background: rgba(239, 68, 68, 0.2);
+    border: 2px solid rgba(239, 68, 68, 0.4);
+    color: #ef4444;
     font-size: 1.5em;
     cursor: pointer;
     transition: all 0.3s ease;
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .bouton-fermer:hover {
-    color: #ef4444;
+    background: #ef4444;
+    color: white;
     transform: rotate(90deg);
 }
 
 .popup-contenu form {
-    padding: 25px;
+    padding: 30px;
 }
 
 .form-groupe {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .form-groupe label {
     display: block;
-    color: #e4e6eb;
-    margin-bottom: 8px;
-    font-weight: 600;
+    color: #fff;
+    margin-bottom: 10px;
+    font-weight: 700;
+    font-size: 1.05em;
 }
 
 .form-groupe input,
 .form-groupe textarea {
     width: 100%;
-    padding: 12px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    color: #e4e6eb;
-    font-size: 1em;
+    padding: 18px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    color: #fff;
+    font-size: 1.1em;
     font-family: inherit;
+    transition: all 0.3s ease;
 }
 
 .form-groupe input:focus,
 .form-groupe textarea:focus {
     outline: none;
     border-color: #667eea;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 25px rgba(102, 126, 234, 0.5);
 }
 
 .form-actions {
     display: flex;
-    gap: 10px;
+    gap: 15px;
     justify-content: flex-end;
 }
 
 /* ========== DISCUSSION COMPLÈTE ========== */
 #discussion-post-original,
 #discussion-reponses {
-    padding: 0 25px 25px;
+    padding: 30px;
+    background: rgba(0, 0, 0, 0.2);
 }
 
 .post-header,
@@ -489,74 +588,91 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
 }
 
 .post-auteur,
 .reponse-auteur {
     color: #667eea;
-    font-weight: 600;
-    font-size: 1.1em;
+    font-weight: 700;
+    font-size: 1.2em;
 }
 
 .post-date,
 .reponse-date {
     color: #8b92a8;
-    font-size: 0.9em;
+    font-size: 0.95em;
 }
 
 .post-contenu,
 .reponse-contenu {
-    color: #e4e6eb;
-    line-height: 1.8;
-    margin-bottom: 15px;
+    color: #fff;
+    line-height: 1.9;
+    margin-bottom: 20px;
+    font-size: 1.05em;
 }
 
 .reponse {
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 10px;
-    padding: 15px;
-    margin-bottom: 15px;
-    border-left: 3px solid #667eea;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid #667eea;
+    transition: all 0.3s ease;
+}
+
+.reponse:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(5px);
 }
 
 .form-repondre {
-    padding: 25px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    border-top: 3px solid rgba(255, 255, 255, 0.15);
+    background: rgba(0, 0, 0, 0.3);
 }
 
 .form-repondre textarea {
     width: 100%;
-    padding: 12px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    color: #e4e6eb;
-    font-size: 1em;
+    padding: 18px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    color: #fff;
+    font-size: 1.1em;
     font-family: inherit;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
 }
 
-/* ========== CHAT BULLE ========== */
+.form-repondre textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 25px rgba(102, 126, 234, 0.5);
+}
+
+/* ========== BULLE CHAT (MÊME STYLE QUE LE FORUM) ========== */
 .bulle-chat {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 400px;
-    max-height: 600px;
-    background: #1a1f2e;
-    border-radius: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 700px;
+    height: 800px;
+    background: linear-gradient(145deg, #1e2433 0%, #1a1f2e 100%);
+    border-radius: 25px;
+    border: 3px solid rgba(102, 126, 234, 0.5);
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8);
     display: none;
     flex-direction: column;
-    z-index: 900;
+    z-index: 1100;
 }
 
 .bulle-chat.ouverte {
     display: flex;
+    animation: zoomIn 0.5s ease;
 }
 
 .contenu-bulle {
@@ -569,80 +685,114 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    border-bottom: 3px solid rgba(255, 255, 255, 0.15);
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 15px 15px 0 0;
+    border-radius: 25px 25px 0 0;
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);
 }
 
 .haut-bulle h3 {
     color: white;
-    font-size: 1.2em;
+    font-size: 1.6em;
+    font-weight: 800;
 }
 
 .zone-messages {
     flex: 1;
     overflow-y: auto;
-    padding: 20px;
-    min-height: 300px;
-    max-height: 400px;
+    padding: 30px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.zone-messages::-webkit-scrollbar {
+    width: 12px;
+}
+
+.zone-messages::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.zone-messages::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
 }
 
 .message {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-    padding: 12px;
-    margin-bottom: 10px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.3s ease;
+}
+
+.message:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateX(5px);
 }
 
 .message-haut {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 }
 
 .message-auteur {
     color: #667eea;
-    font-weight: 600;
-    font-size: 0.95em;
+    font-weight: 700;
+    font-size: 1.1em;
 }
 
 .message-heure {
     color: #8b92a8;
-    font-size: 0.85em;
+    font-size: 0.95em;
 }
 
 .message-texte {
-    color: #e4e6eb;
-    line-height: 1.5;
+    color: #fff;
+    line-height: 1.7;
+    font-size: 1.05em;
 }
 
 .formulaire-message {
-    padding: 15px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 25px;
+    border-top: 3px solid rgba(255, 255, 255, 0.15);
+    background: rgba(0, 0, 0, 0.3);
 }
 
 .formulaire-message textarea {
     width: 100%;
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    color: #e4e6eb;
-    font-size: 0.95em;
+    padding: 18px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    color: #fff;
+    font-size: 1.1em;
     font-family: inherit;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     resize: none;
+    transition: all 0.3s ease;
+}
+
+.formulaire-message textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 25px rgba(102, 126, 234, 0.5);
+    background: rgba(255, 255, 255, 0.12);
 }
 
 .bas-bulle {
-    padding: 0 15px 15px;
+    padding: 0 25px 25px;
 }
 
 .texte-centre {
     text-align: center;
     color: #8b92a8;
-    padding: 20px;
+    padding: 30px;
+    font-style: italic;
+    font-size: 1.05em;
 }
 
 /* ========== FOND SOMBRE ========== */
@@ -653,12 +803,14 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    z-index: 800;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(5px);
+    z-index: 1050;
 }
 
 .fond-sombre.visible {
     display: block;
+    animation: apparition 0.3s ease;
 }
 
 /* ========== RESPONSIVE ========== */
@@ -676,6 +828,11 @@
     .sidebar-widget {
         min-width: 350px;
         max-height: none;
+    }
+
+    .bulle-chat {
+        width: 90%;
+        height: 85vh;
     }
 }
 
@@ -697,18 +854,31 @@
     }
 
     .bulle-chat {
-        width: 100%;
-        right: 0;
-        bottom: 0;
-        border-radius: 15px 15px 0 0;
+        width: 95%;
+        height: 90vh;
     }
 
     .onglets-container {
         flex-wrap: wrap;
+        justify-content: center;
+        padding-left: 0;
     }
 
     .onglet {
         flex: 1;
         min-width: 150px;
+        padding: 15px 30px;
+        font-size: 1.1em;
+    }
+
+    .titre-section h1 {
+        font-size: 2.2em;
+    }
+}
+
+@media (max-width: 480px) {
+    .onglet {
+        padding: 12px 20px;
+        font-size: 1em;
     }
 }
