@@ -91,7 +91,7 @@ $genres = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Accueil | GameLink</title>
     <link rel="stylesheet" href="../CSS/HEADER.css">
-    <link rel="stylesheet" href="../CSS/ACCUEIL_SIMPLE.css">
+    <link rel="stylesheet" href="../CSS/STYLE_ACCUEIL.css">
     <link rel="icon" type="image/svg+xml" href="../ICON/LogoSimple.svg">
 </head>
 <body>
