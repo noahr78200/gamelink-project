@@ -91,7 +91,7 @@ $genres = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Accueil | GameLink</title>
     <link rel="stylesheet" href="../CSS/HEADER.css">
-    <link rel="stylesheet" href="../CSS/STYLE_ACCUEIL.css">
+    <link rel="stylesheet" href="../CSS/ACCUEIL_SIMPLE.css">
     <link rel="icon" type="image/svg+xml" href="../ICON/LogoSimple.svg">
 </head>
 <body>
@@ -123,16 +123,20 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
             <button class="arrow arrow-left" onclick="scrollCarousel('top-games', -1)">‹</button>
             <div class="carousel" id="top-games">
                 <?php foreach ($topGames as $game): ?>
-                    <a href="game.php?id=<?= $game['id_jeu'] ?>" class="game-card">
+                    <a href="game.php?id=<?= $game['id_jeu'] ?>" class="big-game-card">
                         <img src="<?= htmlspecialchars($game['cover_url']) ?>" 
                              alt="<?= htmlspecialchars($game['titre']) ?>"
-                             class="game-image">
-                        <div class="game-info">
-                            <p class="game-name"><?= htmlspecialchars($game['titre']) ?></p>
-                            <div class="game-rating">
+                             class="big-game-image">
+                        <div class="big-game-info">
+                            <p class="big-game-name"><?= htmlspecialchars($game['titre']) ?></p>
+                        </div>
+                        <div class="game-hover-info">
+                            <p class="hover-title"><?= htmlspecialchars($game['titre']) ?></p>
+                            <div class="hover-rating">
                                 <span class="stars">★★★★★</span>
                                 <span class="votes"><?= $game['nombre_votes'] ?> votes</span>
                             </div>
+                            <span class="hover-btn">Voir le jeu</span>
                         </div>
                     </a>
                 <?php endforeach; ?>
@@ -161,12 +165,16 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
                         <img src="<?= htmlspecialchars($coverUrl) ?>" 
                              alt="<?= htmlspecialchars($game['name']) ?>"
                              class="game-image">
-                        <div class="game-info">
-                            <p class="game-name"><?= htmlspecialchars($game['name']) ?></p>
-                            <div class="game-rating">
+                        <div class="default-title">
+                            <p><?= htmlspecialchars($game['name']) ?></p>
+                        </div>
+                        <div class="game-hover-info">
+                            <p class="hover-title"><?= htmlspecialchars($game['name']) ?></p>
+                            <div class="hover-rating">
                                 <span class="stars">★</span>
                                 <span class="votes"><?= $rating ?>/5</span>
                             </div>
+                            <span class="hover-btn">Voir plus</span>
                         </div>
                     </a>
                 <?php endforeach; ?>
@@ -195,12 +203,16 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
                         <img src="<?= htmlspecialchars($coverUrl) ?>" 
                              alt="<?= htmlspecialchars($game['name']) ?>"
                              class="game-image">
-                        <div class="game-info">
-                            <p class="game-name"><?= htmlspecialchars($game['name']) ?></p>
-                            <div class="game-rating">
+                        <div class="default-title">
+                            <p><?= htmlspecialchars($game['name']) ?></p>
+                        </div>
+                        <div class="game-hover-info">
+                            <p class="hover-title"><?= htmlspecialchars($game['name']) ?></p>
+                            <div class="hover-rating">
                                 <span class="stars">★</span>
                                 <span class="votes"><?= $rating ?>/5</span>
                             </div>
+                            <span class="hover-btn">Voir plus</span>
                         </div>
                     </a>
                 <?php endforeach; ?>
@@ -229,12 +241,16 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
                         <img src="<?= htmlspecialchars($coverUrl) ?>" 
                              alt="<?= htmlspecialchars($game['name']) ?>"
                              class="game-image">
-                        <div class="game-info">
-                            <p class="game-name"><?= htmlspecialchars($game['name']) ?></p>
-                            <div class="game-rating">
+                        <div class="default-title">
+                            <p><?= htmlspecialchars($game['name']) ?></p>
+                        </div>
+                        <div class="game-hover-info">
+                            <p class="hover-title"><?= htmlspecialchars($game['name']) ?></p>
+                            <div class="hover-rating">
                                 <span class="stars">★</span>
                                 <span class="votes"><?= $rating ?>/5</span>
                             </div>
+                            <span class="hover-btn">Voir plus</span>
                         </div>
                     </a>
                 <?php endforeach; ?>
@@ -263,12 +279,16 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
                         <img src="<?= htmlspecialchars($coverUrl) ?>" 
                              alt="<?= htmlspecialchars($game['name']) ?>"
                              class="game-image">
-                        <div class="game-info">
-                            <p class="game-name"><?= htmlspecialchars($game['name']) ?></p>
-                            <div class="game-rating">
+                        <div class="default-title">
+                            <p><?= htmlspecialchars($game['name']) ?></p>
+                        </div>
+                        <div class="game-hover-info">
+                            <p class="hover-title"><?= htmlspecialchars($game['name']) ?></p>
+                            <div class="hover-rating">
                                 <span class="stars">★</span>
                                 <span class="votes"><?= $rating ?>/5</span>
                             </div>
+                            <span class="hover-btn">Voir plus</span>
                         </div>
                     </a>
                 <?php endforeach; ?>
@@ -297,12 +317,16 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
                         <img src="<?= htmlspecialchars($coverUrl) ?>" 
                              alt="<?= htmlspecialchars($game['name']) ?>"
                              class="game-image">
-                        <div class="game-info">
-                            <p class="game-name"><?= htmlspecialchars($game['name']) ?></p>
-                            <div class="game-rating">
+                        <div class="default-title">
+                            <p><?= htmlspecialchars($game['name']) ?></p>
+                        </div>
+                        <div class="game-hover-info">
+                            <p class="hover-title"><?= htmlspecialchars($game['name']) ?></p>
+                            <div class="hover-rating">
                                 <span class="stars">★</span>
                                 <span class="votes"><?= $rating ?>/5</span>
                             </div>
+                            <span class="hover-btn">Voir plus</span>
                         </div>
                     </a>
                 <?php endforeach; ?>
@@ -317,7 +341,13 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
 // Fonction SIMPLE pour faire défiler les carrousels
 function scrollCarousel(carouselId, direction) {
     var carousel = document.getElementById(carouselId);
-    var scrollAmount = 240; // largeur d'une carte + gap
+    
+    // Taille différente pour le carrousel des jeux à 5 étoiles
+    if (carouselId === 'top-games') {
+        var scrollAmount = 460; // largeur d'une grande carte + gap
+    } else {
+        var scrollAmount = 240; // largeur d'une petite carte + gap
+    }
     
     carousel.scrollBy({
         left: direction * scrollAmount,
