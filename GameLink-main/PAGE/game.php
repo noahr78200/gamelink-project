@@ -244,9 +244,10 @@ try {
     <link rel="stylesheet" href="../CSS/STYLE_GAME.css">
     <link rel="icon" type="image/svg+xml" href="../ICON/LogoSimple.svg">
 </head>
+<?php include __DIR__ . '/../INCLUDES/header.php'; ?>
 <body>
 
-<?php include __DIR__ . '/../INCLUDES/header.php'; ?>
+
 
 <div class="game-container">
     
