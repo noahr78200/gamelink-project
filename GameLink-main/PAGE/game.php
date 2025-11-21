@@ -1,4 +1,8 @@
 <?php
+// Activer l'affichage des erreurs pour le debug
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 // Démarrer la session
 session_start();
 
@@ -26,68 +30,87 @@ $userId = $_SESSION['user_id'] ?? null;
 
 // ACTION : Supprimer un commentaire
 if (isset($_POST['delete_comment']) && $userId) {
-    $sql = "DELETE FROM avis WHERE id_joueur = ? AND id_jeu = ?";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([$userId, $gameId]);
-    header("Location: game.php?id=" . $gameId);
-    exit;
+    try {
+        $sql = "DELETE FROM avis WHERE id_joueur = ? AND id_jeu = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$userId, $gameId]);
+        header("Location: game.php?id=" . $gameId);
+        exit;
+    } catch (PDOException $e) {
+        die("ERREUR SUPPRESSION: " . $e->getMessage());
+    }
 }
 
 // ACTION : Noter le jeu (AJAX)
 if (isset($_POST['ajax_rating']) && $userId) {
     header('Content-Type: application/json');
-    $note = (int)$_POST['ajax_rating'];
-    if ($note >= 1 && $note <= 5) {
-        // Vérifier si une note existe déjà
-        $sql = "SELECT id_joueur FROM avis WHERE id_joueur = ? AND id_jeu = ?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$userId, $gameId]);
-        $existe = $stmt->fetch();
+    
+    try {
+        $note = (int)$_POST['ajax_rating'];
         
-        if ($existe) {
-            // Mettre à jour
-            $sql = "UPDATE avis SET valeur = ?, date_notation = NOW() WHERE id_joueur = ? AND id_jeu = ?";
+        if ($note >= 1 && $note <= 5) {
+            // Vérifier si une note existe déjà
+            $sql = "SELECT id_joueur FROM avis WHERE id_joueur = ? AND id_jeu = ?";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$note, $userId, $gameId]);
-        } else {
-            // Créer
-            $sql = "INSERT INTO avis (id_joueur, id_jeu, valeur, date_notation) VALUES (?, ?, ?, NOW())";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([$userId, $gameId, $note]);
+            $stmt->execute([$userId, $gameId]);
+            $existe = $stmt->fetch();
+            
+            if ($existe) {
+                // Mettre à jour
+                $sql = "UPDATE avis SET valeur = ?, date_notation = NOW() WHERE id_joueur = ? AND id_jeu = ?";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([$note, $userId, $gameId]);
+            } else {
+                // Créer (SANS clé étrangère sur jeu)
+                $sql = "INSERT INTO avis (id_joueur, id_jeu, valeur, date_notation) VALUES (?, ?, ?, NOW())";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([$userId, $gameId, $note]);
+            }
+            
+            echo json_encode(['success' => true]);
+            exit;
         }
-        echo json_encode(['success' => true]);
+        
+        echo json_encode(['success' => false, 'error' => 'Note invalide']);
+        exit;
+        
+    } catch (PDOException $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
         exit;
     }
-    echo json_encode(['success' => false]);
-    exit;
 }
 
 // ACTION : Ajouter un commentaire
 if (isset($_POST['comment_text']) && $userId) {
-    $commentaire = trim($_POST['comment_text']);
-    
-    if ($commentaire != "") {
-        // Vérifier si un avis existe déjà
-        $sql = "SELECT id_joueur FROM avis WHERE id_joueur = ? AND id_jeu = ?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$userId, $gameId]);
-        $existe = $stmt->fetch();
+    try {
+        $commentaire = trim($_POST['comment_text']);
         
-        if ($existe) {
-            // Mettre à jour
-            $sql = "UPDATE avis SET texte_commentaire = ?, date_commentaire = NOW() WHERE id_joueur = ? AND id_jeu = ?";
+        if ($commentaire != "") {
+            // Vérifier si un avis existe déjà
+            $sql = "SELECT id_joueur FROM avis WHERE id_joueur = ? AND id_jeu = ?";
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$commentaire, $userId, $gameId]);
-        } else {
-            // Créer
-            $sql = "INSERT INTO avis (id_joueur, id_jeu, texte_commentaire, date_commentaire) VALUES (?, ?, ?, NOW())";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([$userId, $gameId, $commentaire]);
+            $stmt->execute([$userId, $gameId]);
+            $existe = $stmt->fetch();
+            
+            if ($existe) {
+                // Mettre à jour
+                $sql = "UPDATE avis SET texte_commentaire = ?, date_commentaire = NOW() WHERE id_joueur = ? AND id_jeu = ?";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([$commentaire, $userId, $gameId]);
+            } else {
+                // Créer (SANS clé étrangère sur jeu)
+                $sql = "INSERT INTO avis (id_joueur, id_jeu, texte_commentaire, date_commentaire) VALUES (?, ?, ?, NOW())";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([$userId, $gameId, $commentaire]);
+            }
         }
+        
+        header("Location: game.php?id=" . $gameId);
+        exit;
+        
+    } catch (PDOException $e) {
+        die("ERREUR COMMENTAIRE: " . $e->getMessage());
     }
-    
-    header("Location: game.php?id=" . $gameId);
-    exit;
 }
 
 // ========================================
@@ -140,39 +163,49 @@ if (isset($jeu['cover']['image_id'])) {
 // ÉTAPE 3 : RÉCUPÉRER LES NOTES
 // ========================================
 
-// Note moyenne
-$sql = "SELECT valeur FROM avis WHERE id_jeu = ? AND valeur IS NOT NULL";
-$stmt = $pdo->prepare($sql);
-$stmt->execute([$gameId]);
-$notes = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-$nombreNotes = count($notes);
-$noteMoyenne = 0;
-if ($nombreNotes > 0) {
-    $noteMoyenne = round(array_sum($notes) / $nombreNotes, 1);
-}
-
-// Ma note personnelle
-$maNote = 0;
-if ($userId) {
-    $sql = "SELECT valeur FROM avis WHERE id_joueur = ? AND id_jeu = ?";
+try {
+    // Note moyenne
+    $sql = "SELECT valeur FROM avis WHERE id_jeu = ? AND valeur IS NOT NULL";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$userId, $gameId]);
-    $maNote = $stmt->fetchColumn() ?: 0;
+    $stmt->execute([$gameId]);
+    $notes = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+    $nombreNotes = count($notes);
+    $noteMoyenne = 0;
+    if ($nombreNotes > 0) {
+        $noteMoyenne = round(array_sum($notes) / $nombreNotes, 1);
+    }
+
+    // Ma note personnelle
+    $maNote = 0;
+    if ($userId) {
+        $sql = "SELECT valeur FROM avis WHERE id_joueur = ? AND id_jeu = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$userId, $gameId]);
+        $maNote = $stmt->fetchColumn() ?: 0;
+    }
+} catch (PDOException $e) {
+    $nombreNotes = 0;
+    $noteMoyenne = 0;
+    $maNote = 0;
 }
 
 // ========================================
 // ÉTAPE 4 : RÉCUPÉRER LES COMMENTAIRES
 // ========================================
 
-$sql = "SELECT a.texte_commentaire, a.date_commentaire, a.id_joueur, j.pseudo
-        FROM avis a
-        JOIN joueur j ON j.id_joueur = a.id_joueur
-        WHERE a.id_jeu = ? AND a.texte_commentaire IS NOT NULL
-        ORDER BY a.date_commentaire DESC";
-$stmt = $pdo->prepare($sql);
-$stmt->execute([$gameId]);
-$commentaires = $stmt->fetchAll();
+try {
+    $sql = "SELECT a.texte_commentaire, a.date_commentaire, a.id_joueur, j.pseudo
+            FROM avis a
+            JOIN joueur j ON j.id_joueur = a.id_joueur
+            WHERE a.id_jeu = ? AND a.texte_commentaire IS NOT NULL
+            ORDER BY a.date_commentaire DESC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$gameId]);
+    $commentaires = $stmt->fetchAll();
+} catch (PDOException $e) {
+    $commentaires = [];
+}
 
 ?>
 <!DOCTYPE html>
@@ -344,6 +377,8 @@ function toggleResume() {
 
 // Fonction pour noter
 function noterJeu(note) {
+    console.log('Notation:', note); // DEBUG
+    
     // Afficher visuellement
     var etoiles = document.querySelectorAll('.star-btn');
     for (var i = 0; i < etoiles.length; i++) {
@@ -362,17 +397,21 @@ function noterJeu(note) {
         method: 'POST',
         body: donnees
     })
-    .then(function(reponse) { return reponse.json(); })
+    .then(function(reponse) { 
+        console.log('Réponse reçue:', reponse); // DEBUG
+        return reponse.json(); 
+    })
     .then(function(data) {
+        console.log('Données:', data); // DEBUG
         if (data.success) {
             location.reload();
         } else {
-            alert('Erreur lors de la notation');
+            alert('Erreur: ' + (data.error || 'Inconnue'));
         }
     })
     .catch(function(erreur) {
-        console.error('Erreur:', erreur);
-        alert('Erreur lors de la notation');
+        console.error('Erreur complète:', erreur); // DEBUG
+        alert('Erreur de connexion: ' + erreur.message);
     });
 }
 </script>
