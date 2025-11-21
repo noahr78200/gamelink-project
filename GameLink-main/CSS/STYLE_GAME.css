@@ -1,6 +1,29 @@
 /* ========================================
-   PAGE GAME - STYLE SIMPLE ET ÉLÉGANT
+   PAGE GAME - STYLE ADMIN THEME
    ======================================== */
+
+:root {
+    /* Couleurs du thème admin */
+    --bg: #0f1115;
+    --bg-grad1: #11151c;
+    --bg-grad2: #0c0f14;
+    --panel: #1a1e27;
+    --panel-2: #171b23;
+    --panel-3: #141820;
+    --border: #2a3140;
+    --hoverBorder: #3a4559;
+    --text: #E7E9ED;
+    --muted: #8c95a3;
+    --accent: #6ea8ff;
+    --accent-2: #9aa6ff;
+    --up: #34d399;
+    --down: #f87171;
+    --star-color: #f59e0b;
+    --radius: 14px;
+    --shadow-1: 0 8px 24px rgba(0,0,0,.35);
+    --shadow-2: 0 2px 0 rgba(255,255,255,.03) inset, 0 1px 0 rgba(255,255,255,.02);
+    --glow: rgba(110,168,255,.12);
+}
 
 * {
     margin: 0;
@@ -9,10 +32,13 @@
 }
 
 body {
-    background: #141414;
-    color: #ffffff;
-    font-family: 'Segoe UI', Arial, sans-serif;
+    background: radial-gradient(1200px 560px at 75% -15%, var(--glow), transparent 60%),
+                linear-gradient(180deg, var(--bg-grad1), var(--bg-grad2));
+    color: var(--text);
+    font-family: system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
     line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .game-container {
@@ -26,16 +52,22 @@ body {
     display: inline-block;
     margin-bottom: 30px;
     padding: 10px 20px;
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
+    background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06)), var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
     text-decoration: none;
-    border-radius: 5px;
+    border-radius: var(--radius);
     font-size: 14px;
-    transition: background 0.3s;
+    font-weight: 600;
+    transition: all 0.18s ease;
+    box-shadow: var(--shadow-2);
 }
 
 .btn-back:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.10)), var(--panel);
+    border-color: var(--hoverBorder);
+    transform: translateX(-3px);
+    box-shadow: 0 6px 16px rgba(0,0,0,.25);
 }
 
 /* ========== SECTION PRINCIPALE ========== */
@@ -43,9 +75,27 @@ body {
     display: flex;
     gap: 40px;
     margin-bottom: 60px;
-    background: rgba(255, 255, 255, 0.05);
+    background: linear-gradient(180deg, var(--panel), var(--panel-3));
     padding: 30px;
-    border-radius: 10px;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-1), var(--shadow-2);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Effet métal brossé subtil */
+.game-main::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,0) 40%),
+                repeating-linear-gradient(135deg,
+                    rgba(255,255,255,.03) 0 2px,
+                    rgba(255,255,255,0) 2px 6px
+                );
+    pointer-events: none;
+    mix-blend-mode: overlay;
 }
 
 /* IMAGE À GAUCHE */
@@ -77,33 +127,39 @@ body {
 
 /* RÉSUMÉ PLIABLE */
 .game-summary {
-    color: #b3b3b3;
+    color: var(--muted);
     font-size: 1em;
     line-height: 1.6;
+    margin-bottom: 10px;
 }
 
 .summary-text {
     display: -webkit-box;
-    
+   
     -webkit-box-orient: vertical;
     overflow: hidden;
+    transition: all 0.3s ease;
 }
 
 .summary-text.expanded {
     display: block;
+   
 }
 
 .btn-toggle {
     background: none;
     border: none;
-    color: #e50914;
+    color: var(--accent);
     cursor: pointer;
     font-size: 0.9em;
     margin-top: 5px;
     padding: 0;
+    font-weight: 600;
+    transition: color 0.2s;
 }
 
 .btn-toggle:hover {
+    color: var(--accent-2);
     text-decoration: underline;
 }
 
@@ -112,27 +168,34 @@ body {
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
-    color: #b3b3b3;
+    color: var(--muted);
     font-size: 0.95em;
+    margin-bottom: 20px;
 }
 
 .meta-item {
     display: flex;
     align-items: center;
     gap: 5px;
+    padding: 8px 14px;
+    background: rgba(255,255,255,.03);
+    border: 1px solid var(--border);
+    border-radius: 20px;
 }
 
 .meta-label {
-    font-weight: bold;
-    color: #fff;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: .02em;
 }
 
 /* ========== SECTION NOTATION ========== */
 .rating-box {
-    background: rgba(255, 255, 255, 0.03);
+    background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06)), var(--panel-2);
     padding: 20px;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-2);
 }
 
 .rating-display {
@@ -140,12 +203,15 @@ body {
     align-items: center;
     gap: 15px;
     margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
 }
 
 .rating-number {
     font-size: 3em;
-    font-weight: bold;
-    color: #ffd700;
+    font-weight: 900;
+    color: var(--star-color);
+    text-shadow: 0 2px 10px rgba(245,158,11,.4);
 }
 
 .rating-stars {
@@ -155,28 +221,32 @@ body {
 
 .star {
     font-size: 1.5em;
-    color: #444;
+    color: #333;
+    transition: color 0.2s ease;
 }
 
 .star.filled {
-    color: #ffd700;
+    color: var(--star-color);
+    text-shadow: 0 0 10px rgba(245,158,11,.5);
 }
 
 .rating-count {
-    color: #b3b3b3;
+    color: var(--muted);
     font-size: 0.9em;
+    margin-top: 5px;
 }
 
 /* NOTATION UTILISATEUR */
 .user-rating {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding-top: 15px;
 }
 
 .user-rating h3 {
     font-size: 1.1em;
     margin-bottom: 10px;
-    color: #fff;
+    color: var(--text);
+    font-weight: 700;
+    letter-spacing: .02em;
 }
 
 .stars-input {
@@ -186,35 +256,40 @@ body {
 
 .star-btn {
     font-size: 2em;
-    color: #444;
+    color: #333;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
     user-select: none;
 }
 
 .star-btn:hover,
 .star-btn.active {
-    color: #ffd700;
+    color: var(--star-color);
+    text-shadow: 0 0 15px rgba(245,158,11,.7);
     transform: scale(1.1);
 }
 
 .login-msg {
-    color: #999;
+    color: var(--muted);
     font-style: italic;
     font-size: 0.95em;
 }
 
 /* ========== SECTION COMMENTAIRES ========== */
 .comments-section {
-    background: rgba(255, 255, 255, 0.05);
+    background: linear-gradient(180deg, var(--panel), var(--panel-3));
     padding: 30px;
-    border-radius: 10px;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-1), var(--shadow-2);
 }
 
 .comments-section h2 {
     font-size: 1.8em;
     margin-bottom: 25px;
-    color: #fff;
+    color: var(--text);
+    font-weight: 700;
+    letter-spacing: .02em;
 }
 
 /* FORMULAIRE COMMENTAIRE */
@@ -226,39 +301,46 @@ body {
     width: 100%;
     min-height: 100px;
     padding: 15px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 5px;
-    color: #fff;
+    background: rgba(255,255,255,.05);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
     font-size: 1em;
     font-family: inherit;
     resize: vertical;
+    transition: all 0.3s ease;
 }
 
 .comment-form textarea:focus {
     outline: none;
-    border-color: #e50914;
+    border-color: var(--accent);
+    background: rgba(255,255,255,.08);
+    box-shadow: 0 0 0 3px rgba(110,168,255,.12);
 }
 
 .comment-form textarea::placeholder {
-    color: #999;
+    color: var(--muted);
 }
 
 .btn-submit {
     margin-top: 10px;
     padding: 10px 25px;
-    background: #e50914;
-    border: none;
-    border-radius: 5px;
-    color: #fff;
+    background: linear-gradient(180deg, rgba(143,182,255,.20), rgba(143,182,255,.06));
+    border: 1px solid rgba(143,182,255,.45);
+    border-radius: var(--radius);
+    color: var(--text);
     font-size: 1em;
-    font-weight: bold;
+    font-weight: 700;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: all 0.18s ease;
+    box-shadow: var(--shadow-2);
 }
 
 .btn-submit:hover {
-    background: #f40612;
+    background: linear-gradient(180deg, rgba(143,182,255,.30), rgba(143,182,255,.12));
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(110,168,255,.25);
 }
 
 /* LISTE COMMENTAIRES */
@@ -270,16 +352,23 @@ body {
 
 .no-comments {
     text-align: center;
-    color: #999;
+    color: var(--muted);
     font-style: italic;
     padding: 40px;
 }
 
 .comment {
-    background: rgba(255, 255, 255, 0.03);
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
     padding: 20px;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    transition: all 0.18s ease;
+}
+
+.comment:hover {
+    background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+    border-color: var(--hoverBorder);
+    box-shadow: 0 4px 12px rgba(0,0,0,.25);
 }
 
 .comment-header {
@@ -288,39 +377,43 @@ body {
     align-items: center;
     margin-bottom: 10px;
     padding-bottom: 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--border);
 }
 
 .comment-author {
-    font-weight: bold;
-    color: #e50914;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: .02em;
 }
 
 .comment-date {
-    color: #999;
+    color: var(--muted);
     font-size: 0.85em;
 }
 
 .comment-text {
-    color: #e0e0e0;
+    color: var(--text);
     line-height: 1.5;
     margin-bottom: 10px;
 }
 
 .btn-delete {
     padding: 6px 12px;
-    background: rgba(239, 68, 68, 0.2);
-    border: 1px solid rgba(239, 68, 68, 0.5);
-    border-radius: 4px;
-    color: #ef4444;
+    background: linear-gradient(180deg, rgba(239,100,100,.22), rgba(239,100,100,.06));
+    border: 1px solid rgba(239,100,100,.55);
+    border-radius: 10px;
+    color: #ff9b9b;
     font-size: 0.85em;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.18s ease;
+    font-weight: 600;
 }
 
 .btn-delete:hover {
-    background: #ef4444;
-    color: #fff;
+    background: linear-gradient(180deg, rgba(239,100,100,.35), rgba(239,100,100,.15));
+    border-color: var(--down);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239,100,100,.3);
 }
 
 /* ========== RESPONSIVE ========== */

@@ -3,8 +3,6 @@ session_start();
 
 // Connexion BDD
 require __DIR__ . '/../DATA/DBConfig.php';
-require_once __DIR__ . '/../INCLUDES/track.php';
-require_once __DIR__ . '/../INCLUDES/check_admin.php';
 
 // Fonction sécuriser texte
 function h($x) { 
@@ -17,6 +15,120 @@ if (!isset($_GET['id'])) {
     exit;
 }
 $gameId = (int)$_GET['id'];
+
+// -----------------------------------------------------
+// TRAITEMENT DES ACTIONS POST EN PREMIER
+// -----------------------------------------------------
+
+// Utilisateur connecté
+$userId = $_SESSION['user_id'] ?? null;
+$userPseudo = $_SESSION['user_pseudo'] ?? null;
+
+// SUPPRESSION DE COMMENTAIRE
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_comment'])) {
+    if ($userId) {
+        try {
+            $sql = "DELETE FROM avis WHERE id_joueur = :u AND id_jeu = :g";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':u' => $userId, ':g' => $gameId]);
+        } catch (PDOException $e) {
+            error_log("Erreur suppression commentaire: " . $e->getMessage());
+        }
+    }
+    header("Location: game.php?id=" . $gameId);
+    exit;
+}
+
+// SAUVEGARDE DES NOTES (par AJAX)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_rating'])) {
+    header('Content-Type: application/json');
+    
+    if (!$userId) {
+        echo json_encode(['success' => false, 'message' => 'Non connecté']);
+        exit;
+    }
+
+    try {
+        $rating = max(1, min(5, (int)$_POST['ajax_rating']));
+        $now = date("Y-m-d H:i:s");
+
+        // Vérifier si un avis existe déjà
+        $sql = "SELECT id_joueur FROM avis WHERE id_joueur = :u AND id_jeu = :g";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':u' => $userId, ':g' => $gameId]);
+        $exists = $stmt->fetch();
+
+        if ($exists) {
+            // Mettre à jour
+            $sql = "UPDATE avis SET valeur = :v, date_notation = :d WHERE id_joueur = :u AND id_jeu = :g";
+        } else {
+            // Insérer
+            $sql = "INSERT INTO avis (id_joueur, id_jeu, valeur, date_notation) VALUES (:u, :g, :v, :d)";
+        }
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':u' => $userId,
+            ':g' => $gameId,
+            ':v' => $rating,
+            ':d' => $now
+        ]);
+
+        echo json_encode(['success' => true]);
+    } catch (PDOException $e) {
+        error_log("Erreur notation: " . $e->getMessage());
+        echo json_encode(['success' => false, 'message' => 'Erreur serveur']);
+    }
+    exit;
+}
+
+// SAUVEGARDE DES COMMENTAIRES
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_text'])) {
+    if (!$userId) {
+        header("Location: ../PAGE/AUTH.php");
+        exit;
+    }
+
+    try {
+        $comment = trim($_POST['comment_text']);
+        $now = date("Y-m-d H:i:s");
+
+        if ($comment !== "") {
+            // Vérifier si l'utilisateur a déjà un avis
+            $sql = "SELECT id_joueur FROM avis WHERE id_joueur = :u AND id_jeu = :g";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':u' => $userId, ':g' => $gameId]);
+            $existingAvis = $stmt->fetch();
+
+            if ($existingAvis) {
+                // Mettre à jour le commentaire
+                $sql = "UPDATE avis SET texte_commentaire = :t, date_commentaire = :d 
+                        WHERE id_joueur = :u AND id_jeu = :g";
+            } else {
+                // Insérer un nouvel avis avec commentaire
+                $sql = "INSERT INTO avis (id_joueur, id_jeu, texte_commentaire, date_commentaire)
+                        VALUES (:u, :g, :t, :d)";
+            }
+
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ':u' => $userId,
+                ':g' => $gameId,
+                ':t' => $comment,
+                ':d' => $now
+            ]);
+        }
+    } catch (PDOException $e) {
+        error_log("Erreur commentaire: " . $e->getMessage());
+    }
+
+    header("Location: game.php?id=" . $gameId);
+    exit;
+}
+
+// -----------------------------------------------------
+// RÉCUPÉRATION DES DONNÉES DU JEU
+// -----------------------------------------------------
 
 // Récupérer les infos du jeu depuis IGDB
 $CLIENT_ID = 'spy0n0vev24kqu6gg3m6t9gh0a9d6r';
@@ -70,117 +182,24 @@ if (isset($game['involved_companies'][0]['company']['name'])) {
     $studio = $game['involved_companies'][0]['company']['name'];
 }
 
-// Utilisateur connecté
-$userId = $_SESSION['user_id'] ?? null;
-$userPseudo = $_SESSION['user_pseudo'] ?? null;
-
-// -----------------------------------------------------
-// SUPPRESSION DE COMMENTAIRE
-// -----------------------------------------------------
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_comment'])) {
-    if ($userId) {
-        $sql = "DELETE FROM avis WHERE id_joueur = :u AND id_jeu = :g";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([':u' => $userId, ':g' => $gameId]);
-    }
-    header("Location: game.php?id=" . $gameId);
-    exit;
-}
-
-// -----------------------------------------------------
-// SAUVEGARDE DES NOTES (par AJAX)
-// -----------------------------------------------------
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_rating'])) {
-    header('Content-Type: application/json');
-    
-    if (!$userId) {
-        echo json_encode(['success' => false, 'message' => 'Non connecté']);
-        exit;
-    }
-
-    $rating = max(1, min(5, (int)$_POST['ajax_rating']));
-    $now = date("Y-m-d H:i:s");
-
-    // Vérifier si un avis existe déjà
-    $sql = "SELECT id_joueur FROM avis WHERE id_joueur = :u AND id_jeu = :g";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([':u' => $userId, ':g' => $gameId]);
-    $exists = $stmt->fetch();
-
-    if ($exists) {
-        // Mettre à jour
-        $sql = "UPDATE avis SET valeur = :v, date_notation = :d WHERE id_joueur = :u AND id_jeu = :g";
-    } else {
-        // Insérer
-        $sql = "INSERT INTO avis (id_joueur, id_jeu, valeur, date_notation) VALUES (:u, :g, :v, :d)";
-    }
-    
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        ':u' => $userId,
-        ':g' => $gameId,
-        ':v' => $rating,
-        ':d' => $now
-    ]);
-
-    echo json_encode(['success' => true]);
-    exit;
-}
-
-// -----------------------------------------------------
-// SAUVEGARDE DES COMMENTAIRES
-// -----------------------------------------------------
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_text'])) {
-    if (!$userId) {
-        header("Location: ../PAGE/AUTH.php");
-        exit;
-    }
-
-    $comment = trim($_POST['comment_text']);
-    $now = date("Y-m-d H:i:s");
-
-    if ($comment !== "") {
-        // Vérifier si l'utilisateur a déjà un avis
-        $sql = "SELECT id_joueur FROM avis WHERE id_joueur = :u AND id_jeu = :g";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([':u' => $userId, ':g' => $gameId]);
-        $existingAvis = $stmt->fetch();
-
-        if ($existingAvis) {
-            // Mettre à jour le commentaire
-            $sql = "UPDATE avis SET texte_commentaire = :t, date_commentaire = :d 
-                    WHERE id_joueur = :u AND id_jeu = :g";
-        } else {
-            // Insérer un nouvel avis avec commentaire
-            $sql = "INSERT INTO avis (id_joueur, id_jeu, texte_commentaire, date_commentaire)
-                    VALUES (:u, :g, :t, :d)";
-        }
-
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            ':u' => $userId,
-            ':g' => $gameId,
-            ':t' => $comment,
-            ':d' => $now
-        ]);
-    }
-
-    header("Location: game.php?id=" . $gameId);
-    exit;
-}
-
 // -----------------------------------------------------
 // RÉCUPÉRER LES NOTES MOYENNES
 // -----------------------------------------------------
-$sql = "SELECT valeur FROM avis WHERE id_jeu = :id AND valeur IS NOT NULL";
-$stmt = $pdo->prepare($sql);
-$stmt->execute([':id' => $gameId]);
-$notes = $stmt->fetchAll(PDO::FETCH_COLUMN);
+try {
+    $sql = "SELECT valeur FROM avis WHERE id_jeu = :id AND valeur IS NOT NULL";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([':id' => $gameId]);
+    $notes = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-$totalVotes = count($notes);
-$avgRating = 0;
-if ($totalVotes > 0) {
-    $avgRating = round(array_sum($notes) / $totalVotes, 1);
+    $totalVotes = count($notes);
+    $avgRating = 0;
+    if ($totalVotes > 0) {
+        $avgRating = round(array_sum($notes) / $totalVotes, 1);
+    }
+} catch (PDOException $e) {
+    error_log("Erreur récupération notes: " . $e->getMessage());
+    $totalVotes = 0;
+    $avgRating = 0;
 }
 
 // -----------------------------------------------------
@@ -188,23 +207,32 @@ if ($totalVotes > 0) {
 // -----------------------------------------------------
 $myRating = 0;
 if ($userId) {
-    $sql = "SELECT valeur FROM avis WHERE id_joueur = :u AND id_jeu = :g";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([':u' => $userId, ':g' => $gameId]);
-    $myRating = $stmt->fetchColumn() ?: 0;
+    try {
+        $sql = "SELECT valeur FROM avis WHERE id_joueur = :u AND id_jeu = :g";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':u' => $userId, ':g' => $gameId]);
+        $myRating = $stmt->fetchColumn() ?: 0;
+    } catch (PDOException $e) {
+        error_log("Erreur récupération ma note: " . $e->getMessage());
+    }
 }
 
 // -----------------------------------------------------
 // RÉCUPÉRER LES COMMENTAIRES
 // -----------------------------------------------------
-$sql = "SELECT a.texte_commentaire, a.date_commentaire, a.id_joueur, j.pseudo
-        FROM avis a
-        JOIN joueur j ON j.id_joueur = a.id_joueur
-        WHERE a.id_jeu = :g AND a.texte_commentaire IS NOT NULL
-        ORDER BY a.date_commentaire DESC";
-$stmt = $pdo->prepare($sql);
-$stmt->execute([':g' => $gameId]);
-$comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$comments = [];
+try {
+    $sql = "SELECT a.texte_commentaire, a.date_commentaire, a.id_joueur, j.pseudo
+            FROM avis a
+            JOIN joueur j ON j.id_joueur = a.id_joueur
+            WHERE a.id_jeu = :g AND a.texte_commentaire IS NOT NULL
+            ORDER BY a.date_commentaire DESC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([':g' => $gameId]);
+    $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    error_log("Erreur récupération commentaires: " . $e->getMessage());
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -239,10 +267,12 @@ $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <!-- Titre -->
             <h1 class="game-title"><?= h($title) ?></h1>
             
-            <!-- Résumé pliable -->
+            <!-- Résumé pliable (limité à 5 lignes) -->
             <div class="game-summary">
                 <p class="summary-text" id="summaryText"><?= nl2br(h($summary)) ?></p>
-                <button class="btn-toggle" id="toggleBtn" onclick="toggleSummary()">Voir plus</button>
+                <?php if (strlen($summary) > 300): ?>
+                    <button class="btn-toggle" id="toggleBtn" onclick="toggleSummary()">Voir plus</button>
+                <?php endif; ?>
             </div>
             
             <!-- Métadonnées -->
