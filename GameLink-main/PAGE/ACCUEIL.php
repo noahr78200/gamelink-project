@@ -130,14 +130,7 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
                         <div class="big-game-info">
                             <p class="big-game-name"><?= htmlspecialchars($game['titre']) ?></p>
                         </div>
-                        <div class="game-hover-info">
-                            <p class="hover-title"><?= htmlspecialchars($game['titre']) ?></p>
-                            <div class="hover-rating">
-                                <span class="stars">★★★★★</span>
-                                <span class="votes"><?= $game['nombre_votes'] ?> votes</span>
-                            </div>
-                            <span class="hover-btn">Voir le jeu</span>
-                        </div>
+                       
                     </a>
                 <?php endforeach; ?>
             </div>
@@ -168,14 +161,7 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
                         <div class="default-title">
                             <p><?= htmlspecialchars($game['name']) ?></p>
                         </div>
-                        <div class="game-hover-info">
-                            <p class="hover-title"><?= htmlspecialchars($game['name']) ?></p>
-                            <div class="hover-rating">
-                                <span class="stars">★</span>
-                                <span class="votes"><?= $rating ?>/5</span>
-                            </div>
-                            <span class="hover-btn">Voir plus</span>
-                        </div>
+                       
                     </a>
                 <?php endforeach; ?>
             </div>
@@ -206,14 +192,7 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
                         <div class="default-title">
                             <p><?= htmlspecialchars($game['name']) ?></p>
                         </div>
-                        <div class="game-hover-info">
-                            <p class="hover-title"><?= htmlspecialchars($game['name']) ?></p>
-                            <div class="hover-rating">
-                                <span class="stars">★</span>
-                                <span class="votes"><?= $rating ?>/5</span>
-                            </div>
-                            <span class="hover-btn">Voir plus</span>
-                        </div>
+                      
                     </a>
                 <?php endforeach; ?>
             </div>
@@ -244,14 +223,7 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
                         <div class="default-title">
                             <p><?= htmlspecialchars($game['name']) ?></p>
                         </div>
-                        <div class="game-hover-info">
-                            <p class="hover-title"><?= htmlspecialchars($game['name']) ?></p>
-                            <div class="hover-rating">
-                                <span class="stars">★</span>
-                                <span class="votes"><?= $rating ?>/5</span>
-                            </div>
-                            <span class="hover-btn">Voir plus</span>
-                        </div>
+                       
                     </a>
                 <?php endforeach; ?>
             </div>
@@ -282,15 +254,7 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
                         <div class="default-title">
                             <p><?= htmlspecialchars($game['name']) ?></p>
                         </div>
-                        <div class="game-hover-info">
-                            <p class="hover-title"><?= htmlspecialchars($game['name']) ?></p>
-                            <div class="hover-rating">
-                                <span class="stars">★</span>
-                                <span class="votes"><?= $rating ?>/5</span>
-                            </div>
-                            <span class="hover-btn">Voir plus</span>
-                        </div>
-                    </a>
+                       
                 <?php endforeach; ?>
             </div>
             <button class="arrow arrow-right" onclick="scrollCarousel('action', 1)">›</button>
@@ -320,14 +284,7 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
                         <div class="default-title">
                             <p><?= htmlspecialchars($game['name']) ?></p>
                         </div>
-                        <div class="game-hover-info">
-                            <p class="hover-title"><?= htmlspecialchars($game['name']) ?></p>
-                            <div class="hover-rating">
-                                <span class="stars">★</span>
-                                <span class="votes"><?= $rating ?>/5</span>
-                            </div>
-                            <span class="hover-btn">Voir plus</span>
-                        </div>
+                        
                     </a>
                 <?php endforeach; ?>
             </div>
