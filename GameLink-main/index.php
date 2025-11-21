@@ -1,94 +1,207 @@
 <?php
-// Ici, on ne fait rien de spécial en PHP.
-// On affiche juste la page d'accueil publique.
+// index.php - Page d'accueil publique
+session_start();
+
+// Récupérer le message flash si existant
+$flash_message = $_SESSION['flash_index'] ?? null;
+unset($_SESSION['flash_index']);
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>GameLink - Bienvenue</title>
-
-    <!-- On relie le CSS de cette page -->
-    <link rel="stylesheet" href="CSS/STYLE_INDEX.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="GameLink - Votre plateforme de jeux vidéo">
+    <title>GameLink - Accueil</title>
+    <link rel="stylesheet" href="CSS/HEADER.css" type="text/css"/>
+    <link rel="stylesheet" href="CSS/STYLE_ACCUEIL.css" type="text/css"/>
+    <link rel="icon" type="image/svg+xml" href="ICON/LogoSimple.svg">
+    <style>
+        .hero-section {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .hero-section h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        .hero-section p {
+            font-size: 1.3em;
+            margin-bottom: 30px;
+        }
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 15px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn-primary {
+            background-color: white;
+            color: #667eea;
+        }
+        .btn-secondary {
+            background-color: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            padding: 60px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .feature-card {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .feature-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .error-message {
+            background: #ff6b6b;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px auto;
+            max-width: 600px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255,107,107,0.3);
+        }
+        .success-message {
+            background: #51cf66;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px auto;
+            max-width: 600px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(81,207,102,0.3);
+        }
+        .protected-message {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-
-    <!-- ===== HEADER SIMPLE ===== -->
-    <header class="main-header">
-        <div class="header-inner">
-
-            <!-- Logo qui renvoie vers l'index -->
-            <a href="index.php" class="logo">GameLink</a>
-
-            <!-- Menu principal : tout envoie vers AUTH.php -->
-            <nav class="main-nav">
-                <a href="AUTH.php">Accueil</a>
-                <a href="AUTH.php">Recherche</a>
-                <a href="AUTH.php">Communauté</a>
-                <a href="AUTH.php">Profil</a>
-            </nav>
-
-            <!-- Boutons Connexion / Inscription à droite -->
-            <div class="auth-buttons">
-                <a href="AUTH.php" class="btn btn-login">Connexion</a>
-                <a href="AUTH.php" class="btn btn-register">Inscription</a>
-            </div>
-        </div>
-    </header>
-
-    <!-- ===== CONTENU PRINCIPAL ===== -->
-    <main>
-        <!-- Bandeau de bienvenue (inspiré de ta page d'accueil) -->
-        <section class="welcome-banner">
-            <h1>Bienvenue sur GameLink 🎮</h1>
-            <p>
-                Crée ton compte pour découvrir les jeux, les playlists et la communauté.
-            </p>
-            <a href="AUTH.php" class="btn-big">
-                Créer un compte
+    <header>
+        <nav class="Menu">
+            <a href="index.php">
+                <img class="logo" src="ICON/LogoComplet.svg" alt="Logo GameLink">
             </a>
-        </section>
-
-        <!-- Bloc "Pourquoi créer un compte ?" -->
-        <section class="home-section">
-            <h2 class="section-title">Pourquoi créer un compte ?</h2>
-
-            <div class="feature-grid">
-
-                <div class="feature-card">
-                    <h3>Ta bibliothèque de jeux</h3>
-                    <p>Retrouve facilement tous tes jeux préférés au même endroit.</p>
-                    <a href="AUTH.php" class="link-small">Voir les jeux</a>
-                </div>
-
-                <div class="feature-card">
-                    <h3>Une vraie communauté</h3>
-                    <p>Discute avec d'autres joueurs et partage tes découvertes.</p>
-                    <a href="AUTH.php" class="link-small">Voir la communauté</a>
-                </div>
-
-                <div class="feature-card">
-                    <h3>Playlists & avis</h3>
-                    <p>Crée des listes de jeux et garde une trace de ce que tu as testé.</p>
-                    <a href="AUTH.php" class="link-small">Créer un compte</a>
-                </div>
-
+            <a href="index.php">ACCUEIL</a>
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <a href="PAGE/RECHERCHE.php">RECHERCHE</a>
+                <a href="PAGE/COMMUNAUTE.php">COMMUNAUTÉ</a>
+                <a href="PAGE/ACCUEIL.php">MON ESPACE</a>
+            <?php endif; ?>
+        </nav>
+        <?php if (isset($_SESSION['user_id'])): ?>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span style="color: white;">Bonjour, <?= htmlspecialchars($_SESSION['user_pseudo']) ?></span>
+                <a href="INCLUDES/logout.php">
+                    <img src="ICON/iconProfil.svg" alt="Logo Profil" width="40">
+                </a>
             </div>
+        <?php else: ?>
+            <a href="PAGE/AUTH.php" class="btn btn-primary" style="margin-right: 20px;">Connexion</a>
+        <?php endif; ?>
+    </header>
+    
+    <main>
+        <?php if ($flash_message && isset($flash_message['error'])): ?>
+            <div class="error-message">
+                ❌ <?= htmlspecialchars($flash_message['error']) ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($flash_message && isset($flash_message['success'])): ?>
+            <div class="success-message">
+                ✅ <?= htmlspecialchars($flash_message['success']) ?>
+            </div>
+        <?php endif; ?>
+
+        <section class="hero-section">
+            <h1>🎮 Bienvenue sur GameLink</h1>
+            <p>Découvrez, notez et partagez vos jeux vidéo préférés avec une communauté passionnée</p>
+            
+            <?php if (!isset($_SESSION['user_id'])): ?>
+                <div class="cta-buttons">
+                    <a href="PAGE/AUTH.php?tab=signup" class="btn btn-primary">Créer un compte</a>
+                    <a href="PAGE/AUTH.php" class="btn btn-secondary">Se connecter</a>
+                </div>
+            <?php else: ?>
+                <div class="cta-buttons">
+                    <a href="PAGE/ACCUEIL.php" class="btn btn-primary">Mon espace</a>
+                    <a href="PAGE/RECHERCHE.php" class="btn btn-secondary">Rechercher des jeux</a>
+                </div>
+            <?php endif; ?>
         </section>
 
-        <!-- Bloc final avec gros CTA -->
-        <section class="home-section">
-            <h2 class="section-title">Prêt à rejoindre l’aventure ?</h2>
-            <p class="center-text">
-                Pour accéder au site complet, tu dois te connecter ou t’inscrire.
-            </p>
+        <?php if (isset($_GET['login_required'])): ?>
+            <div class="protected-message">
+                ⚠️ Vous devez être connecté pour accéder à cette fonctionnalité. 
+                <a href="PAGE/AUTH.php">Connectez-vous</a> ou <a href="PAGE/AUTH.php?tab=signup">créez un compte</a>.
+            </div>
+        <?php endif; ?>
 
-            <div class="cta-row">
-                <a href="AUTH.php" class="btn-big">Je me connecte</a>
-                <a href="AUTH.php" class="btn-big btn-outline">Je m’inscris</a>
+        <section class="features">
+            <div class="feature-card">
+                <h3>📚 Catalogue de jeux</h3>
+                <p>Explorez une vaste bibliothèque de jeux vidéo de tous genres et plateformes</p>
+            </div>
+            
+            <div class="feature-card">
+                <h3>⭐ Notez et commentez</h3>
+                <p>Partagez votre avis sur vos jeux préférés et découvrez ce que pensent les autres joueurs</p>
+            </div>
+            
+            <div class="feature-card">
+                <h3>📋 Playlists personnalisées</h3>
+                <p>Créez des listes de jeux à faire, en cours ou terminés pour organiser votre expérience gaming</p>
+            </div>
+            
+            <div class="feature-card">
+                <h3>💬 Communauté</h3>
+                <p>Rejoignez des forums, créez des groupes et échangez avec d'autres passionnés</p>
+            </div>
+            
+            <div class="feature-card">
+                <h3>✉️ Messagerie</h3>
+                <p>Discutez avec vos amis et partagez vos découvertes gaming en direct</p>
+            </div>
+            
+            <div class="feature-card">
+                <h3>🎯 Événements</h3>
+                <p>Participez à des événements gaming et restez informé des sorties à venir</p>
             </div>
         </section>
     </main>
-
+     
 </body>
 </html>
