@@ -106,13 +106,13 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
     
     <!-- BANNIÈRE DE BIENVENUE -->
     <div class="welcome-banner">
-        <h1>👋 Bienvenue, <?= htmlspecialchars($user_pseudo) ?> !</h1>
+        <h1>Bienvenue, <?= htmlspecialchars($user_pseudo) ?> !</h1>
         <p>Découvrez les meilleurs jeux vidéo du moment</p>
     </div>
 
     <!-- SECTION : JEUX À 5 ÉTOILES -->
     <div class="carousel-container">
-        <h2 class="section-title">⭐ Les meilleurs jeux (5 étoiles)</h2>
+        <h2 class="section-title">Jeux du moment</h2>
         
         <?php if (empty($topGames)): ?>
             <div class="empty-state">
@@ -171,7 +171,7 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
 
     <!-- SECTION : SHOOTER -->
     <div class="carousel-container">
-        <h2 class="section-title">🔫 Shooter</h2>
+        <h2 class="section-title">Shooter</h2>
         
         <?php if (empty($genres['Shooter'])): ?>
             <div class="loading">Chargement des jeux Shooter...</div>
@@ -202,7 +202,7 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
 
     <!-- SECTION : COURSE -->
     <div class="carousel-container">
-        <h2 class="section-title">🏎️ Course</h2>
+        <h2 class="section-title">Course</h2>
         
         <?php if (empty($genres['Course'])): ?>
             <div class="loading">Chargement des jeux de course...</div>
@@ -233,7 +233,7 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
 
     <!-- SECTION : ACTION -->
     <div class="carousel-container">
-        <h2 class="section-title">💥 Action</h2>
+        <h2 class="section-title">Action</h2>
         
         <?php if (empty($genres['Action'])): ?>
             <div class="loading">Chargement des jeux d'action...</div>
@@ -263,7 +263,7 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
 
     <!-- SECTION : STRATÉGIE -->
     <div class="carousel-container">
-        <h2 class="section-title">🧠 Stratégie</h2>
+        <h2 class="section-title">Stratégie</h2>
         
         <?php if (empty($genres['Stratégie'])): ?>
             <div class="loading">Chargement des jeux de stratégie...</div>
