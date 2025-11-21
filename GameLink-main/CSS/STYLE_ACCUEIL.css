@@ -188,26 +188,3 @@ main {
   font-size: 1.3em;
 }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 900px) {
-  main {
-    padding: 20px 10px;
-  }
-  
-  .welcome-banner h1 {
-    font-size: 2em;
-  }
-  
-  .game-card {
-    min-width: 180px;
-  }
-  
-  .game-image {
-    width: 180px;
-    height: 270px;
-  }
-  
-  .arrow {
-    display: none;
-  }
-}
