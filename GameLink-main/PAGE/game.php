@@ -213,7 +213,7 @@ $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= h($title) ?> - GameLink</title>
     <link rel="stylesheet" href="../CSS/HEADER.css">
-    <link rel="stylesheet" href="../CSS/GAME_STYLE.css">
+    <link rel="stylesheet" href="../CSS/STYLE_GAME.css">
     <link rel="icon" type="image/svg+xml" href="../ICON/LogoSimple.svg">
 </head>
 <body>
