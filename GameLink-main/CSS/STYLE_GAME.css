@@ -1,132 +1,373 @@
-body {
+/* ========================================
+   PAGE GAME - STYLE SIMPLE ET ÉLÉGANT
+   ======================================== */
+
+* {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #0b0d16;
-    color: white;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.back-link {
+body {
+    background: #141414;
+    color: #ffffff;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    line-height: 1.6;
+}
+
+.game-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* ========== BOUTON RETOUR ========== */
+.btn-back {
     display: inline-block;
-    margin: 15px;
-    color: #ccc;
-}
-
-.game-page {
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: 30px;
-    padding: 20px 40px;
-}
-
-.game-cover {
-    width: 100%;
-    border-radius: 10px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.6);
-}
-
-.game-genres {
-    color: #aaa;
-    margin-top: -10px;
-}
-
-.rating-block {
-    margin: 15px 0;
-}
-
-.rating-distribution {
-    margin-top: 10px;
-}
-
-.rating-row {
-    display: grid;
-    grid-template-columns: 30px 1fr 40px;
-    gap: 10px;
-    align-items: center;
-    margin-bottom: 5px;
+    margin-bottom: 30px;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
     font-size: 14px;
+    transition: background 0.3s;
 }
 
-.rating-bar {
-    background-color: #222;
-    height: 8px;
-    border-radius: 4px;
+.btn-back:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* ========== SECTION PRINCIPALE ========== */
+.game-main {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 60px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 30px;
+    border-radius: 10px;
+}
+
+/* IMAGE À GAUCHE */
+.game-left {
+    flex-shrink: 0;
+}
+
+.game-poster {
+    width: 300px;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* INFOS À DROITE */
+.game-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.game-title {
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+/* RÉSUMÉ PLIABLE */
+.game-summary {
+    color: #b3b3b3;
+    font-size: 1em;
+    line-height: 1.6;
+}
+
+.summary-text {
+    display: -webkit-box;
+    
+    -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-.rating-bar-fill {
-    background-color: #ffd166;
-    height: 100%;
-    width: 0;
+.summary-text.expanded {
+    display: block;
 }
 
-.rating-form button {
-    margin: 5px 3px 0 0;
-    padding: 5px 8px;
-    background-color: #1c1f2b;
-    color: #ffd166;
-    border: 1px solid #444;
-    border-radius: 5px;
+.btn-toggle {
+    background: none;
+    border: none;
+    color: #e50914;
     cursor: pointer;
+    font-size: 0.9em;
+    margin-top: 5px;
+    padding: 0;
 }
 
-.game-description {
-    background-color: rgba(255,255,255,0.05);
-    padding: 10px;
+.btn-toggle:hover {
+    text-decoration: underline;
+}
+
+/* MÉTADONNÉES */
+.game-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    color: #b3b3b3;
+    font-size: 0.95em;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.meta-label {
+    font-weight: bold;
+    color: #fff;
+}
+
+/* ========== SECTION NOTATION ========== */
+.rating-box {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 20px;
     border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.rating-display {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.rating-number {
+    font-size: 3em;
+    font-weight: bold;
+    color: #ffd700;
+}
+
+.rating-stars {
+    display: flex;
+    gap: 3px;
+}
+
+.star {
+    font-size: 1.5em;
+    color: #444;
+}
+
+.star.filled {
+    color: #ffd700;
+}
+
+.rating-count {
+    color: #b3b3b3;
+    font-size: 0.9em;
+}
+
+/* NOTATION UTILISATEUR */
+.user-rating {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 15px;
+}
+
+.user-rating h3 {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.stars-input {
+    display: flex;
+    gap: 5px;
+}
+
+.star-btn {
+    font-size: 2em;
+    color: #444;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.star-btn:hover,
+.star-btn.active {
+    color: #ffd700;
+    transform: scale(1.1);
+}
+
+.login-msg {
+    color: #999;
+    font-style: italic;
+    font-size: 0.95em;
+}
+
+/* ========== SECTION COMMENTAIRES ========== */
+.comments-section {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 30px;
+    border-radius: 10px;
+}
+
+.comments-section h2 {
+    font-size: 1.8em;
+    margin-bottom: 25px;
+    color: #fff;
+}
+
+/* FORMULAIRE COMMENTAIRE */
+.comment-form {
+    margin-bottom: 30px;
 }
 
 .comment-form textarea {
     width: 100%;
-    min-height: 80px;
-    padding: 8px;
-    border-radius: 6px;
-    border: none;
+    min-height: 100px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    color: #fff;
+    font-size: 1em;
+    font-family: inherit;
+    resize: vertical;
 }
 
-.comment-form button {
-    margin-top: 5px;
-    padding: 8px 12px;
-    border-radius: 6px;
+.comment-form textarea:focus {
+    outline: none;
+    border-color: #e50914;
+}
+
+.comment-form textarea::placeholder {
+    color: #999;
+}
+
+.btn-submit {
+    margin-top: 10px;
+    padding: 10px 25px;
+    background: #e50914;
     border: none;
-    background-color: #ffd166;
-    color: #000;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 1em;
     font-weight: bold;
     cursor: pointer;
+    transition: background 0.3s;
 }
 
+.btn-submit:hover {
+    background: #f40612;
+}
+
+/* LISTE COMMENTAIRES */
 .comments-list {
-    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
-.comment-item {
-    background-color: rgba(255,255,255,0.04);
-    padding: 10px;
+.no-comments {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+    padding: 40px;
+}
+
+.comment {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 20px;
     border-radius: 8px;
-    margin-bottom: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .comment-header {
     display: flex;
     justify-content: space-between;
-    font-size: 13px;
-    color: #ccc;
-    margin-bottom: 5px;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.comment-author {
+    font-weight: bold;
+    color: #e50914;
+}
+
+.comment-date {
+    color: #999;
+    font-size: 0.85em;
 }
 
 .comment-text {
-    margin: 0;
-    font-size: 14px;
+    color: #e0e0e0;
+    line-height: 1.5;
+    margin-bottom: 10px;
 }
 
-.info-text {
-    font-size: 14px;
-    color: #ccc;
+.btn-delete {
+    padding: 6px 12px;
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    border-radius: 4px;
+    color: #ef4444;
+    font-size: 0.85em;
+    cursor: pointer;
+    transition: all 0.3s;
 }
 
-/* Version mobile : une seule colonne */
-@media (max-width: 800px) {
-    .game-page {
-        grid-template-columns: 1fr;
-        padding: 10px 15px;
+.btn-delete:hover {
+    background: #ef4444;
+    color: #fff;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 900px) {
+    .game-main {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .game-poster {
+        width: 250px;
+    }
+
+    .game-title {
+        font-size: 2em;
+    }
+}
+
+@media (max-width: 600px) {
+    .game-container {
+        padding: 20px 15px;
+    }
+
+    .game-main,
+    .comments-section {
+        padding: 20px 15px;
+    }
+
+    .game-poster {
+        width: 200px;
+    }
+
+    .game-title {
+        font-size: 1.6em;
+    }
+
+    .rating-number {
+        font-size: 2.5em;
+    }
+
+    .star-btn {
+        font-size: 1.6em;
+    }
+
+    .comment-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
     }
 }
