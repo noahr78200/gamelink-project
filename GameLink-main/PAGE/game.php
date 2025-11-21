@@ -1,8 +1,4 @@
 <?php
-// Activer l'affichage des erreurs pour le debug
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 // Démarrer la session
 session_start();
 
@@ -25,7 +21,97 @@ $gameId = (int)$_GET['id'];
 $userId = $_SESSION['user_id'] ?? null;
 
 // ========================================
-// ÉTAPE 1 : GÉRER LES ACTIONS (AVANT TOUT)
+// RÉCUPÉRER LES INFOS DU JEU D'ABORD
+// ========================================
+
+$CLIENT_ID = 'spy0n0vev24kqu6gg3m6t9gh0a9d6r';
+$TOKEN = 'jmapwgfaw3021u1ce2zdrqix57gxhz';
+
+$requete = 'fields id, name, cover.image_id, genres.name, platforms.name, summary, first_release_date, involved_companies.company.name;
+            where id = ' . $gameId . ';
+            limit 1;';
+
+$ch = curl_init('https://api.igdb.com/v4/games');
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    'Client-ID: ' . $CLIENT_ID,
+    'Authorization: Bearer ' . $TOKEN
+]);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $requete);
+
+$reponse = curl_exec($ch);
+curl_close($ch);
+
+$data = json_decode($reponse, true);
+$jeu = $data[0] ?? null;
+
+if (!$jeu) {
+    header("Location: RECHERCHE.php");
+    exit;
+}
+
+// Extraire les informations
+$titre = $jeu['name'] ?? "Sans titre";
+$resume = $jeu['summary'] ?? "Aucune description disponible.";
+$genres = isset($jeu['genres']) ? implode(", ", array_column($jeu['genres'], 'name')) : "Non spécifié";
+$plateformes = isset($jeu['platforms']) ? implode(", ", array_column($jeu['platforms'], 'name')) : "Non spécifié";
+$editeur = $jeu['involved_companies'][0]['company']['name'] ?? "Non spécifié";
+$dateSortie = isset($jeu['first_release_date']) ? date('Y-m-d', $jeu['first_release_date']) : null;
+
+// Image de couverture
+if (isset($jeu['cover']['image_id'])) {
+    $image = 'https://images.igdb.com/igdb/image/upload/t_cover_big/' . $jeu['cover']['image_id'] . '.jpg';
+} else {
+    $image = '../IMG/placeholder.jpg';
+}
+
+// ========================================
+// FONCTION : CRÉER LE JEU DANS LA BDD
+// ========================================
+function creerJeuDansBDD($pdo, $gameId, $titre, $editeur, $dateSortie, $resume, $image) {
+    try {
+        // Vérifier si le jeu existe déjà
+        $sql = "SELECT id_jeu FROM jeu WHERE id_jeu = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$gameId]);
+        
+        if (!$stmt->fetch()) {
+            // Le jeu n'existe pas, on doit d'abord créer l'éditeur
+            
+            // 1. Vérifier si l'éditeur existe
+            $sql = "SELECT id_editeur FROM editeur WHERE nom = ?";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$editeur]);
+            $editeurData = $stmt->fetch();
+            
+            if (!$editeurData) {
+                // Créer l'éditeur
+                $sql = "INSERT INTO editeur (nom) VALUES (?)";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([$editeur]);
+                $idEditeur = $pdo->lastInsertId();
+            } else {
+                $idEditeur = $editeurData['id_editeur'];
+            }
+            
+            // 2. Créer le jeu
+            $sql = "INSERT INTO jeu (id_jeu, id_editeur, titre, date_sortie, description, cover_url) 
+                    VALUES (?, ?, ?, ?, ?, ?)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$gameId, $idEditeur, $titre, $dateSortie, $resume, $image]);
+        }
+    } catch (PDOException $e) {
+        // Si erreur, on ne bloque pas, on continue
+        error_log("Erreur création jeu: " . $e->getMessage());
+    }
+}
+
+// Créer le jeu dans la BDD si nécessaire
+creerJeuDansBDD($pdo, $gameId, $titre, $editeur, $dateSortie, $resume, $image);
+
+// ========================================
+// ÉTAPE 1 : GÉRER LES ACTIONS
 // ========================================
 
 // ACTION : Supprimer un commentaire
@@ -61,7 +147,7 @@ if (isset($_POST['ajax_rating']) && $userId) {
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([$note, $userId, $gameId]);
             } else {
-                // Créer (SANS clé étrangère sur jeu)
+                // Créer
                 $sql = "INSERT INTO avis (id_joueur, id_jeu, valeur, date_notation) VALUES (?, ?, ?, NOW())";
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([$userId, $gameId, $note]);
@@ -98,7 +184,7 @@ if (isset($_POST['comment_text']) && $userId) {
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([$commentaire, $userId, $gameId]);
             } else {
-                // Créer (SANS clé étrangère sur jeu)
+                // Créer
                 $sql = "INSERT INTO avis (id_joueur, id_jeu, texte_commentaire, date_commentaire) VALUES (?, ?, ?, NOW())";
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([$userId, $gameId, $commentaire]);
@@ -114,53 +200,7 @@ if (isset($_POST['comment_text']) && $userId) {
 }
 
 // ========================================
-// ÉTAPE 2 : RÉCUPÉRER LES INFOS DU JEU
-// ========================================
-
-$CLIENT_ID = 'spy0n0vev24kqu6gg3m6t9gh0a9d6r';
-$TOKEN = 'jmapwgfaw3021u1ce2zdrqix57gxhz';
-
-$requete = 'fields id, name, cover.image_id, genres.name, platforms.name, summary, first_release_date, involved_companies.company.name;
-            where id = ' . $gameId . ';
-            limit 1;';
-
-$ch = curl_init('https://api.igdb.com/v4/games');
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Client-ID: ' . $CLIENT_ID,
-    'Authorization: Bearer ' . $TOKEN
-]);
-curl_setopt($ch, CURLOPT_POSTFIELDS, $requete);
-
-$reponse = curl_exec($ch);
-curl_close($ch);
-
-$data = json_decode($reponse, true);
-$jeu = $data[0] ?? null;
-
-if (!$jeu) {
-    header("Location: RECHERCHE.php");
-    exit;
-}
-
-// Extraire les informations
-$titre = $jeu['name'] ?? "Sans titre";
-$resume = $jeu['summary'] ?? "Aucune description disponible.";
-$genres = isset($jeu['genres']) ? implode(", ", array_column($jeu['genres'], 'name')) : "Non spécifié";
-$plateformes = isset($jeu['platforms']) ? implode(", ", array_column($jeu['platforms'], 'name')) : "Non spécifié";
-$editeur = $jeu['involved_companies'][0]['company']['name'] ?? "Non spécifié";
-$dateSortie = isset($jeu['first_release_date']) ? date('d/m/Y', $jeu['first_release_date']) : "Non spécifié";
-
-// Image de couverture
-if (isset($jeu['cover']['image_id'])) {
-    $image = 'https://images.igdb.com/igdb/image/upload/t_cover_big/' . $jeu['cover']['image_id'] . '.jpg';
-} else {
-    $image = '../IMG/placeholder.jpg';
-}
-
-// ========================================
-// ÉTAPE 3 : RÉCUPÉRER LES NOTES
+// ÉTAPE 2 : RÉCUPÉRER LES NOTES
 // ========================================
 
 try {
@@ -191,7 +231,7 @@ try {
 }
 
 // ========================================
-// ÉTAPE 4 : RÉCUPÉRER LES COMMENTAIRES
+// ÉTAPE 3 : RÉCUPÉRER LES COMMENTAIRES
 // ========================================
 
 try {
@@ -266,7 +306,7 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
                     <span class="meta-label">Éditeur:</span> <?= h($editeur) ?>
                 </div>
                 <div class="meta-item">
-                    <span class="meta-label">Sortie:</span> <?= h($dateSortie) ?>
+                    <span class="meta-label">Sortie:</span> <?= h($dateSortie ? date('d/m/Y', strtotime($dateSortie)) : 'Non spécifié') ?>
                 </div>
             </div>
             
@@ -377,8 +417,6 @@ function toggleResume() {
 
 // Fonction pour noter
 function noterJeu(note) {
-    console.log('Notation:', note); // DEBUG
-    
     // Afficher visuellement
     var etoiles = document.querySelectorAll('.star-btn');
     for (var i = 0; i < etoiles.length; i++) {
@@ -398,11 +436,9 @@ function noterJeu(note) {
         body: donnees
     })
     .then(function(reponse) { 
-        console.log('Réponse reçue:', reponse); // DEBUG
         return reponse.json(); 
     })
     .then(function(data) {
-        console.log('Données:', data); // DEBUG
         if (data.success) {
             location.reload();
         } else {
@@ -410,8 +446,8 @@ function noterJeu(note) {
         }
     })
     .catch(function(erreur) {
-        console.error('Erreur complète:', erreur); // DEBUG
-        alert('Erreur de connexion: ' + erreur.message);
+        console.error('Erreur:', erreur);
+        alert('Erreur de connexion');
     });
 }
 </script>
