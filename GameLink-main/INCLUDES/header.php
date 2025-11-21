@@ -26,8 +26,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <a href="RECHERCHE.php" class="<?= $current_page === 'RECHERCHE.php' ? 'active' : '' ?>">
             RECHERCHE
         </a>
+
         <a href="COMMUNAUTE.php" class="<?= $current_page === 'COMMUNAUTE.php' ? 'active' : '' ?>">
             COMMUNAUTÉ
+        </a>
+         <a href="CHAT.php" class="<?= $current_page === 'CHAT.php' ? 'active' : '' ?>">
+            CHAT
         </a>
         
         <?php if (is_admin()): ?>

@@ -1,0 +1,1 @@
+<?php echo 'Lyes doit finir la page profil avant de commencer CHAT.php'; exit; ?>
