@@ -158,60 +158,6 @@ main {
 }
 
 /* ===== EFFET DE SURVOL (infos cachées) ===== */
-.game-hover-info {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 70%, transparent 100%);
-  padding: 20px 15px;
-  border-radius: 0 0 12px 12px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.game-card:hover .game-hover-info {
-  opacity: 1;
-}
-
-.hover-title {
-  font-size: 1.1em;
-  font-weight: bold;
-  margin: 0 0 10px 0;
-  color: white;
-}
-
-.hover-rating {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.hover-rating .stars {
-  color: #f59e0b;
-  font-size: 1.2em;
-}
-
-.hover-rating .votes {
-  color: #E7E9ED;
-  font-size: 0.95em;
-}
-
-.hover-btn {
-  display: inline-block;
-  padding: 8px 20px;
-  background: #6ea8ff;
-  color: white;
-  border-radius: 8px;
-  font-size: 0.95em;
-  font-weight: bold;
-  text-decoration: none;
-}
-
-.hover-btn:hover {
-  background: #5a94e6;
-}
 
 /* Cacher les infos par défaut (sauf le titre) */
 .default-title {
