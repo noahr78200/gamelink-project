@@ -11,7 +11,7 @@ body {
 }
 
 main {
-  
+  max-width: 1400px;
   margin: 0 auto;
   padding: 40px 20px;
 }
@@ -72,6 +72,7 @@ main {
   transition: transform 0.3s ease;
   text-decoration: none;
   color: inherit;
+  position: relative;
 }
 
 .game-card:hover {
@@ -115,6 +116,124 @@ main {
 .votes {
   color: #8c95a3;
   font-size: 0.9em;
+}
+
+/* ===== GRANDES CARTES (Jeux à 5 étoiles) ===== */
+.big-game-card {
+  min-width: 440px;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.big-game-card:hover {
+  transform: scale(1.05);
+}
+
+.big-game-image {
+  width: 440px;
+  height: 660px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.big-game-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 100%);
+  padding: 30px 20px 20px 20px;
+  border-radius: 0 0 12px 12px;
+}
+
+.big-game-name {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin: 0;
+  color: white;
+}
+
+/* ===== EFFET DE SURVOL (infos cachées) ===== */
+.game-hover-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 70%, transparent 100%);
+  padding: 20px 15px;
+  border-radius: 0 0 12px 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.game-card:hover .game-hover-info {
+  opacity: 1;
+}
+
+.hover-title {
+  font-size: 1.1em;
+  font-weight: bold;
+  margin: 0 0 10px 0;
+  color: white;
+}
+
+.hover-rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.hover-rating .stars {
+  color: #f59e0b;
+  font-size: 1.2em;
+}
+
+.hover-rating .votes {
+  color: #E7E9ED;
+  font-size: 0.95em;
+}
+
+.hover-btn {
+  display: inline-block;
+  padding: 8px 20px;
+  background: #6ea8ff;
+  color: white;
+  border-radius: 8px;
+  font-size: 0.95em;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.hover-btn:hover {
+  background: #5a94e6;
+}
+
+/* Cacher les infos par défaut (sauf le titre) */
+.default-title {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  padding: 10px;
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+  border-radius: 0 0 12px 12px;
+}
+
+.default-title p {
+  margin: 0;
+  font-size: 1em;
+  font-weight: bold;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 10px;
 }
 
 /* ===== FLÈCHES DE NAVIGATION ===== */
@@ -188,3 +307,26 @@ main {
   font-size: 1.3em;
 }
 
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  main {
+    padding: 20px 10px;
+  }
+  
+  .welcome-banner h1 {
+    font-size: 2em;
+  }
+  
+  .game-card {
+    min-width: 180px;
+  }
+  
+  .game-image {
+    width: 180px;
+    height: 270px;
+  }
+  
+  .arrow {
+    display: none;
+  }
+}
