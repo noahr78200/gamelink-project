@@ -140,7 +140,7 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
 
     <!-- SECTION : RPG -->
     <div class="carousel-container">
-        <h2 class="section-title">🎭 RPG</h2>
+        <h2 class="section-title"> RPG</h2>
         
         <?php if (empty($genres['RPG'])): ?>
             <div class="loading">Chargement des jeux RPG...</div>
