@@ -5,12 +5,8 @@ session_start();
 // Se connecter à la base de données
 require __DIR__ . '/../DATA/DBConfig.php';
 
-// tracker les vues de page
-require __DIR__ . '/../INCLUDES/tracker.php';
-
-//chek admin
-require __DIR__ . '/../INCLUDES/checkAdmin.php';    
-
+require_once __DIR__ . '/../INCLUDES/track.php';
+require_once __DIR__ . '/../INCLUDES/check_admin.php';
 // Fonction pour sécuriser le texte
 function h($texte) { 
     return htmlspecialchars($texte, ENT_QUOTES, 'UTF-8'); 
