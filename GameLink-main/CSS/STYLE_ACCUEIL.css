@@ -1,171 +1,330 @@
 /* ============================
-   STYLE_ACCUEIL.css
-   Thème "Metal Grey" comme ADMIN
+   PAGE ACCUEIL STYLE NETFLIX
    ============================ */
 
-/* Palette copiée de STYLE_ADMIN.css */
-:root{
+/* Couleurs du thème admin */
+:root {
   --bg: #0f1115;
-  --bg-grad1: #11151c;
-  --bg-grad2: #0c0f14;
-
-  --panel:   #1a1e27;
+  --panel: #1a1e27;
   --panel-2: #171b23;
-  --panel-3: #141820;
-
   --border: #2a3140;
-  --hoverBorder:#3a4559;
-  --footerBorder:#232836;
-
-  --text:#E7E9ED;
-  --muted:#8c95a3;
-  --valueMild:#C0C4CB;
-  --footerText:#9AA0A9;
-  --navText:#E9ECF4;
-  --placeholder:#606774;
-
-  --up:#34d399;
-  --down:#f87171;
-  --warning:#f59e0b;
-  --accent:#6ea8ff;
-  --accent-2:#9aa6ff;
-
-  --chart1:#202633;
-  --chart2:#2c3444;
-  --chartDash:#3c475a;
-  --line:#525a66;
-  --altRow:#1b2130;
-
-  --g:16px;
-  --radius:14px;
-
-  --shadow-1: 0 8px 24px rgba(0,0,0,.35);
-  --shadow-2: 0 2px 0 rgba(255,255,255,.03) inset, 0 1px 0 rgba(255,255,255,.02);
-
-  --glow: rgba(110,168,255,.12);
+  --hoverBorder: #3a4559;
+  --text: #E7E9ED;
+  --muted: #8c95a3;
+  --accent: #6ea8ff;
+  --star-color: #f59e0b;
+  --radius: 14px;
+  --shadow: 0 8px 24px rgba(0,0,0,.35);
 }
 
-/* Décalage pour le header fixe */
-body > main{
-  margin-top: 6rem;
-  margin-left: 1%;
-  margin-right: 1%;
-  padding: 24px 0 40px;
-  max-width: 1400px;
-  margin-inline: auto;
-  font-size: clamp(14px, .9vw + 12px, 16px);
-}
-
-/* Bannière de bienvenue */
-.welcome-banner{
-  background:
-    radial-gradient(600px 260px at 90% -20%, var(--glow), transparent 60%),
-    linear-gradient(135deg, #1f2933 0%, #111827 100%);
-  border-radius: 18px;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-1);
-  padding: 32px 24px;
-  text-align: center;
-  margin-bottom: 28px;
-}
-
-.welcome-banner h1{
-  margin: 0 0 8px;
-  font-size: clamp(24px, 3vw, 32px);
+body {
+  background: var(--bg);
   color: var(--text);
-}
-
-.welcome-banner p{
+  font-family: Arial, sans-serif;
   margin: 0;
-  color: var(--muted);
-  font-size: 0.95rem;
+  padding: 0;
 }
 
-/* Cartes de stats */
-.stats-cards{
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--g);
-  margin-bottom: 32px;
+main {
+  padding: 40px 20px;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
-.stat-card{
-  background: linear-gradient(180deg, var(--panel-2), var(--panel-3));
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  padding: 18px 16px;
+/* ===== BANNIÈRE DE BIENVENUE ===== */
+.welcome-banner {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 40px;
+  border-radius: 15px;
+  margin-bottom: 50px;
   text-align: center;
-  box-shadow: var(--shadow-2);
-  transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
 }
 
-.stat-card:hover{
-  transform: translateY(-2px);
-  border-color: var(--hoverBorder);
-  box-shadow: 0 10px 24px rgba(0,0,0,.45);
+.welcome-banner h1 {
+  font-size: 2.5em;
+  margin: 0 0 10px 0;
 }
 
-.stat-card h3{
-  margin: 0 0 6px;
-  font-size: 2rem;
-  color: var(--text);
-}
-
-.stat-card p{
+.welcome-banner p {
   margin: 0;
-  color: var(--muted);
-  font-size: .9rem;
+  font-size: 1.1em;
+  opacity: 0.9;
 }
 
-/* Sections de jeux */
-.game-section{
-  margin-bottom: 32px;
+/* ===== SECTION DE CARROUSEL ===== */
+.carousel-section {
+  margin-bottom: 50px;
 }
 
-.game-section h2{
-  margin: 0 0 16px;
-  font-size: 1.1rem;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--accent);
-  padding-bottom: 8px;
-  border-bottom: 2px solid var(--border);
-}
-
-/* États vides */
-.empty-state{
-  background: linear-gradient(180deg, var(--panel), var(--panel-3));
-  border-radius: var(--radius);
-  border: 1px dashed var(--border);
-  padding: 36px 20px;
-  text-align: center;
-  color: var(--muted);
-}
-
-.empty-state p{
-  margin: 0 0 16px;
-  font-size: .98rem;
-}
-
-/* Bouton "ajouter / rechercher des jeux" */
-.btn-add-game{
-  display: inline-block;
-  padding: 10px 22px;
-  border-radius: 999px;
-  border: 1px solid rgba(143,182,255,.45);
-  background:
-    linear-gradient(180deg, rgba(143,182,255,.20), rgba(143,182,255,.06)),
-    rgba(0,0,0,.7);
+.carousel-section h2 {
+  font-size: 1.5em;
+  margin: 0 0 20px 0;
   color: var(--text);
-  font-weight: 600;
-  font-size: .9rem;
-  text-decoration: none;
+  padding-left: 10px;
+}
+
+/* ===== GRAND CARROUSEL (Top 10) ===== */
+.big-carousel {
+  position: relative;
+  overflow: hidden;
+}
+
+.big-carousel-wrapper {
+  display: flex;
+  transition: transform 0.5s ease;
+}
+
+.big-game-card {
+  min-width: 100%;
+  position: relative;
   cursor: pointer;
-  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
 }
 
-.btn-add-game:hover{
-  transform: translateY(-1px);
-  border-color: var(--hoverBorder);
-  box-shadow: 0 8px 18px rgba(0,0,0,.35);
+.big-game-card img {
+  width: 100%;
+  height: 500px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.big-game-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+  padding: 40px;
+  color: white;
+}
+
+.big-game-info h3 {
+  font-size: 2.5em;
+  margin: 0 0 15px 0;
+}
+
+.big-game-rating {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+  font-size: 1.2em;
+}
+
+.big-game-rating .stars {
+  color: var(--star-color);
+  font-size: 1.5em;
+}
+
+.big-game-info .btn-voir {
+  display: inline-block;
+  padding: 12px 30px;
+  background: var(--accent);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.big-game-info .btn-voir:hover {
+  background: #5a94e6;
+}
+
+/* Flèches du grand carrousel */
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.7);
+  color: white;
+  border: none;
+  font-size: 3em;
+  padding: 20px 25px;
+  cursor: pointer;
+  border-radius: 5px;
+  z-index: 10;
+}
+
+.carousel-arrow:hover {
+  background: rgba(0,0,0,0.9);
+}
+
+.carousel-arrow.left {
+  left: 20px;
+}
+
+.carousel-arrow.right {
+  right: 20px;
+}
+
+/* ===== PETITS CARROUSELS (par genre) ===== */
+.small-carousel {
+  position: relative;
+  overflow: hidden;
+  padding: 0 50px;
+}
+
+.small-carousel-wrapper {
+  display: flex;
+  gap: 15px;
+  transition: transform 0.5s ease;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+}
+
+.small-carousel-wrapper::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+.small-game-card {
+  min-width: 200px;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.small-game-card:hover {
+  transform: scale(1.05);
+}
+
+.small-game-card img {
+  width: 200px;
+  height: 280px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* Info au survol */
+.small-game-hover {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.95), transparent);
+  padding: 15px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.small-game-card:hover .small-game-hover {
+  opacity: 1;
+}
+
+.small-game-hover h4 {
+  margin: 0 0 8px 0;
+  font-size: 1em;
+  color: white;
+}
+
+.small-game-hover .rating {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 8px;
+  font-size: 0.9em;
+  color: white;
+}
+
+.small-game-hover .rating .stars {
+  color: var(--star-color);
+}
+
+.small-game-hover .btn-voir-small {
+  display: inline-block;
+  padding: 6px 15px;
+  background: var(--accent);
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 0.85em;
+  font-weight: bold;
+}
+
+.small-game-hover .btn-voir-small:hover {
+  background: #5a94e6;
+}
+
+/* Flèches des petits carrousels */
+.small-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.7);
+  color: white;
+  border: none;
+  font-size: 2em;
+  padding: 15px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  z-index: 10;
+}
+
+.small-arrow:hover {
+  background: rgba(0,0,0,0.9);
+}
+
+.small-arrow.left {
+  left: 0;
+}
+
+.small-arrow.right {
+  right: 0;
+}
+
+/* ===== ÉTAT VIDE ===== */
+.empty-state {
+  background: var(--panel-2);
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.empty-state p {
+  margin: 0 0 20px 0;
+  font-size: 1.2em;
+}
+
+.btn-recherche {
+  display: inline-block;
+  padding: 12px 30px;
+  background: var(--accent);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.btn-recherche:hover {
+  background: #5a94e6;
+}
+
+/* ===== CHARGEMENT ===== */
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: var(--muted);
+  font-size: 1.2em;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .big-game-card img {
+    height: 300px;
+  }
+  
+  .big-game-info h3 {
+    font-size: 1.8em;
+  }
+  
+  .small-game-card {
+    min-width: 150px;
+  }
+  
+  .small-game-card img {
+    width: 150px;
+    height: 220px;
+  }
 }

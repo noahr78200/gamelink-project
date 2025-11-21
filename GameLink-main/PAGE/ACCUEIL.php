@@ -1,171 +1,363 @@
 <?php
-// PAGE/ACCUEIL.php - Page d'accueil pour utilisateurs connectés
+// Démarrer la session
 session_start();
-
-// TRACKING AUTOMATIQUE - Ne touche plus jamais à cette ligne !
 require_once __DIR__ . '/../INCLUDES/track.php';
-
 // Protection : redirection si non connecté
 if (!isset($_SESSION['user_id'])) {
     header('Location: ../index.php?login_required=1');
     exit;
 }
 
-// Récupérer les informations de l'utilisateur
+// Connexion à la base de données
 require_once __DIR__ . '/../DATA/DBConfig.php';
 
+// Récupérer les infos de l'utilisateur
 $user_id = $_SESSION['user_id'];
 $user_pseudo = $_SESSION['user_pseudo'];
+
+// ========================================
+// 1. RÉCUPÉRER LES 10 MEILLEURS JEUX (5 étoiles)
+// ========================================
+$topGames = [];
+try {
+    // Récupérer les jeux avec une note moyenne de 5 étoiles
+    $sql = "SELECT j.id_jeu, j.titre, j.cover_url, 
+                   AVG(a.valeur) as note_moyenne, 
+                   COUNT(a.valeur) as nombre_votes
+            FROM jeu j
+            JOIN avis a ON a.id_jeu = j.id_jeu
+            WHERE a.valeur IS NOT NULL
+            GROUP BY j.id_jeu
+            HAVING note_moyenne = 5
+            ORDER BY nombre_votes DESC
+            LIMIT 10";
+    $stmt = $pdo->query($sql);
+    $topGames = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    // Si erreur, on continue avec un tableau vide
+    $topGames = [];
+}
+
+// ========================================
+// 2. RÉCUPÉRER LES JEUX PAR GENRE DEPUIS IGDB
+// ========================================
+
+// Informations API IGDB
+$CLIENT_ID = 'spy0n0vev24kqu6gg3m6t9gh0a9d6r';
+$TOKEN = 'jmapwgfaw3021u1ce2zdrqix57gxhz';
+
+// Fonction pour récupérer des jeux par genre
+function getGamesByGenre($genreName, $CLIENT_ID, $TOKEN) {
+    // Chercher 7 jeux populaires du genre
+    $requete = 'search "' . $genreName . '";
+                fields id, name, cover.image_id, rating;
+                where rating != null;
+                sort rating desc;
+                limit 7;';
+    
+    $ch = curl_init('https://api.igdb.com/v4/games');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Client-ID: ' . $CLIENT_ID,
+        'Authorization: Bearer ' . $TOKEN
+    ]);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $requete);
+    
+    $reponse = curl_exec($ch);
+    curl_close($ch);
+    
+    $data = json_decode($reponse, true);
+    return $data ?: [];
+}
+
+// Récupérer les jeux pour chaque genre
+$genres = [
+    'RPG' => getGamesByGenre('RPG', $CLIENT_ID, $TOKEN),
+    'Shooter' => getGamesByGenre('Shooter', $CLIENT_ID, $TOKEN),
+    'Racing' => getGamesByGenre('Racing', $CLIENT_ID, $TOKEN),
+    'Action' => getGamesByGenre('Action', $CLIENT_ID, $TOKEN),
+    'Strategy' => getGamesByGenre('Strategy', $CLIENT_ID, $TOKEN)
+];
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Mon espace GameLink">
-    <title>Mon Espace | GameLink</title>
-    <link rel="stylesheet" href="../CSS/HEADER.css" type="text/css"/>
-    <link rel="stylesheet" href="../CSS/STYLE_ACCUEIL.css" type="text/css"/>
+    <title>Accueil | GameLink</title>
+    <link rel="stylesheet" href="../CSS/HEADER.css">
+    <link rel="stylesheet" href="../CSS/ACCUEIL_STYLE.css">
     <link rel="icon" type="image/svg+xml" href="../ICON/LogoSimple.svg">
-    <style>
-        main {
-            padding: 40px 20px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        .welcome-banner {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-            border-radius: 10px;
-            margin-bottom: 40px;
-            text-align: center;
-        }
-        .welcome-banner h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        .game-section {
-            margin-bottom: 50px;
-        }
-        .game-section h2 {
-            color: #667eea;
-            font-size: 1.8em;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #667eea;
-        }
-        .empty-state {
-            background: #f8f9fa;
-            padding: 60px 20px;
-            border-radius: 10px;
-            text-align: center;
-            color: #666;
-        }
-        .empty-state p {
-            font-size: 1.2em;
-            margin-bottom: 20px;
-        }
-        .btn-add-game {
-            display: inline-block;
-            padding: 12px 30px;
-            background: #667eea;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: background 0.3s;
-        }
-        .btn-add-game:hover {
-            background: #5568d3;
-        }
-        .stats-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-        .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        .stat-card h3 {
-            color: #667eea;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        .stat-card p {
-            color: #666;
-            font-size: 1.1em;
-        }
-    </style>
 </head>
 <body>
 
 <?php 
-    // Inclure le header (qui affichera ou non le lien ADMIN)
-    include __DIR__ . '/../INCLUDES/header.php'; 
-    ?>
+// Inclure le header
+if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
+    include __DIR__ . '/../INCLUDES/header.php';
+}
+?>
+
+<main>
     
-    <main>
-        <div class="welcome-banner">
-            <h1>👋 Bienvenue, <?= htmlspecialchars($user_pseudo) ?> !</h1>
-            <p>Voici votre espace personnel GameLink</p>
-        </div>
+    <!-- BANNIÈRE DE BIENVENUE -->
+    <div class="welcome-banner">
+        <h1>👋 Bienvenue, <?= htmlspecialchars($user_pseudo) ?> !</h1>
+        <p>Découvrez les meilleurs jeux sélectionnés pour vous</p>
+    </div>
 
-        <div class="stats-cards">
-            <div class="stat-card">
-                <h3>0</h3>
-                <p>Jeux en cours</p>
-            </div>
-            <div class="stat-card">
-                <h3>0</h3>
-                <p>Jeux terminés</p>
-            </div>
-            <div class="stat-card">
-                <h3>0</h3>
-                <p>Jeux à faire</p>
-            </div>
-            <div class="stat-card">
-                <h3>0</h3>
-                <p>Jeux favoris</p>
-            </div>
-        </div>
-
-        <section class="game-section">
-            <h2>🎮 JEUX EN COURS</h2>
+    <!-- GRAND CARROUSEL : TOP 10 JEUX À 5 ÉTOILES -->
+    <section class="carousel-section">
+        <h2>⭐ Les meilleurs jeux (5 étoiles)</h2>
+        
+        <?php if (empty($topGames)): ?>
             <div class="empty-state">
-                <p>Vous n'avez pas encore de jeux en cours</p>
-                <a href="RECHERCHE.php" class="btn-add-game">Rechercher des jeux</a>
+                <p>Aucun jeu n'a encore 5 étoiles</p>
+                <a href="RECHERCHE.php" class="btn-recherche">Rechercher des jeux</a>
             </div>
-        </section>
+        <?php else: ?>
+            <div class="big-carousel" id="bigCarousel">
+                <!-- Flèche gauche -->
+                <button class="carousel-arrow left" onclick="moveCarousel(-1)">‹</button>
+                
+                <!-- Jeux -->
+                <div class="big-carousel-wrapper" id="bigWrapper">
+                    <?php foreach ($topGames as $game): ?>
+                        <div class="big-game-card">
+                            <img src="<?= htmlspecialchars($game['cover_url']) ?>" 
+                                 alt="<?= htmlspecialchars($game['titre']) ?>">
+                            <div class="big-game-info">
+                                <h3><?= htmlspecialchars($game['titre']) ?></h3>
+                                <div class="big-game-rating">
+                                    <span class="stars">★★★★★</span>
+                                    <span><?= $game['nombre_votes'] ?> vote<?= $game['nombre_votes'] > 1 ? 's' : '' ?></span>
+                                </div>
+                                <a href="game.php?id=<?= $game['id_jeu'] ?>" class="btn-voir">Voir le jeu</a>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                
+                <!-- Flèche droite -->
+                <button class="carousel-arrow right" onclick="moveCarousel(1)">›</button>
+            </div>
+        <?php endif; ?>
+    </section>
 
-        <section class="game-section">
-            <h2>📝 JEUX À COMMENCER</h2>
-            <div class="empty-state">
-                <p>Aucun jeu dans votre liste "à faire"</p>
-                <a href="RECHERCHE.php" class="btn-add-game">Ajouter des jeux</a>
+    <!-- PETITS CARROUSELS PAR GENRE -->
+    
+    <!-- RPG -->
+    <section class="carousel-section">
+        <h2>🎭 RPG</h2>
+        <?php if (empty($genres['RPG'])): ?>
+            <div class="loading">Chargement...</div>
+        <?php else: ?>
+            <div class="small-carousel">
+                <button class="small-arrow left" onclick="scrollCarousel('rpg', -1)">‹</button>
+                <div class="small-carousel-wrapper" id="rpg">
+                    <?php foreach ($genres['RPG'] as $game): ?>
+                        <?php 
+                        $coverUrl = isset($game['cover']['image_id']) 
+                            ? 'https://images.igdb.com/igdb/image/upload/t_cover_big/' . $game['cover']['image_id'] . '.jpg'
+                            : '../IMG/placeholder.jpg';
+                        $rating = isset($game['rating']) ? round($game['rating'] / 20, 1) : 0;
+                        ?>
+                        <div class="small-game-card" onclick="window.location.href='game.php?id=<?= $game['id'] ?>'">
+                            <img src="<?= htmlspecialchars($coverUrl) ?>" 
+                                 alt="<?= htmlspecialchars($game['name']) ?>">
+                            <div class="small-game-hover">
+                                <h4><?= htmlspecialchars($game['name']) ?></h4>
+                                <div class="rating">
+                                    <span class="stars">★</span>
+                                    <span><?= $rating ?>/5</span>
+                                </div>
+                                <a href="game.php?id=<?= $game['id'] ?>" class="btn-voir-small">Voir plus</a>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                <button class="small-arrow right" onclick="scrollCarousel('rpg', 1)">›</button>
             </div>
-        </section>
+        <?php endif; ?>
+    </section>
 
-        <section class="game-section">
-            <h2>⏸️ JEUX EN PAUSE</h2>
-            <div class="empty-state">
-                <p>Aucun jeu en pause</p>
+    <!-- SHOOTER -->
+    <section class="carousel-section">
+        <h2>🔫 Shooter</h2>
+        <?php if (empty($genres['Shooter'])): ?>
+            <div class="loading">Chargement...</div>
+        <?php else: ?>
+            <div class="small-carousel">
+                <button class="small-arrow left" onclick="scrollCarousel('shooter', -1)">‹</button>
+                <div class="small-carousel-wrapper" id="shooter">
+                    <?php foreach ($genres['Shooter'] as $game): ?>
+                        <?php 
+                        $coverUrl = isset($game['cover']['image_id']) 
+                            ? 'https://images.igdb.com/igdb/image/upload/t_cover_big/' . $game['cover']['image_id'] . '.jpg'
+                            : '../IMG/placeholder.jpg';
+                        $rating = isset($game['rating']) ? round($game['rating'] / 20, 1) : 0;
+                        ?>
+                        <div class="small-game-card" onclick="window.location.href='game.php?id=<?= $game['id'] ?>'">
+                            <img src="<?= htmlspecialchars($coverUrl) ?>" 
+                                 alt="<?= htmlspecialchars($game['name']) ?>">
+                            <div class="small-game-hover">
+                                <h4><?= htmlspecialchars($game['name']) ?></h4>
+                                <div class="rating">
+                                    <span class="stars">★</span>
+                                    <span><?= $rating ?>/5</span>
+                                </div>
+                                <a href="game.php?id=<?= $game['id'] ?>" class="btn-voir-small">Voir plus</a>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                <button class="small-arrow right" onclick="scrollCarousel('shooter', 1)">›</button>
             </div>
-        </section>
+        <?php endif; ?>
+    </section>
 
-        <section class="game-section">
-            <h2>✅ JEUX TERMINÉS</h2>
-            <div class="empty-state">
-                <p>Vous n'avez pas encore terminé de jeux</p>
-                <a href="RECHERCHE.php" class="btn-add-game">Découvrir des jeux</a>
+    <!-- COURSE -->
+    <section class="carousel-section">
+        <h2>🏎️ Course</h2>
+        <?php if (empty($genres['Racing'])): ?>
+            <div class="loading">Chargement...</div>
+        <?php else: ?>
+            <div class="small-carousel">
+                <button class="small-arrow left" onclick="scrollCarousel('racing', -1)">‹</button>
+                <div class="small-carousel-wrapper" id="racing">
+                    <?php foreach ($genres['Racing'] as $game): ?>
+                        <?php 
+                        $coverUrl = isset($game['cover']['image_id']) 
+                            ? 'https://images.igdb.com/igdb/image/upload/t_cover_big/' . $game['cover']['image_id'] . '.jpg'
+                            : '../IMG/placeholder.jpg';
+                        $rating = isset($game['rating']) ? round($game['rating'] / 20, 1) : 0;
+                        ?>
+                        <div class="small-game-card" onclick="window.location.href='game.php?id=<?= $game['id'] ?>'">
+                            <img src="<?= htmlspecialchars($coverUrl) ?>" 
+                                 alt="<?= htmlspecialchars($game['name']) ?>">
+                            <div class="small-game-hover">
+                                <h4><?= htmlspecialchars($game['name']) ?></h4>
+                                <div class="rating">
+                                    <span class="stars">★</span>
+                                    <span><?= $rating ?>/5</span>
+                                </div>
+                                <a href="game.php?id=<?= $game['id'] ?>" class="btn-voir-small">Voir plus</a>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                <button class="small-arrow right" onclick="scrollCarousel('racing', 1)">›</button>
             </div>
-        </section>
-    </main>
-     
+        <?php endif; ?>
+    </section>
+
+    <!-- ACTION -->
+    <section class="carousel-section">
+        <h2>💥 Action</h2>
+        <?php if (empty($genres['Action'])): ?>
+            <div class="loading">Chargement...</div>
+        <?php else: ?>
+            <div class="small-carousel">
+                <button class="small-arrow left" onclick="scrollCarousel('action', -1)">‹</button>
+                <div class="small-carousel-wrapper" id="action">
+                    <?php foreach ($genres['Action'] as $game): ?>
+                        <?php 
+                        $coverUrl = isset($game['cover']['image_id']) 
+                            ? 'https://images.igdb.com/igdb/image/upload/t_cover_big/' . $game['cover']['image_id'] . '.jpg'
+                            : '../IMG/placeholder.jpg';
+                        $rating = isset($game['rating']) ? round($game['rating'] / 20, 1) : 0;
+                        ?>
+                        <div class="small-game-card" onclick="window.location.href='game.php?id=<?= $game['id'] ?>'">
+                            <img src="<?= htmlspecialchars($coverUrl) ?>" 
+                                 alt="<?= htmlspecialchars($game['name']) ?>">
+                            <div class="small-game-hover">
+                                <h4><?= htmlspecialchars($game['name']) ?></h4>
+                                <div class="rating">
+                                    <span class="stars">★</span>
+                                    <span><?= $rating ?>/5</span>
+                                </div>
+                                <a href="game.php?id=<?= $game['id'] ?>" class="btn-voir-small">Voir plus</a>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                <button class="small-arrow right" onclick="scrollCarousel('action', 1)">›</button>
+            </div>
+        <?php endif; ?>
+    </section>
+
+    <!-- STRATÉGIE -->
+    <section class="carousel-section">
+        <h2>🧠 Stratégie</h2>
+        <?php if (empty($genres['Strategy'])): ?>
+            <div class="loading">Chargement...</div>
+        <?php else: ?>
+            <div class="small-carousel">
+                <button class="small-arrow left" onclick="scrollCarousel('strategy', -1)">‹</button>
+                <div class="small-carousel-wrapper" id="strategy">
+                    <?php foreach ($genres['Strategy'] as $game): ?>
+                        <?php 
+                        $coverUrl = isset($game['cover']['image_id']) 
+                            ? 'https://images.igdb.com/igdb/image/upload/t_cover_big/' . $game['cover']['image_id'] . '.jpg'
+                            : '../IMG/placeholder.jpg';
+                        $rating = isset($game['rating']) ? round($game['rating'] / 20, 1) : 0;
+                        ?>
+                        <div class="small-game-card" onclick="window.location.href='game.php?id=<?= $game['id'] ?>'">
+                            <img src="<?= htmlspecialchars($coverUrl) ?>" 
+                                 alt="<?= htmlspecialchars($game['name']) ?>">
+                            <div class="small-game-hover">
+                                <h4><?= htmlspecialchars($game['name']) ?></h4>
+                                <div class="rating">
+                                    <span class="stars">★</span>
+                                    <span><?= $rating ?>/5</span>
+                                </div>
+                                <a href="game.php?id=<?= $game['id'] ?>" class="btn-voir-small">Voir plus</a>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                <button class="small-arrow right" onclick="scrollCarousel('strategy', 1)">›</button>
+            </div>
+        <?php endif; ?>
+    </section>
+
+</main>
+
+<script>
+// ===== GRAND CARROUSEL (manuel) =====
+let currentSlide = 0;
+
+function moveCarousel(direction) {
+    const wrapper = document.getElementById('bigWrapper');
+    const cards = wrapper.querySelectorAll('.big-game-card');
+    const totalSlides = cards.length;
+    
+    currentSlide = currentSlide + direction;
+    
+    // Revenir au début ou à la fin
+    if (currentSlide < 0) {
+        currentSlide = totalSlides - 1;
+    } else if (currentSlide >= totalSlides) {
+        currentSlide = 0;
+    }
+    
+    // Déplacer le carrousel
+    wrapper.style.transform = 'translateX(-' + (currentSlide * 100) + '%)';
+}
+
+// ===== PETITS CARROUSELS (défilement horizontal) =====
+function scrollCarousel(carouselId, direction) {
+    const carousel = document.getElementById(carouselId);
+    const scrollAmount = 230; // largeur d'une carte + gap
+    
+    carousel.scrollBy({
+        left: direction * scrollAmount,
+        behavior: 'smooth'
+    });
+}
+</script>
+
 </body>
 </html>
