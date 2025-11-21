@@ -5,8 +5,6 @@ session_start();
 // Se connecter à la base de données
 require __DIR__ . '/../DATA/DBConfig.php';
 
-require_once __DIR__ . '/../INCLUDES/track.php';
-require_once __DIR__ . '/../INCLUDES/check_admin.php';
 // Fonction pour sécuriser le texte
 function h($texte) { 
     return htmlspecialchars($texte, ENT_QUOTES, 'UTF-8'); 
@@ -37,6 +35,7 @@ if (isset($_POST['delete_comment']) && $userId) {
 
 // ACTION : Noter le jeu (AJAX)
 if (isset($_POST['ajax_rating']) && $userId) {
+    header('Content-Type: application/json');
     $note = (int)$_POST['ajax_rating'];
     if ($note >= 1 && $note <= 5) {
         // Vérifier si une note existe déjà
@@ -59,6 +58,8 @@ if (isset($_POST['ajax_rating']) && $userId) {
         echo json_encode(['success' => true]);
         exit;
     }
+    echo json_encode(['success' => false]);
+    exit;
 }
 
 // ACTION : Ajouter un commentaire
@@ -152,12 +153,12 @@ if ($nombreNotes > 0) {
 }
 
 // Ma note personnelle
-$maNot = 0;
+$maNote = 0;
 if ($userId) {
     $sql = "SELECT valeur FROM avis WHERE id_joueur = ? AND id_jeu = ?";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$userId, $gameId]);
-    $maNot = $stmt->fetchColumn() ?: 0;
+    $maNote = $stmt->fetchColumn() ?: 0;
 }
 
 // ========================================
@@ -186,7 +187,12 @@ $commentaires = $stmt->fetchAll();
 </head>
 <body>
 
-<?php include __DIR__ . '/../INCLUDES/header.php'; ?>
+<?php 
+// Inclure le header seulement s'il existe
+if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
+    include __DIR__ . '/../INCLUDES/header.php';
+}
+?>
 
 <div class="game-container">
     
@@ -253,7 +259,7 @@ $commentaires = $stmt->fetchAll();
                         <h3>Votre note :</h3>
                         <div class="stars-input">
                             <?php for ($i = 1; $i <= 5; $i++): ?>
-                                <span class="star-btn <?= $i <= $maNot ? 'active' : '' ?>" 
+                                <span class="star-btn <?= $i <= $maNote ? 'active' : '' ?>" 
                                       onclick="noterJeu(<?= $i ?>)">★</span>
                             <?php endfor; ?>
                         </div>
@@ -360,7 +366,13 @@ function noterJeu(note) {
     .then(function(data) {
         if (data.success) {
             location.reload();
+        } else {
+            alert('Erreur lors de la notation');
         }
+    })
+    .catch(function(erreur) {
+        console.error('Erreur:', erreur);
+        alert('Erreur lors de la notation');
     });
 }
 </script>
