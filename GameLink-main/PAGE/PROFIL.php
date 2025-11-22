@@ -31,8 +31,9 @@ if (!$user) {
     ?>
         <main>
             <section class="profile-card">
-                
-
+                <button class="edit-btn">
+                    <img src="../ICON/edit.svg" alt="Logo edit" width="30px">
+                </button>
                 <div class="profile-info">
                 <img src="../ICON/iconProfil.svg" alt="avatar">
                 <div class="name-bio">

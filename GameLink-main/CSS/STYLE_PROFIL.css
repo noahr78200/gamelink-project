@@ -6,6 +6,8 @@
     --text-muted: #6b6b6b;
     --bg-main: #f5f5f5;
     --form-text: #000000; 
+    --form-bg: #b4b4b4; 
+    --form-border: #cccccc;
 }
 
 :root[data-theme="light"] {
@@ -14,6 +16,8 @@
     --font-color: #000000;
     --font-color-bis: #00000071;
     --form-text: #111111; 
+    --form-bg: #b4b4b4;
+    --form-border: #cccccc;
 }
 
 :root[data-theme="dark"] {
@@ -22,6 +26,8 @@
     --font-color: #ffffff;
     --font-color-bis: #ffffff71;
     --form-text: #ffffff; 
+    --form-bg: #2b2431;
+    --form-border: #4a3a50;
 }
 
 body > main{
@@ -171,8 +177,8 @@ body {
 .form input {
     padding: 8px 10px;
     border-radius: 6px;
-    border: 1px solid #333;
-    background: var(--bg-main);
+    border: 1px solid var(--form-border);
+    background: var(--form-bg);
     color: var(--form-text);
 }
 
