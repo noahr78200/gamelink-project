@@ -36,8 +36,8 @@ if ($mode === 'search' && $search !== '') {
     // On crée un tableau pour stocker tous les jeux
     $allGames = array();
     
-    // On fait 10 requêtes de 500 jeux = 5000 jeux au total
-    for ($offset = 0; $offset < 5000; $offset += 500) {
+    // On fait 10 requêtes de 500 jeux = 1000 jeux au total
+    for ($offset = 0; $offset < 1000; $offset += 500) {
         $body = 'fields id, name, first_release_date, rating,
                         cover.image_id,
                         genres.name,

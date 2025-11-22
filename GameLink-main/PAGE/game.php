@@ -166,6 +166,30 @@ if (isset($_POST['ajax_rating']) && $userId) {
     }
 }
 
+// ACTION : Favoris (simple POST toggle)
+if (isset($_POST['toggle_fav']) && $userId) {
+    try {
+        $stmt = $pdo->prepare("SELECT 1 FROM favoris WHERE id_joueur = ? AND id_jeu = ?");
+        $stmt->execute([$userId, $gameId]);
+
+        if ($stmt->fetch()) {
+            $stmt = $pdo->prepare("DELETE FROM favoris WHERE id_joueur = ? AND id_jeu = ?");
+            $stmt->execute([$userId, $gameId]);
+        } else {
+            $stmt = $pdo->prepare("INSERT INTO favoris (id_joueur, id_jeu) VALUES (?, ?)");
+            $stmt->execute([$userId, $gameId]);
+        }
+
+        header("Location: game.php?id=" . $gameId);
+        exit;
+    } catch (PDOException $e) {
+        // ne pas bloquer l'utilisateur : log et rediriger
+        error_log('Favoris error: ' . $e->getMessage());
+        header("Location: game.php?id=" . $gameId);
+        exit;
+    }
+}
+
 // ACTION : Ajouter un commentaire
 if (isset($_POST['comment_text']) && $userId) {
     try {
@@ -245,6 +269,18 @@ try {
     $commentaires = $stmt->fetchAll();
 } catch (PDOException $e) {
     $commentaires = [];
+}
+
+// Vérifier si le jeu est en favoris pour l'utilisateur connecté
+$isFavori = false;
+if ($userId) {
+    try {
+        $stmt = $pdo->prepare("SELECT 1 FROM favoris WHERE id_joueur = ? AND id_jeu = ?");
+        $stmt->execute([$userId, $gameId]);
+        $isFavori = (bool) $stmt->fetch();
+    } catch (PDOException $e) {
+        $isFavori = false;
+    }
 }
 
 ?>
@@ -341,6 +377,16 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
                     <p class="login-msg">Connectez-vous pour noter</p>
                 <?php endif; ?>
                 
+                <!-- Favoris -->
+                <?php if ($userId): ?>
+                    <div class="favorite-box">
+                        <form method="post" style="display:inline">
+                            <button type="submit" name="toggle_fav" value="1" class="btn-fav <?= $isFavori ? 'active' : '' ?>">
+                                <?= $isFavori ? 'Retirer des favoris' : 'Ajouter aux favoris' ?>
+                            </button>
+                        </form>
+                    </div>
+                <?php endif; ?> 
             </div>
             
         </div>

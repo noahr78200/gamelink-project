@@ -338,6 +338,15 @@ CREATE TABLE IF NOT EXISTS page_views (
     FOREIGN KEY (user_id) REFERENCES joueur(id_joueur) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ==========================================
--- C'EST TOUT ! 🎉
--- ==========================================
+CREATE TABLE IF NOT EXISTS favoris (
+    id_favori INT AUTO_INCREMENT PRIMARY KEY,
+    id_joueur INT NOT NULL,
+    id_jeu_igdb INT NOT NULL,
+    titre_jeu VARCHAR(255),
+    cover_url VARCHAR(255),
+    id_jeu INT NOT NULL,
+    date_ajout TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_joueur_jeu (id_joueur, id_jeu),
+    FOREIGN KEY (id_joueur) REFERENCES joueur(id_joueur) ON DELETE CASCADE,
+    FOREIGN KEY (id_jeu) REFERENCES jeu(id_jeu) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
