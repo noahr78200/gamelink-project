@@ -326,12 +326,12 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
                 <?php if ($userId): ?>
                     <div class="favorite-box">
                         <form method="post" style="display:inline">
-                            <button type="submit" name="toggle_fav" value="1" class="btn-fav <?= $isFavori ? 'active' : '' ?>">
-                                <?= $isFavori ? 'Retirer des favoris' : 'Ajouter aux favoris' ?>
+                            <button type="submit" name="toggle_fav" value="1" class="btn-fav <?= $isFavori ? 'active' : '' ?>" aria-label="Favori">
+                                <img class="star" src="<?= $isFavori ? '../ICON/SVG/STAR_YELLOW.svg' : '../ICON/SVG/STAR_GREY.svg' ?>" alt="STAR" width="28">
                             </button>
                         </form>
                     </div>
-                <?php endif; ?> 
+                <?php endif; ?>
             
             <!-- Résumé (limité à 5 lignes) -->
             <div class="game-summary">
@@ -502,8 +502,17 @@ document.addEventListener('DOMContentLoaded', function(){
     var favBtn = document.querySelector('.btn-fav');
     if (!favBtn) return;
     favBtn.addEventListener('click', function(e){
+        // toggle class for immediate feedback and swap svg
         this.classList.toggle('active');
-        this.textContent = this.classList.contains('active') ? 'Retirer des favoris' : 'Ajouter aux favoris';
+        var img = this.querySelector('img.star');
+        if (img) {
+            if (this.classList.contains('active')) {
+                img.src = '../ICON/SVG/STAR_YELLOW.svg';
+            } else {
+                img.src = '../ICON/SVG/STAR_GREY.svg';
+            }
+        }
+        // allow the form to submit normally
     });
 });
 </script>

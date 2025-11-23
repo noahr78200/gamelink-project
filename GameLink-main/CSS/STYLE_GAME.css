@@ -226,19 +226,13 @@ body {
 
 /* Bouton favoris (page jeu) */
 .btn-fav {
-    padding: 8px 12px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    background: #ffffff;
-    color: #111111;
+    padding: 4px;
+    border: none;
+    background: transparent;
     cursor: pointer;
-    transition: background .15s ease, color .15s ease, border-color .15s ease;
 }
-.btn-fav.active {
-    background: #c73c3c;
-    border-color: #a33232;
-    color: #ffffff;
-}
+.btn-fav img.star { width: 28px; height: 28px; display: block; }
+.btn-fav.active img.star { filter: drop-shadow(0 0 6px rgba(255,200,60,0.45)); }
 
 /* Liste commentaires */
 .comments-list {
