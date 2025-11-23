@@ -1,11 +1,3 @@
-/* ==========================================
-   HEADER.css - Header unifié style ADMIN
-   Correspond exactement au style de STYLE_ADMIN.css
-   ========================================== */
-
-/* -------------------------------
-   Variables (même style que ADMIN)
--------------------------------- */
 :root {
     /* Fond & panneaux */
     --bg: #0f1115;
@@ -27,9 +19,43 @@
     --glow: rgba(110, 168, 255, .12);
 }
 
-/* -------------------------------
-   Reset + Style de base du body
--------------------------------- */
+:root[data-theme="light"] {
+    --bg: #f5f5f5;
+    --bg-grad1: #ffffff;
+    --bg-grad2: #e0e0e0;
+
+    --border: #cccccc;
+    --hoverBorder: #bbbbbb;
+
+    --text: #1a1a1a;
+    --muted: #6b6b6b;
+    --navText: #1a1a1a;
+
+    --accent: #6ea8ff;
+
+    --glow: rgba(110, 168, 255, .2);
+}
+
+:root[data-theme="dark"] {
+--bg: #0f1115;
+    --bg-grad1: #11151c;
+    --bg-grad2: #0c0f14;
+
+    /* Traits & texte */
+    --border: #2a3140;
+    --hoverBorder: #3a4559;
+
+    --text: #E7E9ED;
+    --muted: #8c95a3;
+    --navText: #E9ECF4;
+
+    /* Accents */
+    --accent: #6ea8ff;
+    
+    /* Halo discret */
+    --glow: rgba(110, 168, 255, .12);
+}
+
 * {
     box-sizing: border-box;
 }
