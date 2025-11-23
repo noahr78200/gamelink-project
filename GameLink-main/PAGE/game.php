@@ -321,6 +321,17 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
             
             <!-- Titre -->
             <h1 class="game-title"><?= h($titre) ?></h1>
+
+            <!-- Favoris -->
+                <?php if ($userId): ?>
+                    <div class="favorite-box">
+                        <form method="post" style="display:inline">
+                            <button type="submit" name="toggle_fav" value="1" class="btn-fav <?= $isFavori ? 'active' : '' ?>">
+                                <?= $isFavori ? 'Retirer des favoris' : 'Ajouter aux favoris' ?>
+                            </button>
+                        </form>
+                    </div>
+                <?php endif; ?> 
             
             <!-- Résumé (limité à 5 lignes) -->
             <div class="game-summary">
@@ -376,17 +387,6 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
                 <?php else: ?>
                     <p class="login-msg">Connectez-vous pour noter</p>
                 <?php endif; ?>
-                
-                <!-- Favoris -->
-                <?php if ($userId): ?>
-                    <div class="favorite-box">
-                        <form method="post" style="display:inline">
-                            <button type="submit" name="toggle_fav" value="1" class="btn-fav <?= $isFavori ? 'active' : '' ?>">
-                                <?= $isFavori ? 'Retirer des favoris' : 'Ajouter aux favoris' ?>
-                            </button>
-                        </form>
-                    </div>
-                <?php endif; ?> 
             </div>
             
         </div>
@@ -496,6 +496,16 @@ function noterJeu(note) {
         alert('Erreur de connexion');
     });
 }
+
+// Bouton favoris : toggle visuel immédiat avant submit
+document.addEventListener('DOMContentLoaded', function(){
+    var favBtn = document.querySelector('.btn-fav');
+    if (!favBtn) return;
+    favBtn.addEventListener('click', function(e){
+        this.classList.toggle('active');
+        this.textContent = this.classList.contains('active') ? 'Retirer des favoris' : 'Ajouter aux favoris';
+    });
+});
 </script>
 
 </body>

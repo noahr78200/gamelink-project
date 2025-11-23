@@ -232,11 +232,15 @@ body {
 .btn-fav {
     padding: 8px 12px;
     border-radius: 6px;
-    border: 1px solid #ccc;
-    background: transparent;
+    border: 1px solid var(--form-border, #ccc);
+    background: #ffffff;
+    color: #111111;
     cursor: pointer;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
 }
+.btn-fav:hover { filter: brightness(.97); }
 .btn-fav.active {
-    background: #ffb851;
-    border-color: #ffb851;
+    background: #c73c3c; /* rouge quand actif */
+    border-color: #a33232;
+    color: #ffffff;
 }

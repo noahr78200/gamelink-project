@@ -224,6 +224,22 @@ body {
     background: #5a94e6;
 }
 
+/* Bouton favoris (page jeu) */
+.btn-fav {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #ffffff;
+    color: #111111;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.btn-fav.active {
+    background: #c73c3c;
+    border-color: #a33232;
+    color: #ffffff;
+}
+
 /* Liste commentaires */
 .comments-list {
     margin-top: 30px;
