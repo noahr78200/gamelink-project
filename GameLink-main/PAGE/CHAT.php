@@ -13,4 +13,7 @@
 <?php
     include '../INCLUDES/header.php';   
 ?>
-<?php echo 'Lyes doit finir la page profil avant de commencer CHAT.php'; exit; ?>
+<body>
+    <p>Lyes doit finir la page chat.php
+        
+    </p>
