@@ -11,6 +11,6 @@
     <link rel="icon" type="image/svg+xml" href="../ICON/LogoSimple.svg">
 </head>
 <?php
-    include '../INCLUDES/HEADER.php';   
+    include '../INCLUDES/header.php';   
 ?>
 <?php echo 'Lyes doit finir la page profil avant de commencer CHAT.php'; exit; ?>
