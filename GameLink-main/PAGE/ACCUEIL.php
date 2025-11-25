@@ -15,6 +15,21 @@ require_once __DIR__ . '/../DATA/DBConfig.php';
 $user_id = $_SESSION['user_id'];
 $user_pseudo = $_SESSION['user_pseudo'];
 
+$headlineTitle = '';
+$headlineBody  = '';
+
+// Charger le message actuel
+try {
+    $stmt = $pdo->prepare("SELECT title, body FROM homepage_headline WHERE id = 1");
+    $stmt->execute();
+    if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $headlineTitle = $row['title'];
+        $headlineBody  = $row['body'];
+    }
+} catch (Exception $e) {
+    // en prod tu loggueras l'erreur, ici on peut ignorer pour ne pas casser la page
+}
+
 // ========================================
 // ÉTAPE 1 : RÉCUPÉRER LES JEUX À 5 ÉTOILES
 // ========================================
@@ -109,6 +124,9 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
         <h1>Bienvenue, <?= htmlspecialchars($user_pseudo) ?> !</h1>
         <p>Découvrez les meilleurs jeux vidéo du moment</p>
     </div>
+
+    <!-- Banniere event -->
+
 
     <!-- SECTION : JEUX À 5 ÉTOILES -->
     <div class="carousel-container">
