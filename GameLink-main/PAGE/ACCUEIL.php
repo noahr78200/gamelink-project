@@ -126,7 +126,22 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
     </div>
 
     <!-- Banniere event -->
+    <!-- MESSAGE À LA UNE -->
+<?php if ($headlineTitle || $headlineBody): ?>
+    <section class="steam-banner">
+        <div class="steam-banner-top">
 
+            <?php if (!empty($headlineTitle)): ?>
+                <h2><?= htmlspecialchars($headlineTitle) ?></h2>
+            <?php endif; ?>
+
+            <?php if (!empty($headlineBody)): ?>
+                <p><?= nl2br(htmlspecialchars($headlineBody)) ?></p>
+            <?php endif; ?>
+
+        </div>
+    </section>
+<?php endif; ?>
 
     <!-- SECTION : JEUX À 5 ÉTOILES -->
     <div class="carousel-container">
