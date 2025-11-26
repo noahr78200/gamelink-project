@@ -3,10 +3,10 @@ session_start();
 
 require_once __DIR__ . '/../INCLUDES/track.php';
 require_once __DIR__ . '/../DATA/DBConfig.php';
+require_once __DIR__ . '/../INCLUDES/avatar_svg.php';
 
 $user_id = $_SESSION['user_id'];
-$stmt = $pdo->prepare("SELECT pseudo, email, bio FROM joueur WHERE id_joueur = ?");
-$stmt->execute([$user_id]);
+$stmt = $pdo->prepare("SELECT pseudo, email, bio, avatar_config FROM joueur WHERE id_joueur = ?");$stmt->execute([$user_id]);
 $user = $stmt->fetch();
 
 if (!$user) {
@@ -31,11 +31,11 @@ if (!$user) {
     ?>
         <main>
             <section class="profile-card">
-                <button class="edit-btn">
+                <a href="avatar.php" class="edit-btn">
                     <img src="../ICON/edit.svg" alt="Logo edit" width="30px">
-                </button>
+                </a>
                 <div class="profile-info">
-                <img src="../ICON/iconProfil.svg" alt="avatar">
+                <?php echo generateAvatarSVG($user['avatar_config'], 100); ?>
                 <div class="name-bio">
                     <h2><?= htmlspecialchars($user['pseudo']) ?></h2>
                     <p><?= htmlspecialchars($user['bio']) ?></p>
