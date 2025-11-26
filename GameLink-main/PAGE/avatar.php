@@ -165,6 +165,13 @@ $avatar_config = $user['avatar_config'] ?? null;
             color: white;
         }
 
+        .btn img {
+            height: 1.3em;
+            width: 1.3em;
+            vertical-align: text-bottom;
+            margin-right: 8px;
+        }
+
         @media (max-width: 768px) {
             .main-content {
                 grid-template-columns: 1fr;
@@ -192,7 +199,7 @@ $avatar_config = $user['avatar_config'] ?? null;
 
                 <div class="action-buttons">
                     <button class="btn btn-green" onclick="saveAvatar()" id="save-btn">
-                        💾 Sauvegarder et retourner au profil
+                        <img src="../ICON/SVG/save.svg" alt="save logo"> Sauvegarder et retourner au profil
                     </button>
                 </div>
             </div>
