@@ -83,7 +83,7 @@ unset($_SESSION['flash_index']);
                 <img src="../ICON/SVG/INDEX_JPG/catalogue.jpg" alt="Catalogue de jeux">
             </div>
             <div class="feature-content">
-                <div class="feature-number">Fonctionnalité 01</div>
+                <div class="feature-number"></div>
                 <h2>Un catalogue de jeux immense</h2>
                 <p>
                     Explorez une bibliothèque complète de milliers de jeux vidéo. 
@@ -102,7 +102,7 @@ unset($_SESSION['flash_index']);
                 <img src="../ICON/SVG/INDEX_JPG/note.jpg" alt="Système de notation">
             </div>
             <div class="feature-content">
-                <div class="feature-number">Fonctionnalité 02</div>
+                <div class="feature-number"></div>
                 <h2>Notez et partagez vos avis</h2>
                 <p>
                     Donnez votre avis sur les jeux que vous avez joués. Attribuez des notes, 
@@ -121,7 +121,7 @@ unset($_SESSION['flash_index']);
                 <img src="../ICON/SVG/INDEX_JPG/commu.jpg" alt="Communauté">
             </div>
             <div class="feature-content">
-                <div class="feature-number">Fonctionnalité 03</div>
+                <div class="feature-number"></div>
                 <h2>Rejoignez la communauté</h2>
                 <p>
                     Échangez avec des milliers de passionnés sur nos forums. Participez à des 
@@ -140,7 +140,7 @@ unset($_SESSION['flash_index']);
                 <img src="../ICON/SVG/INDEX_JPG/playlist.jpg" alt="Playlists">
             </div>
             <div class="feature-content">
-                <div class="feature-number">Fonctionnalité 04</div>
+                <div class="feature-number"></div>
                 <h2>Organisez votre bibliothèque</h2>
                 <p>
                     Créez des playlists personnalisées pour organiser vos jeux. Triez-les par 
