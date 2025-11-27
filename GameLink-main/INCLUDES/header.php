@@ -53,5 +53,6 @@ if (isset($_SESSION['user_id'])) {
     <a href="PROFIL.php" style="line-height: 0;">
         <?php echo generateAvatarSVG($header_avatar_config, 35); ?>
     </a>
+    <script src="../JS/snake_simple.js"></script>
 </header>
 <script src="../JS/logo_menu_phone.js"></script>
