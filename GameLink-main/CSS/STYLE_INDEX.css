@@ -3,7 +3,7 @@
    Version avec bannières alternées
    ============================= */
 
-
+/* Fond sombre général */
 body {
   background: #0f1115;
   color: #E7E9ED;
@@ -12,30 +12,34 @@ body {
   padding: 0;
 }
 
+/* Contenu principal */
 main {
- 
-  margin: 0 auto;
-  padding: 40px 80px;
+  margin: 6rem auto 0;
+  padding: 0;
 }
+
 /* ===== BANNIÈRE DE BIENVENUE ===== */
 
 .welcome-banner {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 80px 80px;
+  padding: 120px 80px;
   text-align: center;
 }
 
 .welcome-banner h1 {
-  font-size: 48px;
-  margin: 0 0 20px 0;
+  font-size: 64px;
+  margin: 0 0 30px 0;
   font-weight: bold;
 }
 
 .welcome-banner p {
-  margin: 0 0 30px 0;
-  font-size: 20px;
+  margin: 0 0 40px 0;
+  font-size: 24px;
   opacity: 0.95;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .cta-buttons {
@@ -80,8 +84,8 @@ main {
 .feature-section {
   display: flex;
   align-items: center;
-  gap: 60px;
-  padding: 80px 80px;
+  gap: 50px;
+  padding: 60px 80px;
   background: #0f1115;
 }
 
@@ -93,15 +97,16 @@ main {
 
 /* Image de la bannière */
 .feature-image {
-  flex: 1;
-  min-width: 300px;
+  flex: 0.8;
+  min-width: 250px;
+  max-width: 500px;
 }
 
 .feature-image img {
   width: 100%;
   height: auto;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.5);
 }
 
 /* Placeholder pour images temporaires */
@@ -109,14 +114,14 @@ main {
   width: 100%;
   aspect-ratio: 16/9;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 15px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.5);
 }
 
 /* Contenu texte */
@@ -127,25 +132,25 @@ main {
 
 .feature-number {
   color: #6ea8ff;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: bold;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
 .feature-content h2 {
-  font-size: 36px;
-  margin: 0 0 20px 0;
+  font-size: 30px;
+  margin: 0 0 15px 0;
   color: #E7E9ED;
   font-weight: bold;
 }
 
 .feature-content p {
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1.6;
   color: #cbd5f5;
-  margin: 0 0 25px 0;
+  margin: 0 0 20px 0;
 }
 
 .feature-link {
@@ -197,17 +202,29 @@ main {
 /* ===== RESPONSIVE ===== */
 
 @media (max-width: 1024px) {
+  .welcome-banner {
+    padding: 100px 60px;
+  }
+
+  .welcome-banner h1 {
+    font-size: 52px;
+  }
+  
+  .welcome-banner p {
+    font-size: 20px;
+  }
+
   .feature-section {
-    padding: 60px 40px;
+    padding: 50px 40px;
     gap: 40px;
   }
   
   .feature-content h2 {
-    font-size: 30px;
+    font-size: 26px;
   }
   
   .feature-content p {
-    font-size: 16px;
+    font-size: 15px;
   }
 }
 
@@ -224,33 +241,34 @@ main {
   }
   
   .welcome-banner {
-    padding: 60px 20px;
+    padding: 80px 30px;
   }
   
   .welcome-banner h1 {
-    font-size: 36px;
+    font-size: 40px;
   }
   
   .welcome-banner p {
-    font-size: 16px;
+    font-size: 18px;
   }
   
   .feature-section,
   .feature-section:nth-child(even) {
     flex-direction: column;
     padding: 40px 20px;
-    gap: 30px;
+    gap: 25px;
   }
   
   .feature-content h2 {
-    font-size: 26px;
+    font-size: 24px;
   }
   
   .feature-content p {
-    font-size: 15px;
+    font-size: 14px;
   }
   
   .feature-image {
     min-width: 100%;
+    max-width: 100%;
   }
 }
