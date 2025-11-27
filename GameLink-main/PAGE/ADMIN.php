@@ -372,7 +372,7 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
     <!-- ONGLET UTILISATEURS -->
     <div class="tab-content <?= $current_tab === 'users' ? 'active' : '' ?>">
       <?php 
-      $users_file = __DIR__ . '../INCLUDES/users_management.php';
+      $users_file = __DIR__ . '/users_management.php';
       if (file_exists($users_file)) {
           include $users_file;
       } else {
