@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 - Page introuvable | GameLink</title>
+    <title>500 - Erreur serveur | GameLink</title>
     <style>
         body {
             margin: 0;
@@ -31,7 +31,7 @@
         h1 {
             font-size: 80px;
             margin: 0;
-            color: #6ea8fe;
+            color: #fbbf24;
         }
 
         h2 {
@@ -61,25 +61,16 @@
             background: #5a96e3;
             transform: translateY(-2px);
         }
-
-        .button-secondary {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .button-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="emoji"></div>
-        <h1>404</h1>
-        <h2>Oups ! Page introuvable</h2>
-        <p>La page que tu cherches n'existe pas ou a été déplacée.</p>
+        <div class="emoji">⚠️</div>
+        <h1>500</h1>
+        <h2>Erreur serveur</h2>
+        <p>Une erreur s'est produite sur le serveur. Réessaye dans quelques instants.</p>
         
         <a href="/PAGE/ACCUEIL.php" class="button"> Retour à l'accueil</a>
-        <a href="javascript:history.back()" class="button button-secondary">⬅ Retour</a>
     </div>
 </body>
 </html>
