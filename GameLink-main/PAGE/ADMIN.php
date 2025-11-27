@@ -80,10 +80,10 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
   <main>
     <!-- Message de bienvenue -->
     <div class="admin-welcome">
-      <h2>👋 Bienvenue Admin !</h2>
+      <h2> Bienvenue Admin !</h2>
       <p>Connecté avec l'ID : <strong><?= htmlspecialchars($_SESSION['user_id'] ?? $_SESSION['user_pseudo'] ?? 'Admin') ?></strong></p>
       <p style="font-size: 14px; margin-top: 10px;">
-        📊 Total de joueurs : <strong><?= number_format($total_joueurs) ?></strong>
+       Total de joueurs : <strong><?= number_format($total_joueurs) ?></strong>
       </p>
     </div>
 
