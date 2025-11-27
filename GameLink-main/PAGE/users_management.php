@@ -112,14 +112,20 @@ function formatTimeAgo($datetime) {
                 <table class="users-table">
                     <thead>
                         <tr>
-                            <th style="width: 10%;">ID</th>
-                            <th style="width: 25%;">Pseudo</th>
-                            <th style="width: 35%;">Email</th>
-                            <th style="width: 30%;">Date d'inscription</th>
+                            <th style="width: 8%;">ID</th>
+                            <th style="width: 22%;">Pseudo</th>
+                            <th style="width: 30%;">Email</th>
+                            <th style="width: 15%;">Rôle</th>
+                            <th style="width: 25%;">Date d'inscription</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($users as $user): ?>
+                            <?php 
+                                // Déterminer le rôle
+                                $role = ($user['id_joueur'] == 7) ? 'Administrateur' : 'Utilisateur';
+                                $role_class = ($user['id_joueur'] == 7) ? 'role-admin' : 'role-user';
+                            ?>
                             <tr class="user-row">
                                 <td>
                                     <div class="user-id">
@@ -134,6 +140,17 @@ function formatTimeAgo($datetime) {
                                 <td>
                                     <div class="user-email">
                                         <?= htmlspecialchars($user['email']) ?>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="user-role">
+                                        <span class="role-badge <?= $role_class ?>">
+                                            <?php if ($user['id_joueur'] == 7): ?>
+                                                👑 <?= $role ?>
+                                            <?php else: ?>
+                                                <?= $role ?>
+                                            <?php endif; ?>
+                                        </span>
                                     </div>
                                 </td>
                                 <td>
@@ -280,6 +297,38 @@ function formatTimeAgo($datetime) {
 .user-date {
     font-size: 14px;
     color: var(--valueMild);
+}
+
+/* Rôles */
+.user-role {
+    display: flex;
+    align-items: center;
+}
+
+.role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    border: 1px solid;
+}
+
+.role-badge.role-admin {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.15);
+    border-color: rgba(251, 191, 36, 0.4);
+    box-shadow: 0 0 12px rgba(251, 191, 36, 0.2);
+}
+
+.role-badge.role-user {
+    color: #9ca3af;
+    background: rgba(156, 163, 175, 0.1);
+    border-color: rgba(156, 163, 175, 0.3);
 }
 
 /* Pagination */
