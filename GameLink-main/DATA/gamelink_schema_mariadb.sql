@@ -8,7 +8,7 @@ CREATE TABLE joueur (
     pseudo          VARCHAR(50) NOT NULL UNIQUE,
     email           VARCHAR(255) NOT NULL UNIQUE,
     password_hash   VARCHAR(255) NOT NULL,
-    avatar_url      VARCHAR(255),
+    avatar_config TEXT NULL,
     date_inscription TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     bio             TEXT,
     pays            VARCHAR(100)
