@@ -25,7 +25,7 @@ unset($_SESSION['flash_index']);
                 <img class="logo" src="ICON/LogoComplet.svg" alt="Logo GameLink">
             </a>
             <a href="index.php">ACCUEIL</a>
-            <
+            
                 <a href="PAGE/RECHERCHE.php">RECHERCHE</a>
                 <a href="PAGE/COMMUNAUTE.php">COMMUNAUTÉ</a>
                 <a href="PAGE/ACCUEIL.php">MON ESPACE</a>
