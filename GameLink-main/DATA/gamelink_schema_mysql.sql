@@ -358,3 +358,17 @@ CREATE TABLE homepage_headline (
     body TEXT NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+-- ========================
+-- TABLE EASTER EGG : SNAKE GAME
+-- ========================
+
+CREATE TABLE IF NOT EXISTS snake_scores (
+    id_score        INT AUTO_INCREMENT PRIMARY KEY,
+    id_joueur       INT NOT NULL,
+    score           INT NOT NULL,
+    date_score      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_joueur) REFERENCES joueur(id_joueur) ON DELETE CASCADE,
+    INDEX idx_score (score DESC),
+    INDEX idx_joueur_score (id_joueur, score DESC)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
