@@ -3,7 +3,7 @@
    Version avec bannières alternées
    ============================= */
 
-/* Fond sombre général */
+
 body {
   background: #0f1115;
   color: #E7E9ED;
@@ -12,12 +12,11 @@ body {
   padding: 0;
 }
 
-/* Contenu principal */
 main {
-  margin: 6rem auto 0;
-  padding: 0;
+ 
+  margin: 0 auto;
+  padding: 40px 80px;
 }
-
 /* ===== BANNIÈRE DE BIENVENUE ===== */
 
 .welcome-banner {
