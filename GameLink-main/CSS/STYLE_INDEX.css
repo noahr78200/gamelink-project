@@ -14,10 +14,10 @@ body {
 
 /* Contenu principal */
 main {
-  margin: 6rem auto 0;
-  padding: 0;
+ 
+  margin: 0 auto;
+  padding: 40px 80px;
 }
-
 /* ===== BANNIÈRE DE BIENVENUE ===== */
 
 .welcome-banner {
