@@ -158,6 +158,15 @@ header .logo {
 header > a:last-child img:hover {
     transform: scale(1.1);
 }
+.btn-primary {
+  background: white;
+  color: #667eea;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255,255,255,0.3);
+}
 
 /* ==========================================
    RESPONSIVE - TABLETTE
