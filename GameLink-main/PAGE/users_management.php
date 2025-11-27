@@ -3,6 +3,17 @@
 // 👥 GESTION DES UTILISATEURS - ADMIN
 // ==========================================
 
+// Vérifier que PDO est disponible
+if (!isset($pdo)) {
+    echo '<section class="admin-surface">';
+    echo '<div class="card">';
+    echo '<div class="card-title">👥 Gestion des utilisateurs</div>';
+    echo '<p style="padding: 40px; text-align: center; color: #f87171;">⚠️ Erreur : Connexion à la base de données non disponible</p>';
+    echo '</div>';
+    echo '</section>';
+    return;
+}
+
 // Récupération des paramètres
 $search = $_GET['search'] ?? '';
 $page = max(1, intval($_GET['page'] ?? 1));
@@ -48,6 +59,10 @@ try {
     $total_users = $stmt_count->fetch(PDO::FETCH_ASSOC)['total'];
     $total_pages = ceil($total_users / $per_page);
 
+    // Debug
+    echo "<!-- DEBUG: Total users = $total_users -->";
+    echo "<!-- DEBUG: SQL = $sql -->";
+
     // Récupération des utilisateurs avec pagination
     $sql .= " ORDER BY j.date_inscription DESC LIMIT :limit OFFSET :offset";
     $stmt = $pdo->prepare($sql);
@@ -60,12 +75,16 @@ try {
     
     $stmt->execute();
     $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    echo "<!-- DEBUG: Users count = " . count($users) . " -->";
 
 } catch (Exception $e) {
     $users = [];
     $total_users = 0;
     $total_pages = 0;
-    error_log("Erreur récupération utilisateurs : " . $e->getMessage());
+    $error_message = $e->getMessage();
+    error_log("Erreur récupération utilisateurs : " . $error_message);
+    echo "<!-- DEBUG ERROR: " . htmlspecialchars($error_message) . " -->";
 }
 
 // Fonction pour calculer le temps écoulé
