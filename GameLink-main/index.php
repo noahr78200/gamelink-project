@@ -69,8 +69,8 @@ unset($_SESSION['flash_index']);
                 </div>
             <?php else: ?>
                 <div class="cta-buttons">
-                    <a href="PAGE/ACCUEIL.php" class="btn-big btn-primary">Mon espace</a>
-                    <a href="PAGE/RECHERCHE.php" class="btn-big btn-secondary">Rechercher des jeux</a>
+                    <a href="PAGE/AUTH.php" class="btn-big btn-primary">Mon espace</a>
+                    <a href="PAGE/AUTH.php" class="btn-big btn-secondary">Rechercher des jeux</a>
                 </div>
             <?php endif; ?>
         </section>
@@ -90,7 +90,7 @@ unset($_SESSION['flash_index']);
                     De l'indépendant au triple A, du rétro aux dernières sorties, 
                     découvrez tous les jeux classés par genre, plateforme et année de sortie.
                 </p>
-                <a href="PAGE/RECHERCHE.php" class="feature-link">Explorer le catalogue</a>
+                <a href="PAGE/AUTH.php" class="feature-link">Explorer le catalogue</a>
             </div>
         </section>
 
@@ -128,7 +128,7 @@ unset($_SESSION['flash_index']);
                     discussions, créez des groupes thématiques, organisez des événements gaming 
                     et trouvez des partenaires de jeu qui partagent vos intérêts.
                 </p>
-                <a href="PAGE/COMMUNAUTE.php" class="feature-link">Découvrir la communauté</a>
+                <a href="PAGE/AUTH.php" class="feature-link">Découvrir la communauté</a>
             </div>
         </section>
 
