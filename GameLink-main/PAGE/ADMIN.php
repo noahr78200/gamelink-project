@@ -372,17 +372,8 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
     <!-- ONGLET UTILISATEURS -->
     <div class="tab-content <?= $current_tab === 'users' ? 'active' : '' ?>">
       <?php 
-      $users_file = __DIR__ . '/users_management.php';
-      if (file_exists($users_file)) {
-          include $users_file;
-      } else {
-          echo '<section class="admin-surface">';
-          echo '<div class="card">';
-          echo '<div class="card-title">👥 Gestion des utilisateurs</div>';
-          echo '<p style="padding: 20px; text-align: center; color: #99a1b3;">Fichier users_management.php introuvable</p>';
-          echo '</div>';
-          echo '</section>';
-      }
+      $users_file = __DIR__ . '../INCLUDES/users_management.php';
+     
       ?>
     </div>
 
