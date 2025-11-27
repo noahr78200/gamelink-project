@@ -37,7 +37,7 @@
 }
 
 :root[data-theme="dark"] {
---bg: #0f1115;
+    --bg: #0f1115;
     --bg-grad1: #11151c;
     --bg-grad2: #0c0f14;
 
@@ -94,7 +94,7 @@ body > main {
 /* ==========================================
    HEADER PRINCIPAL
    ========================================== */
- header {
+header {
     position: fixed;
     top: 0;
     left: 0;
@@ -148,7 +148,7 @@ header .logo {
 }
 
 /* Icône de profil (à droite) */
- header > a:last-child img {
+header > a:last-child img {
     height: 2.5rem;
     width: auto;
     border-radius: 50%;
@@ -158,31 +158,125 @@ header .logo {
 header > a:last-child img:hover {
     transform: scale(1.1);
 }
+
 .btn-primary {
-  background: white;
-  color: #667eea;
+    background: white;
+    color: #667eea;
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255,255,255,0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255,255,255,0.3);
 }
 
 /* ==========================================
-   RESPONSIVE - TABLETTE
+   BOUTON HAMBURGER (caché par défaut)
+   ========================================== */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 28px;
+    height: 21px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 11;
+}
+
+.hamburger span {
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: var(--navText);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+/* Animation du hamburger quand le menu est ouvert */
+.hamburger.active span:nth-child(1) {
+    transform: translateY(9px) rotate(45deg);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
+}
+
+/* ==========================================
+   RESPONSIVE - TABLETTE ET MOBILE
    ========================================== */
 @media (max-width: 1024px) {
-    .Menu {
-        font-size: 0.95rem;
-        gap: 1.5rem;
+    /* Afficher le bouton hamburger */
+    .hamburger {
+        display: flex;
     }
-    
-     header .logo {
+
+    /* Container pour hamburger + profil */
+    header > a:last-child {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    /* Menu déroulant */
+    .Menu {
+        position: fixed;
+        top: 5rem;
+        left: 0;
+        width: 100%;
+        flex-direction: column;
+        background-color: rgba(0, 0, 0, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 2rem 0;
+        gap: 0;
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+
+    /* Menu ouvert */
+    .Menu.active {
+        max-height: 400px;
+        opacity: 1;
+    }
+
+    /* Liens du menu mobile */
+    .Menu a {
+        width: 100%;
+        text-align: center;
+        padding: 1rem 2rem;
+        border-radius: 0;
+        font-size: 1.1rem;
+    }
+
+    .Menu a:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: none;
+    }
+
+    .Menu a.active {
+        background: rgba(110, 168, 255, 0.25);
+    }
+
+    /* Ajustements du header */
+    header .logo {
         height: 2rem;
     }
-    
+
     header > a:last-child img {
         height: 2rem;
+    }
+
+    /* Ajuster la marge du contenu */
+    body > main {
+        margin-top: 5.5rem;
     }
 }
 
@@ -192,24 +286,45 @@ header > a:last-child img:hover {
 @media (max-width: 768px) {
     header {
         height: 4rem;
-        padding: 0 1%;
+        padding: 0 4%;
     }
-    
+
     .Menu {
-        font-size: 0.85rem;
-        gap: 1rem;
+        top: 4rem;
     }
-    
+
     .Menu a {
-        padding: 0.4rem 0.7rem;
+        font-size: 1rem;
+        padding: 0.9rem 2rem;
     }
-    
+
     header .logo {
         height: 1.8rem;
     }
-    
-   header > a:last-child img {
+
+    header > a:last-child img {
         height: 1.8rem;
+    }
+
+    .hamburger {
+        width: 26px;
+        height: 19px;
+    }
+
+    .hamburger span {
+        height: 2.5px;
+    }
+
+    .hamburger.active span:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+    }
+
+    .hamburger.active span:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+
+    body > main {
+        margin-top: 4.5rem;
     }
 }
 
@@ -217,25 +332,52 @@ header > a:last-child img:hover {
    RESPONSIVE - PETIT MOBILE
    ========================================== */
 @media (max-width: 480px) {
-    body > header {
+    header {
         height: 3.5rem;
+        padding: 0 5%;
     }
-    
+
     .Menu {
-        font-size: 0.75rem;
-        gap: 0.5rem;
+        top: 3.5rem;
+        padding: 1.5rem 0;
     }
-    
+
     .Menu a {
-        padding: 0.3rem 0.5rem;
+        font-size: 0.95rem;
+        padding: 0.8rem 1.5rem;
     }
-    
+
     header .logo {
         height: 1.5rem;
     }
-    
+
     header > a:last-child img {
         height: 1.5rem;
+    }
+
+    header > a:last-child {
+        gap: 0.8rem;
+    }
+
+    .hamburger {
+        width: 24px;
+        height: 18px;
+    }
+
+    .hamburger span {
+        height: 2px;
+    }
+
+    .hamburger.active span:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+    }
+
+    .hamburger.active span:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+
+    body > main {
+        margin-top: 4rem;
     }
 }
 
@@ -246,4 +388,10 @@ header > a:last-child img:hover {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
     border-radius: 6px;
+}
+
+/* Focus pour le hamburger */
+.hamburger:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
 }

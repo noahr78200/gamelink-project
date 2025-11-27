@@ -54,3 +54,4 @@ if (isset($_SESSION['user_id'])) {
         <?php echo generateAvatarSVG($header_avatar_config, 35); ?>
     </a>
 </header>
+<script src="../JS/logo_menu_phone.js"></script>
