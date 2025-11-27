@@ -1,85 +1,85 @@
-# ==========================================
-# HTACCESS - PROJET GAMELINK
-# Fichier de configuration Apache
-# ==========================================
+; # ==========================================
+; # HTACCESS - PROJET GAMELINK
+; # Fichier de configuration Apache
+; # ==========================================
 
-# Activer le moteur de réécriture d'URL
-RewriteEngine On
+; # Activer le moteur de réécriture d'URL
+; RewriteEngine On
 
-# ==========================================
-# 1. GESTION DES ERREURS HTTP
-# ==========================================
+; # ==========================================
+; # 1. GESTION DES ERREURS HTTP
+; # ==========================================
 
-# Erreur 404 - Page non trouvée
-ErrorDocument 404 /PAGE/404.php
+; # Erreur 404 - Page non trouvée
+; ErrorDocument 404 /PAGE/404.php
 
-# Erreur 500 - Erreur serveur interne
-ErrorDocument 500 /PAGE/500.php
+; # Erreur 500 - Erreur serveur interne
+; ErrorDocument 500 /PAGE/500.php
 
-# Erreur 403 - Accès interdit
-ErrorDocument 403 /PAGE/403.php
+; # Erreur 403 - Accès interdit
+; ErrorDocument 403 /PAGE/403.php
 
-# ==========================================
-# 2. SÉCURITÉ DU SITE
-# ==========================================
+; # ==========================================
+; # 2. SÉCURITÉ DU SITE
+; # ==========================================
 
-# Empêcher l'affichage du contenu des dossiers
-Options -Indexes
+; # Empêcher l'affichage du contenu des dossiers
+; Options -Indexes
 
-# Bloquer l'accès aux fichiers sensibles
-<FilesMatch "(\.htaccess|\.env|\.sql|\.git|config\.php)$">
-    Order Allow,Deny
-    Deny from all
-</FilesMatch>
+; # Bloquer l'accès aux fichiers sensibles
+; <FilesMatch "(\.htaccess|\.env|\.sql|\.git|config\.php)$">
+;     Order Allow,Deny
+;     Deny from all
+; </FilesMatch>
 
-# ==========================================
-# 3. FORCER HTTPS (protocole sécurisé)
-# ==========================================
+; # ==========================================
+; # 3. FORCER HTTPS (protocole sécurisé)
+; # ==========================================
 
-# Forcer la redirection vers HTTPS
-RewriteCond %{HTTPS} off
-RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+; # Forcer la redirection vers HTTPS
+; RewriteCond %{HTTPS} off
+; RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-# ==========================================
-# 4. RÉÉCRITURE D'URL (URL propres)
-# ==========================================
+; # ==========================================
+; # 4. RÉÉCRITURE D'URL (URL propres)
+; # ==========================================
 
-# Exemple : transformer /jeu/minecraft en /jeu.php?id=minecraft
-# RewriteRule ^jeu/([a-zA-Z0-9-]+)$ /HTML/jeu.php?id=$1 [L]
+; # Exemple : transformer /jeu/minecraft en /jeu.php?id=minecraft
+; # RewriteRule ^jeu/([a-zA-Z0-9-]+)$ /HTML/jeu.php?id=$1 [L]
 
-# Exemple : transformer /profil/jean en /profil.php?pseudo=jean
-# RewriteRule ^profil/([a-zA-Z0-9-]+)$ /HTML/profil.php?pseudo=$1 [L]
+; # Exemple : transformer /profil/jean en /profil.php?pseudo=jean
+; # RewriteRule ^profil/([a-zA-Z0-9-]+)$ /HTML/profil.php?pseudo=$1 [L]
 
-# Exemple : transformer /communaute/post/123 en /post.php?id=123
-# RewriteRule ^communaute/post/([0-9]+)$ /HTML/post.php?id=$1 [L]
+; # Exemple : transformer /communaute/post/123 en /post.php?id=123
+; # RewriteRule ^communaute/post/([0-9]+)$ /HTML/post.php?id=$1 [L]
 
-# ==========================================
-# 5. OPTIMISATION (BONUS)
-# ==========================================
+; # ==========================================
+; # 5. OPTIMISATION (BONUS)
+; # ==========================================
 
-# Activer la compression des fichiers
-<IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/html
-    AddOutputFilterByType DEFLATE text/css
-    AddOutputFilterByType DEFLATE text/javascript
-    AddOutputFilterByType DEFLATE application/javascript
-</IfModule>
+; # Activer la compression des fichiers
+; <IfModule mod_deflate.c>
+;     AddOutputFilterByType DEFLATE text/html
+;     AddOutputFilterByType DEFLATE text/css
+;     AddOutputFilterByType DEFLATE text/javascript
+;     AddOutputFilterByType DEFLATE application/javascript
+; </IfModule>
 
-# Cache des fichiers statiques
-<IfModule mod_expires.c>
-    ExpiresActive On
+; # Cache des fichiers statiques
+; <IfModule mod_expires.c>
+;     ExpiresActive On
     
-    # Images - 1 an
-    ExpiresByType image/jpeg "access plus 1 year"
-    ExpiresByType image/png "access plus 1 year"
-    ExpiresByType image/gif "access plus 1 year"
-    ExpiresByType image/svg+xml "access plus 1 year"
+;     # Images - 1 an
+;     ExpiresByType image/jpeg "access plus 1 year"
+;     ExpiresByType image/png "access plus 1 year"
+;     ExpiresByType image/gif "access plus 1 year"
+;     ExpiresByType image/svg+xml "access plus 1 year"
     
-    # CSS et JavaScript - 1 mois
-    ExpiresByType text/css "access plus 1 month"
-    ExpiresByType application/javascript "access plus 1 month"
-</IfModule>
+;     # CSS et JavaScript - 1 mois
+;     ExpiresByType text/css "access plus 1 month"
+;     ExpiresByType application/javascript "access plus 1 month"
+; </IfModule>
 
-# ==========================================
-# FIN DU FICHIER
-# ==========================================
+; # ==========================================
+; # FIN DU FICHIER
+; # ==========================================
