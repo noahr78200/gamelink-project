@@ -80,7 +80,7 @@ unset($_SESSION['flash_index']);
             <div class="feature-image">
                 <!-- Remplacez le placeholder par votre image -->
                 <!-- <img src="IMAGES/catalogue-jeux.jpg" alt="Catalogue de jeux"> -->
-                <div class="image-placeholder">📚 Catalogue</div>
+                <img src="../ICON/SVG/INDEX_JPG/catalogue.jpg" alt="Catalogue de jeux">
             </div>
             <div class="feature-content">
                 <div class="feature-number">Fonctionnalité 01</div>
@@ -99,7 +99,7 @@ unset($_SESSION['flash_index']);
             <div class="feature-image">
                 <!-- Remplacez le placeholder par votre image -->
                 <!-- <img src="IMAGES/notation.jpg" alt="Système de notation"> -->
-                <div class="image-placeholder">⭐ Notes</div>
+                <img src="../ICON/SVG/INDEX_JPG/note.jpg" alt="Système de notation">
             </div>
             <div class="feature-content">
                 <div class="feature-number">Fonctionnalité 02</div>
@@ -118,7 +118,7 @@ unset($_SESSION['flash_index']);
             <div class="feature-image">
                 <!-- Remplacez le placeholder par votre image -->
                 <!-- <img src="IMAGES/communaute.jpg" alt="Communauté"> -->
-                <div class="image-placeholder">💬 Communauté</div>
+                <img src="../ICON/SVG/INDEX_JPG/commu.jpg" alt="Communauté">
             </div>
             <div class="feature-content">
                 <div class="feature-number">Fonctionnalité 03</div>
@@ -137,7 +137,7 @@ unset($_SESSION['flash_index']);
             <div class="feature-image">
                 <!-- Remplacez le placeholder par votre image -->
                 <!-- <img src="IMAGES/playlists.jpg" alt="Playlists"> -->
-                <div class="image-placeholder">📋 Playlists</div>
+                <img src="../ICON/SVG/INDEX_JPG/playlist.jpg" alt="Playlists">
             </div>
             <div class="feature-content">
                 <div class="feature-number">Fonctionnalité 04</div>
