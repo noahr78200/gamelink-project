@@ -14,8 +14,7 @@ if (!isset($pdo)) {
     return;
 }
 
-// Paramètres de recherche et pagination
-$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+// Paramètres de pagination
 $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 $per_page = 20;
 $offset = ($page - 1) * $per_page;
@@ -27,61 +26,28 @@ $total_pages = 0;
 
 try {
     // ÉTAPE 1 : Compter le total d'utilisateurs
-    if (!empty($search)) {
-        $count_sql = "SELECT COUNT(*) as total FROM joueur WHERE pseudo LIKE ? OR email LIKE ?";
-        $stmt_count = $pdo->prepare($count_sql);
-        $search_param = '%' . $search . '%';
-        $stmt_count->execute([$search_param, $search_param]);
-    } else {
-        $count_sql = "SELECT COUNT(*) as total FROM joueur";
-        $stmt_count = $pdo->prepare($count_sql);
-        $stmt_count->execute();
-    }
+    $count_sql = "SELECT COUNT(*) as total FROM joueur";
+    $stmt_count = $pdo->prepare($count_sql);
+    $stmt_count->execute();
     
     $count_result = $stmt_count->fetch(PDO::FETCH_ASSOC);
     $total_users = $count_result ? intval($count_result['total']) : 0;
     $total_pages = $total_users > 0 ? ceil($total_users / $per_page) : 1;
 
     // ÉTAPE 2 : Récupérer les utilisateurs
-    if (!empty($search)) {
-        $sql = "SELECT 
-            id_joueur,
-            pseudo,
-            email,
-            avatar_config,
-            date_inscription,
-            bio,
-            pays
-        FROM joueur 
-        WHERE pseudo LIKE ? OR email LIKE ?
-        ORDER BY date_inscription DESC 
-        LIMIT ? OFFSET ?";
-        
-        $stmt = $pdo->prepare($sql);
-        $search_param = '%' . $search . '%';
-        $stmt->bindValue(1, $search_param, PDO::PARAM_STR);
-        $stmt->bindValue(2, $search_param, PDO::PARAM_STR);
-        $stmt->bindValue(3, $per_page, PDO::PARAM_INT);
-        $stmt->bindValue(4, $offset, PDO::PARAM_INT);
-        $stmt->execute();
-    } else {
-        $sql = "SELECT 
-            id_joueur,
-            pseudo,
-            email,
-            avatar_config,
-            date_inscription,
-            bio,
-            pays
-        FROM joueur 
-        ORDER BY date_inscription DESC 
-        LIMIT ? OFFSET ?";
-        
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindValue(1, $per_page, PDO::PARAM_INT);
-        $stmt->bindValue(2, $offset, PDO::PARAM_INT);
-        $stmt->execute();
-    }
+    $sql = "SELECT 
+        id_joueur,
+        pseudo,
+        email,
+        date_inscription
+    FROM joueur 
+    ORDER BY date_inscription DESC 
+    LIMIT ? OFFSET ?";
+    
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(1, $per_page, PDO::PARAM_INT);
+    $stmt->bindValue(2, $offset, PDO::PARAM_INT);
+    $stmt->execute();
     
     $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -121,44 +87,13 @@ function formatTimeAgo($datetime) {
         return 'Inconnu';
     }
 }
-
-// Fonction pour générer l'avatar
-function getUserAvatar($avatar_config, $pseudo) {
-    if (!empty($avatar_config)) {
-        $config = json_decode($avatar_config, true);
-        if (is_array($config) && isset($config['url'])) {
-            return '<img src="' . htmlspecialchars($config['url']) . '" class="user-avatar" alt="Avatar de ' . htmlspecialchars($pseudo) . '">';
-        }
-    }
-    
-    // Avatar par défaut avec première lettre
-    $initial = mb_strtoupper(mb_substr($pseudo, 0, 1));
-    $colors = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#43e97b', '#fa709a', '#ff6b9d', '#feca57'];
-    $color_index = ord($initial) % count($colors);
-    $color = $colors[$color_index];
-    
-    return '<div class="user-avatar-default" style="background: ' . $color . ';">' . 
-           htmlspecialchars($initial) . 
-           '</div>';
-}
 ?>
 
 <!-- Interface utilisateurs -->
 <section class="admin-surface">
     <div class="card users-card">
-        <div class="card-header-flex">
-            <div class="card-title">
-                👥 Liste des utilisateurs (<?= number_format($total_users) ?>)
-            </div>
-            <div class="users-search-wrapper">
-                <input 
-                    type="text" 
-                    id="userSearch" 
-                    class="users-search-input" 
-                    placeholder="🔍 Rechercher un pseudo ou email..."
-                    value="<?= htmlspecialchars($search) ?>"
-                >
-            </div>
+        <div class="card-title">
+            👥 Liste des utilisateurs (<?= number_format($total_users) ?>)
         </div>
 
         <?php if (isset($error_display)): ?>
@@ -169,34 +104,26 @@ function getUserAvatar($avatar_config, $pseudo) {
 
         <?php if (empty($users) && !isset($error_display)): ?>
             <div style="padding: 60px 20px; text-align: center; color: var(--muted);">
-                <?php if (!empty($search)): ?>
-                    <div style="font-size: 48px; margin-bottom: 16px;">😕</div>
-                    <div style="font-size: 18px; margin-bottom: 8px;">Aucun utilisateur trouvé</div>
-                    <div style="font-size: 14px;">pour la recherche : <strong>"<?= htmlspecialchars($search) ?>"</strong></div>
-                <?php else: ?>
-                    <div style="font-size: 48px; margin-bottom: 16px;">📭</div>
-                    <div style="font-size: 18px;">Aucun utilisateur inscrit</div>
-                <?php endif; ?>
+                <div style="font-size: 48px; margin-bottom: 16px;">📭</div>
+                <div style="font-size: 18px;">Aucun utilisateur inscrit</div>
             </div>
         <?php else: ?>
             <div class="users-table-wrapper">
                 <table class="users-table">
                     <thead>
                         <tr>
-                            <th style="width: 60px;">Avatar</th>
-                            <th style="width: 20%;">Pseudo</th>
-                            <th style="width: 30%;">Email</th>
-                            <th style="width: 15%;">Pays</th>
-                            <th style="width: 20%;">Date d'inscription</th>
-                            <th style="width: 15%;">ID</th>
+                            <th style="width: 10%;">ID</th>
+                            <th style="width: 25%;">Pseudo</th>
+                            <th style="width: 35%;">Email</th>
+                            <th style="width: 30%;">Date d'inscription</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($users as $user): ?>
                             <tr class="user-row">
                                 <td>
-                                    <div class="user-avatar-wrapper">
-                                        <?= getUserAvatar($user['avatar_config'], $user['pseudo']) ?>
+                                    <div class="user-id">
+                                        #<?= $user['id_joueur'] ?>
                                     </div>
                                 </td>
                                 <td>
@@ -210,15 +137,6 @@ function getUserAvatar($avatar_config, $pseudo) {
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="user-country">
-                                        <?php if (!empty($user['pays'])): ?>
-                                            <?= htmlspecialchars($user['pays']) ?>
-                                        <?php else: ?>
-                                            <span style="color: var(--muted); font-style: italic;">—</span>
-                                        <?php endif; ?>
-                                    </div>
-                                </td>
-                                <td>
                                     <div class="user-date">
                                         <?php 
                                             $date = new DateTime($user['date_inscription']);
@@ -227,11 +145,6 @@ function getUserAvatar($avatar_config, $pseudo) {
                                         <small style="display: block; color: var(--muted); font-size: 11px; margin-top: 2px;">
                                             Il y a <?= formatTimeAgo($user['date_inscription']) ?>
                                         </small>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="user-id">
-                                        #<?= $user['id_joueur'] ?>
                                     </div>
                                 </td>
                             </tr>
@@ -249,10 +162,10 @@ function getUserAvatar($avatar_config, $pseudo) {
                     </div>
                     <div class="pagination-controls">
                         <?php if ($page > 1): ?>
-                            <a href="?tab=users&page=1<?= !empty($search) ? '&search=' . urlencode($search) : '' ?>" class="pagination-btn" title="Première page">
+                            <a href="?tab=users&page=1" class="pagination-btn" title="Première page">
                                 ⏮️
                             </a>
-                            <a href="?tab=users&page=<?= $page - 1 ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>" class="pagination-btn" title="Page précédente">
+                            <a href="?tab=users&page=<?= $page - 1 ?>" class="pagination-btn" title="Page précédente">
                                 ◀️
                             </a>
                         <?php endif; ?>
@@ -264,17 +177,17 @@ function getUserAvatar($avatar_config, $pseudo) {
                         
                         for ($i = $start; $i <= $end; $i++): 
                         ?>
-                            <a href="?tab=users&page=<?= $i ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>" 
+                            <a href="?tab=users&page=<?= $i ?>" 
                                class="pagination-btn <?= $i === $page ? 'active' : '' ?>">
                                 <?= $i ?>
                             </a>
                         <?php endfor; ?>
 
                         <?php if ($page < $total_pages): ?>
-                            <a href="?tab=users&page=<?= $page + 1 ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>" class="pagination-btn" title="Page suivante">
+                            <a href="?tab=users&page=<?= $page + 1 ?>" class="pagination-btn" title="Page suivante">
                                 ▶️
                             </a>
-                            <a href="?tab=users&page=<?= $total_pages ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>" class="pagination-btn" title="Dernière page">
+                            <a href="?tab=users&page=<?= $total_pages ?>" class="pagination-btn" title="Dernière page">
                                 ⏭️
                             </a>
                         <?php endif; ?>
@@ -292,41 +205,8 @@ function getUserAvatar($avatar_config, $pseudo) {
     min-height: 400px;
 }
 
-.card-header-flex {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-/* Barre de recherche */
-.users-search-wrapper {
-    position: relative;
-    flex-shrink: 0;
-}
-
-.users-search-input {
-    width: 320px;
-    padding: 10px 16px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text);
-    font-size: 14px;
-    transition: all 0.3s ease;
-}
-
-.users-search-input:focus {
-    outline: none;
-    border-color: var(--accent);
-    background: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 0 0 3px rgba(110, 168, 255, 0.15);
-}
-
-.users-search-input::placeholder {
-    color: var(--placeholder);
+.card-title {
+    margin-bottom: 20px;
 }
 
 /* Tableau */
@@ -377,33 +257,14 @@ function getUserAvatar($avatar_config, $pseudo) {
     vertical-align: middle;
 }
 
-/* Avatar */
-.user-avatar-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.user-avatar,
-.user-avatar-default {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid var(--border);
-}
-
-.user-avatar-default {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 18px;
-    color: white;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-}
-
 /* Textes */
+.user-id {
+    font-family: ui-monospace, monospace;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--accent);
+}
+
 .user-pseudo {
     font-weight: 600;
     font-size: 15px;
@@ -412,21 +273,13 @@ function getUserAvatar($avatar_config, $pseudo) {
 
 .user-email {
     color: var(--muted);
-    font-size: 13px;
+    font-size: 14px;
     word-break: break-all;
 }
 
-.user-date,
-.user-country,
-.user-id {
+.user-date {
     font-size: 14px;
     color: var(--valueMild);
-}
-
-.user-id {
-    font-family: ui-monospace, monospace;
-    font-weight: 600;
-    color: var(--accent-2);
 }
 
 /* Pagination */
@@ -491,22 +344,7 @@ function getUserAvatar($avatar_config, $pseudo) {
 }
 
 /* Responsive */
-@media (max-width: 1200px) {
-    .users-search-input {
-        width: 280px;
-    }
-}
-
 @media (max-width: 768px) {
-    .card-header-flex {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .users-search-input {
-        width: 100%;
-    }
-    
     .users-table {
         font-size: 13px;
     }
@@ -527,33 +365,3 @@ function getUserAvatar($avatar_config, $pseudo) {
     }
 }
 </style>
-
-<script>
-// Recherche avec debounce
-(function() {
-    const searchInput = document.getElementById('userSearch');
-    if (!searchInput) return;
-
-    let searchTimeout;
-    
-    searchInput.addEventListener('input', function() {
-        clearTimeout(searchTimeout);
-        
-        searchTimeout = setTimeout(function() {
-            const searchValue = searchInput.value.trim();
-            const url = new URL(window.location.href);
-            
-            if (searchValue) {
-                url.searchParams.set('search', searchValue);
-            } else {
-                url.searchParams.delete('search');
-            }
-            
-            url.searchParams.set('page', '1');
-            url.searchParams.set('tab', 'users');
-            
-            window.location.href = url.toString();
-        }, 600);
-    });
-})();
-</script>
