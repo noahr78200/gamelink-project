@@ -40,9 +40,7 @@ if (isset($_SESSION['user_id'])) {
         <a href="COMMUNAUTE.php" class="<?= $current_page === 'COMMUNAUTE.php' ? 'active' : '' ?>">
             COMMUNAUTÉ
         </a>
-        <a href="CHAT.php" class="<?= $current_page === 'CHAT.php' ? 'active' : '' ?>">
-            CHAT
-        </a>
+       
         
         <?php if (is_admin()): ?>
             <a href="ADMIN.php" class="<?= $current_page === 'ADMIN.php' ? 'active' : '' ?>">
