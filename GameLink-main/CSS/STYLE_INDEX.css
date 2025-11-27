@@ -14,90 +14,8 @@ body {
 
 /* Contenu principal */
 main {
-  max-width: 1400px;
-  margin: 0 auto;
+  margin: 6rem auto 0;
   padding: 0;
-}
-
-/* ===== HEADER ===== */
-
-.main-header {
-  background: #111827;
-  border-bottom: 1px solid #1f2937;
-}
-
-.header-inner {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 15px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-/* Logo */
-.logo-link {
-  text-decoration: none;
-}
-
-.logo {
-  height: 40px;
-  width: auto;
-}
-
-/* Menu principal */
-.main-nav {
-  display: flex;
-  gap: 30px;
-  align-items: center;
-}
-
-.main-nav a {
-  color: #E7E9ED;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  transition: color 0.3s;
-}
-
-.main-nav a:hover {
-  color: #6ea8ff;
-}
-
-/* Boutons Connexion / Inscription */
-.auth-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-.btn {
-  padding: 10px 20px;
-  border-radius: 5px;
-  font-size: 14px;
-  text-decoration: none;
-  border: 1px solid transparent;
-  transition: all 0.3s;
-  font-weight: 500;
-}
-
-.btn-login {
-  background: transparent;
-  color: #E7E9ED;
-  border-color: #6ea8ff;
-}
-
-.btn-login:hover {
-  background: #6ea8ff;
-  color: white;
-}
-
-.btn-register {
-  background: #6ea8ff;
-  color: white;
-}
-
-.btn-register:hover {
-  background: #5a90e0;
 }
 
 /* ===== BANNIÈRE DE BIENVENUE ===== */
@@ -105,7 +23,7 @@ main {
 .welcome-banner {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 80px 40px;
+  padding: 80px 80px;
   text-align: center;
 }
 
@@ -164,7 +82,7 @@ main {
   display: flex;
   align-items: center;
   gap: 60px;
-  padding: 80px 60px;
+  padding: 80px 80px;
   background: #0f1115;
 }
 

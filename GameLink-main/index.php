@@ -13,45 +13,34 @@ unset($_SESSION['flash_index']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="GameLink - Votre plateforme de jeux vidéo">
     <title>GameLink - Accueil</title>
+    <link rel="stylesheet" href="CSS/HEADER.css" type="text/css"/>
     <link rel="stylesheet" href="CSS/STYLE_INDEX.css" type="text/css"/>
     <link rel="icon" type="image/svg+xml" href="ICON/LogoSimple.svg">
 </head>
 <body>
     <!-- HEADER -->
-    <header class="main-header">
-        <div class="header-inner">
-            <!-- Logo -->
-            <a href="index.php" class="logo-link">
+    <header>
+        <nav class="Menu">
+            <a href="index.php">
                 <img class="logo" src="ICON/LogoComplet.svg" alt="Logo GameLink">
             </a>
-            
-            <!-- Menu principal -->
-            <nav class="main-nav">
-                <a href="index.php">ACCUEIL</a>
-                
-                    <a href="PAGE/RECHERCHE.php">RECHERCHE</a>
-                    <a href="PAGE/COMMUNAUTE.php">COMMUNAUTÉ</a>
-                    <a href="PAGE/ACCUEIL.php">MON ESPACE</a>
-                
-
-            </nav>
-            
-            <!-- Boutons Connexion / Inscription ou Profil -->
-            <?php if (isset($_SESSION['user_id'])): ?>
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <span style="color: white;">Bonjour, <?= htmlspecialchars($_SESSION['user_pseudo']) ?></span>
-                    <a href="INCLUDES/logout.php">
-                        <img src="ICON/iconProfil.svg" alt="Logo Profil" width="40">
-                    </a>
-                </div>
-            <?php else: ?>
-                <div class="auth-buttons">
-                    <a href="PAGE/AUTH.php" class="btn btn-login">Connexion</a>
-                    <a href="PAGE/AUTH.php?tab=signup" class="btn btn-register">Inscription</a>
-                </div>
+            <a href="index.php">ACCUEIL</a>
+            <
+                <a href="PAGE/RECHERCHE.php">RECHERCHE</a>
+                <a href="PAGE/COMMUNAUTE.php">COMMUNAUTÉ</a>
+                <a href="PAGE/ACCUEIL.php">MON ESPACE</a>
            
-            <?php endif; ?>
-        </div>
+        </nav>
+        <?php if (isset($_SESSION['user_id'])): ?>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span style="color: white;">Bonjour, <?= htmlspecialchars($_SESSION['user_pseudo']) ?></span>
+                <a href="INCLUDES/logout.php">
+                    <img src="ICON/iconProfil.svg" alt="Logo Profil" width="40">
+                </a>
+            </div>
+        <?php else: ?>
+            <a href="PAGE/AUTH.php" class="btn btn-primary" style="margin-right: 20px;">Connexion / Inscription</a>
+        <?php endif; ?>
     </header>
     
     <main>
