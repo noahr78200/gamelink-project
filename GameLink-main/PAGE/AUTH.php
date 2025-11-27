@@ -50,7 +50,7 @@ function ancienne_valeur($nom_champ, $valeur_par_defaut = '') {
     <a href="../index.php">
       <img src="../ICON/LogoComplet.svg" alt="GameLink">
     </a>
-    <span>GameLink</span>
+    <span></span>
   </div>
   <nav>
     <a href="../index.php">Accueil</a>
@@ -61,7 +61,7 @@ function ancienne_valeur($nom_champ, $valeur_par_defaut = '') {
 <main>
   <!-- Carte de bienvenue -->
   <section class="card">
-    <h1 class="title">Bienvenue 👋</h1>
+    <h1 class="title">Bienvenue </h1>
     <p class="muted">
       Connecte-toi ou crée un compte pour accéder à GameLink. 
       Le captcha sera demandé après une inscription ou une connexion réussie.
