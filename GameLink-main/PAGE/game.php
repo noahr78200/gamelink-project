@@ -1,28 +1,18 @@
 <?php
-// Démarrer la session
 session_start();
-
-// Se connecter à la base de données
 require __DIR__ . '/../DATA/DBConfig.php';
 
-// Fonction pour sécuriser le texte
 function h($texte) { 
     return htmlspecialchars($texte, ENT_QUOTES, 'UTF-8'); 
 }
 
-// Récupérer l'ID du jeu
 if (!isset($_GET['id'])) {
     header("Location: RECHERCHE.php");
     exit;
 }
 $gameId = (int)$_GET['id'];
 
-// Récupérer l'utilisateur connecté
 $userId = $_SESSION['user_id'] ?? null;
-
-// ========================================
-// RÉCUPÉRER LES INFOS DU JEU D'ABORD
-// ========================================
 
 $CLIENT_ID = 'spy0n0vev24kqu6gg3m6t9gh0a9d6r';
 $TOKEN = 'jmapwgfaw3021u1ce2zdrqix57gxhz';
@@ -51,7 +41,6 @@ if (!$jeu) {
     exit;
 }
 
-// Extraire les informations
 $titre = $jeu['name'] ?? "Sans titre";
 $resume = $jeu['summary'] ?? "Aucune description disponible.";
 $genres = isset($jeu['genres']) ? implode(", ", array_column($jeu['genres'], 'name')) : "Non spécifié";
@@ -59,7 +48,6 @@ $plateformes = isset($jeu['platforms']) ? implode(", ", array_column($jeu['platf
 $editeur = $jeu['involved_companies'][0]['company']['name'] ?? "Non spécifié";
 $dateSortie = isset($jeu['first_release_date']) ? date('Y-m-d', $jeu['first_release_date']) : null;
 
-// Image de couverture
 if (isset($jeu['cover']['image_id'])) {
     $image = 'https://images.igdb.com/igdb/image/upload/t_cover_big/' . $jeu['cover']['image_id'] . '.jpg';
 } else {
@@ -252,6 +240,18 @@ try {
     $nombreNotes = 0;
     $noteMoyenne = 0;
     $maNote = 0;
+}
+
+$isFavori = false;
+if ($userId) {
+    try {
+        $sql = "SELECT 1 FROM favoris WHERE id_joueur = ? AND id_jeu = ?";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$userId, $gameId]);
+        $isFavori = (bool)$stmt->fetch();
+    } catch (PDOException $e) {
+        $isFavori = false;
+    }
 }
 
 // ========================================
