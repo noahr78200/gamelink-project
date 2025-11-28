@@ -59,7 +59,7 @@ unset($_SESSION['flash_index']);
 
         <!-- BANNIÈRE DE BIENVENUE -->
         <section class="welcome-banner">
-            <h1>🎮 Bienvenue sur GameLink</h1>
+            <h1>Bienvenue sur GameLink</h1>
             <p>Découvrez, notez et partagez vos jeux vidéo préférés avec une communauté passionnée</p>
             
             <?php if (!isset($_SESSION['user_id'])): ?>
