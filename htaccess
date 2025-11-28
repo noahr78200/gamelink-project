@@ -1,0 +1,27 @@
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    ServerName gamelink.ovh
+    
+    DocumentRoot /var/www/html/gamelink/GameLink-main
+    
+    <Directory /var/www/html/gamelink/GameLink-main>
+        Options -Indexes FollowSymLinks
+        AllowOverride None
+        Require all granted
+        
+        # Gestion des erreurs HTTP
+        ErrorDocument 404 /PAGE/404.php
+        ErrorDocument 403 /PAGE/403.php
+        ErrorDocument 500 /PAGE/500.php
+        
+        # Sécurité - Bloquer fichiers sensibles
+        <FilesMatch "\.(htaccess|htpasswd|ini|log|sql|env|git)$">
+            Require all denied
+        </FilesMatch>
+    </Directory>
+    
+    
+    
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
