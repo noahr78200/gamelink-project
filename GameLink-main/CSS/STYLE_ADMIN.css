@@ -659,3 +659,193 @@ body > main{
   font-size: 0.95rem;
   line-height: 1.4;
 }
+
+
+/* -------------------------------
+   Tablette (1200px et moins)
+-------------------------------- */
+@media (max-width: 1200px) {
+  .admin-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .sidecard {
+    order: 3;
+    grid-column: 1 / -1;
+  }
+  
+  .chart.big {
+    order: 2;
+    height: 340px;
+  }
+  
+  .kpi-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .reports-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* -------------------------------
+   Mobile (800px et moins)
+-------------------------------- */
+@media (max-width: 800px) {
+  body > main {
+    margin-top: 5rem;
+    padding: 0 10px;
+    font-size: 14px;
+  }
+  
+  .admin-surface {
+    padding: 10px;
+    border-radius: 12px;
+  }
+  
+  /* KPI Cards - 1 colonne */
+  .kpi-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .kpi-card {
+    padding: 12px;
+    min-height: 80px;
+  }
+  
+  .kpi-label {
+    font-size: 11px;
+  }
+  
+  .kpi-value {
+    font-size: 28px;
+  }
+  
+  .delta {
+    font-size: 11px;
+    padding: 2px 8px;
+  }
+  
+  /* Grille admin - 1 colonne */
+  .admin-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .stack {
+    gap: 12px;
+    grid-auto-rows: 200px;
+  }
+  
+  .chart.big {
+    height: 260px;
+  }
+  
+  /* Cartes */
+  .card {
+    padding: 10px;
+  }
+  
+  .card-title {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  
+  /* Onglets */
+  .admin-tabs {
+    padding: 0 8px;
+    gap: 4px;
+    margin: 15px 0;
+  }
+  
+  .admin-tab {
+    padding: 8px 14px;
+    font-size: 14px;
+  }
+  
+  /* Bannière bienvenue */
+  .admin-welcome {
+    margin: 10px 5px;
+    padding: 15px;
+  }
+  
+  .admin-welcome h2 {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+  
+  .admin-welcome p {
+    font-size: 14px;
+  }
+  
+  /* Tables */
+  .report-table {
+    font-size: 12px;
+  }
+  
+  .report-table thead th,
+  .report-table tbody td {
+    padding: 8px 10px;
+  }
+  
+  /* Wrapper pour scroll horizontal */
+  .card.table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Newsletter & Headlines */
+  .newsletter-card .nl-field textarea {
+    min-height: 180px;
+  }
+  
+  .headline-card .nl-field textarea {
+    min-height: 100px;
+  }
+  
+  .newsletter-card .nl-actions,
+  .headline-card .nl-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .newsletter-card .nl-actions #nlTestEmail {
+    max-width: 100%;
+  }
+  
+  /* Bannière message */
+  .headline-banner {
+    padding: 15px 18px;
+    margin: 12px 0 20px;
+  }
+  
+  .headline-banner h2 {
+    font-size: 1.1rem;
+  }
+  
+  .headline-banner p {
+    font-size: 0.9rem;
+  }
+  
+  /* Modal */
+  .modal-card {
+    width: 95vw;
+  }
+  
+  .modal-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .modal-header,
+  .modal-footer {
+    padding: 12px 14px;
+  }
+  
+  .modal-body {
+    padding: 14px;
+  }
+}
+
