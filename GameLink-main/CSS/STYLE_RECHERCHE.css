@@ -1,34 +1,28 @@
 /* ============================
-   STYLE_RECHERCHE.css
-   Page recherche GameLink
+   STYLE_RECHERCHE.css - GameLink
+   Version responsive optimisée
    ============================ */
 
 :root {
   --bg: #0f1115;
   --bg-grad1: #11151c;
   --bg-grad2: #0c0f14;
-
   --panel: #1a1e27;
   --panel-2: #171b23;
   --panel-3: #141820;
-
   --border: #2a3140;
   --hoverBorder: #3a4559;
-
   --text: #E7E9ED;
   --muted: #8c95a3;
   --accent: #6ea8ff;
   --accent-soft: rgba(110, 168, 255, .15);
   --danger: #ff6b7a;
-  --success: #4caf50;
-
   --placeholder: #606774;
-
   --g: 16px;
   --radius: 14px;
 }
 
-/* Décalage pour le header global */
+/* Décalage pour le header */
 body > main,
 .page-recherche {
   margin-top: 6rem;
@@ -49,7 +43,7 @@ body > main,
 }
 
 /* =============================
-   Section barre de recherche
+   Barre de recherche
    ============================= */
 .search-bar-section {
   display: flex;
@@ -120,7 +114,7 @@ body > main,
 }
 
 /* =============================
-   Section "Afficher tous les jeux"
+   Afficher tous les jeux
    ============================= */
 .all-games-section {
   display: flex;
@@ -155,7 +149,7 @@ body > main,
   background: radial-gradient(circle at top, #202536 0, #141822 55%, #0e1118 100%);
   border-radius: var(--radius);
   border: 1px solid rgba(255, 255, 255, .03);
-  padding: 14px 14px 14px;
+  padding: 14px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, .35);
 }
 
@@ -211,7 +205,7 @@ body > main,
   font-weight: 600;
 }
 
-/* Filtres type "chips" */
+/* Filtres type chips */
 .filters {
   display: flex;
   flex-wrap: wrap;
@@ -317,6 +311,7 @@ body > main,
   font-size: .95rem;
   margin: 10px 11px 6px;
   font-weight: 600;
+  line-height: 1.3;
 }
 
 /* Infos (note, date) */
@@ -326,8 +321,55 @@ body > main,
   color: var(--muted);
 }
 
-/* Adaptation mobile */
+/* =============================
+   RESPONSIVE - MOBILE
+   ============================= */
+
+/* Tablette (900px et moins) */
+@media (max-width: 900px) {
+  body > main,
+  .page-recherche {
+    margin-left: 0;
+    margin-right: 0;
+    padding: 16px 20px 32px;
+  }
+
+  .filters-groups {
+    grid-template-columns: repeat(2, 1fr);
+    gap: .75rem 1rem;
+  }
+
+  #Game-list {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 14px;
+  }
+}
+
+/* Mobile portrait (768px et moins) */
 @media (max-width: 768px) {
+  body > main,
+  .page-recherche {
+    padding: 12px 15px 24px;
+  }
+
+  .search-bar-section h1 {
+    font-size: 1.3rem;
+  }
+
+  .search-bar {
+    padding: 6px 12px;
+    gap: 8px;
+  }
+
+  .search-bar input {
+    font-size: .9rem;
+  }
+
+  .search-bar button {
+    padding: 6px 14px;
+    font-size: .85rem;
+  }
+
   .filters-panel {
     padding: 12px;
   }
@@ -337,8 +379,22 @@ body > main,
     gap: .75rem;
   }
 
-  .games-section {
-    margin-top: .25rem;
+  .filter-group {
+    gap: .4rem;
+  }
+
+  .filters {
+    gap: 5px;
+  }
+
+  .chip {
+    font-size: .75rem;
+    padding: 4px 10px;
+  }
+
+  .show-all-button {
+    padding: 10px 20px;
+    font-size: .9rem;
   }
 
   #Game-list {
@@ -346,12 +402,74 @@ body > main,
     gap: 12px;
   }
 
-  .search-bar-section h1 {
-    font-size: 1.3rem;
+  .game-title {
+    font-size: .9rem;
+    margin: 8px 10px 5px;
+  }
+
+  .game-info {
+    font-size: .75rem;
+    margin: 0 10px 10px;
   }
 }
 
+/* Petit mobile (480px et moins) */
 @media (max-width: 480px) {
+  body > main,
+  .page-recherche {
+    margin-top: 5rem;
+    padding: 10px;
+    gap: 1rem;
+  }
+
+  .search-bar-section h1 {
+    font-size: 1.2rem;
+  }
+
+  .search-bar {
+    flex-wrap: wrap;
+    border-radius: 12px;
+    padding: 8px;
+  }
+
+  .search-bar input {
+    width: 100%;
+    margin-bottom: 8px;
+    padding: 8px;
+  }
+
+  .search-bar button {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+  }
+
+  .filters-panel {
+    padding: 10px;
+  }
+
+  .filters-panel-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .filters-reset {
+    align-self: flex-start;
+    padding: 4px 8px;
+    margin-top: 4px;
+  }
+
+  .chip {
+    font-size: .72rem;
+    padding: 4px 8px;
+  }
+
+  .show-all-button {
+    padding: 8px 16px;
+    font-size: .85rem;
+  }
+
   #Game-list {
     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     gap: 10px;
@@ -359,9 +477,45 @@ body > main,
 
   .game-title {
     font-size: .85rem;
+    margin: 8px 8px 5px;
   }
 
   .game-info {
     font-size: .72rem;
+    margin: 0 8px 8px;
+  }
+
+  .games-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .games-count {
+    font-size: .85rem;
+  }
+}
+
+/* Très petit mobile (360px et moins) */
+@media (max-width: 360px) {
+  .search-bar-section h1 {
+    font-size: 1.1rem;
+  }
+
+  #Game-list {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .game-card {
+    border-radius: 10px;
+  }
+
+  .game-title {
+    font-size: .8rem;
+  }
+
+  .game-info {
+    font-size: .7rem;
   }
 }
