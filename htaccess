@@ -19,9 +19,11 @@
             Require all denied
         </FilesMatch>
     </Directory>
-    
-    
-    
+<DirectoryMatch "^/.*/\.(git|svn|htaccess)">
+    Require all denied
+</DirectoryMatch>
+
     ErrorLog ${APACHE_LOG_DIR}/error.log
     CustomLog ${APACHE_LOG_DIR}/access.log combined
 </VirtualHost>
+
