@@ -430,38 +430,66 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
 
         <!-- Newsletter -->
         <section class="card newsletter-card" id="newsletter">
-          <div class="card-title">Newsletter – Edition</div>
+  <div class="card-title">Newsletter — Edition</div>
+   <form id="newsletterForm" class="nl-form" method="post" action="../API/newsletter_send.php">
+  <div class="nl-field">
+    <label for="nlSubject">Objet du mail</label>
+    <input
+      id="nlSubject"
+      name="subject"
+      type="text"
+      required
+      placeholder="Ex: Mise à jour GameLink v2.1"
+    >
+  </div>
 
-          <!-- UI uniquement pour l'instant, pas de back -->
-          <form id="newsletterForm" class="nl-form" method="post" action="#">
-            <div class="nl-field">
-              <label for="nlSubject">Objet du mail</label>
-              <input id="nlSubject" name="subject" type="text" required placeholder="Ex: Mise à jour GameLink v2.1">
-            </div>
+  <div class="nl-field">
+    <label for="nlTitle">Titre dans l'email</label>
+    <input
+      id="nlTitle"
+      name="title"
+      type="text"
+      required
+      placeholder="Découvrez les nouveautés !"
+    >
+  </div>
 
-            <div class="nl-field">
-              <label for="nlTitle">Titre dans l'email</label>
-              <input id="nlTitle" name="title" type="text" required placeholder="Découvrez les nouveautés !">
-            </div>
+  <div class="nl-field">
+    <label for="nlBody">Corps du mail</label>
+    <textarea
+      id="nlBody"
+      name="body"
+      rows="10"
+      required
+      placeholder="Texte du message."
+    ></textarea>
+    <small class="muted">
+      Cette zone servira pour le contenu principal de ta newsletter.
+    </small>
+  </div>
 
-            <div class="nl-field">
-              <label for="nlBody">Corps du mail</label>
-              <textarea id="nlBody" name="body" rows="10" required placeholder="Texte du message..."></textarea>
-              <small class="muted">Astuce : cette zone servira pour le contenu de ta newsletter.</small>
-            </div>
+  <div class="nl-actions">
+    <input
+      type="email"
+      id="nlTestEmail"
+      name="test_email"
+      placeholder="Envoyer un test à… (optionnel)"
+    >
+    <div class="spacer"></div>
 
-            <div class="nl-actions">
-              <input type="email" id="nlTestEmail" name="test_email" placeholder="Envoyer un test à … (optionnel)">
-              <div class="spacer"></div>
-              <!-- Boutons purement UI pour l'instant -->
-              <button type="button" class="btn ghost" disabled>Aperçu (à venir)</button>
-              <button type="button" class="btn warn" disabled>Envoyer un test</button>
-              <button type="button" class="btn primary" disabled>Envoyer à tous</button>
-            </div>
-          </form>
-        </section>
-      </section>
-    </div>
+    <!-- Deux boutons submit, avec un name="action" différent -->
+    <button type="submit" class="btn warn" name="action" value="test">
+      Envoyer un test
+    </button>
+    <button type="submit" class="btn primary" name="action" value="all">
+      Envoyer à tous
+    </button>
+  </div>
+</form>
+     
+ 
+
+</section>
 
   </main>
 
