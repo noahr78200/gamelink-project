@@ -242,3 +242,18 @@ body {
 }
 .btn-fav img.star { width: 28px; height: 28px; display: block; }
 .btn-fav.active img.star { filter: drop-shadow(0 0 6px rgba(255,200,60,0.45)); }
+
+.btn-download {
+    display: inline-block;
+    margin-left: 10px;
+    padding: 8px 14px;
+    border-radius: 6px;
+    background: #4a6cff;
+    color: #fff;
+    font-size: 0.9rem;
+    text-decoration: none;
+    font-weight: 600;
+}
+.btn-download:hover {
+    background: #3a56d0;
+}
