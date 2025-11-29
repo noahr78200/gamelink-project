@@ -34,6 +34,9 @@ if (!$user) {
                 <a href="avatar.php" class="edit-btn">
                     <img src="../ICON/edit.svg" alt="Logo edit" width="30px">
                 </a>
+                <a href="../API/profil_pdf.php" class="btn">
+                    Télécharger mon profil en PDF
+                </a>
                 <div class="profile-info">
                 <?php echo generateAvatarSVG($user['avatar_config'], 100); ?>
                 <div class="name-bio">
