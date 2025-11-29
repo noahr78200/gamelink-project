@@ -1,18 +1,28 @@
 <?php
+// Démarrer la session
 session_start();
+
+// Se connecter à la base de données
 require __DIR__ . '/../DATA/DBConfig.php';
 
+// Fonction pour sécuriser le texte
 function h($texte) { 
     return htmlspecialchars($texte, ENT_QUOTES, 'UTF-8'); 
 }
 
+// Récupérer l'ID du jeu
 if (!isset($_GET['id'])) {
     header("Location: RECHERCHE.php");
     exit;
 }
 $gameId = (int)$_GET['id'];
 
+// Récupérer l'utilisateur connecté
 $userId = $_SESSION['user_id'] ?? null;
+
+// ========================================
+// RÉCUPÉRER LES INFOS DU JEU D'ABORD
+// ========================================
 
 $CLIENT_ID = 'spy0n0vev24kqu6gg3m6t9gh0a9d6r';
 $TOKEN = 'jmapwgfaw3021u1ce2zdrqix57gxhz';
@@ -41,6 +51,7 @@ if (!$jeu) {
     exit;
 }
 
+// Extraire les informations
 $titre = $jeu['name'] ?? "Sans titre";
 $resume = $jeu['summary'] ?? "Aucune description disponible.";
 $genres = isset($jeu['genres']) ? implode(", ", array_column($jeu['genres'], 'name')) : "Non spécifié";
@@ -48,6 +59,7 @@ $plateformes = isset($jeu['platforms']) ? implode(", ", array_column($jeu['platf
 $editeur = $jeu['involved_companies'][0]['company']['name'] ?? "Non spécifié";
 $dateSortie = isset($jeu['first_release_date']) ? date('Y-m-d', $jeu['first_release_date']) : null;
 
+// Image de couverture
 if (isset($jeu['cover']['image_id'])) {
     $image = 'https://images.igdb.com/igdb/image/upload/t_cover_big/' . $jeu['cover']['image_id'] . '.jpg';
 } else {
@@ -154,30 +166,6 @@ if (isset($_POST['ajax_rating']) && $userId) {
     }
 }
 
-// ACTION : Favoris (simple POST toggle)
-if (isset($_POST['toggle_fav']) && $userId) {
-    try {
-        $stmt = $pdo->prepare("SELECT 1 FROM favoris WHERE id_joueur = ? AND id_jeu = ?");
-        $stmt->execute([$userId, $gameId]);
-
-        if ($stmt->fetch()) {
-            $stmt = $pdo->prepare("DELETE FROM favoris WHERE id_joueur = ? AND id_jeu = ?");
-            $stmt->execute([$userId, $gameId]);
-        } else {
-            $stmt = $pdo->prepare("INSERT INTO favoris (id_joueur, id_jeu) VALUES (?, ?)");
-            $stmt->execute([$userId, $gameId]);
-        }
-
-        header("Location: game.php?id=" . $gameId);
-        exit;
-    } catch (PDOException $e) {
-        // ne pas bloquer l'utilisateur : log et rediriger
-        error_log('Favoris error: ' . $e->getMessage());
-        header("Location: game.php?id=" . $gameId);
-        exit;
-    }
-}
-
 // ACTION : Ajouter un commentaire
 if (isset($_POST['comment_text']) && $userId) {
     try {
@@ -240,18 +228,6 @@ try {
     $nombreNotes = 0;
     $noteMoyenne = 0;
     $maNote = 0;
-}
-
-$isFavori = false;
-if ($userId) {
-    try {
-        $sql = "SELECT 1 FROM favoris WHERE id_joueur = ? AND id_jeu = ?";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$userId, $gameId]);
-        $isFavori = (bool)$stmt->fetch();
-    } catch (PDOException $e) {
-        $isFavori = false;
-    }
 }
 
 // ========================================
@@ -322,17 +298,6 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
             <!-- Titre -->
             <h1 class="game-title"><?= h($titre) ?></h1>
 
-            <!-- Favoris -->
-                <?php if ($userId): ?>
-                    <div class="favorite-box">
-                        <form method="post" style="display:inline">
-                            <button type="submit" name="toggle_fav" value="1" class="btn-fav <?= $isFavori ? 'active' : '' ?>" aria-label="Favori">
-                                <img class="star" src="<?= $isFavori ? '../ICON/SVG/STAR_YELLOW.svg' : '../ICON/SVG/STAR_GREY.svg' ?>" alt="STAR" width="28">
-                            </button>
-                        </form>
-                    </div>
-                <?php endif; ?>
-            
             <!-- Résumé (limité à 5 lignes) -->
             <div class="game-summary">
                 <p class="summary-text" id="resume"><?= nl2br(h($resume)) ?></p>
@@ -496,25 +461,6 @@ function noterJeu(note) {
         alert('Erreur de connexion');
     });
 }
-
-// Bouton favoris : toggle visuel immédiat avant submit
-document.addEventListener('DOMContentLoaded', function(){
-    var favBtn = document.querySelector('.btn-fav');
-    if (!favBtn) return;
-    favBtn.addEventListener('click', function(e){
-        // toggle class for immediate feedback and swap svg
-        this.classList.toggle('active');
-        var img = this.querySelector('img.star');
-        if (img) {
-            if (this.classList.contains('active')) {
-                img.src = '../ICON/SVG/STAR_YELLOW.svg';
-            } else {
-                img.src = '../ICON/SVG/STAR_GREY.svg';
-            }
-        }
-        // allow the form to submit normally
-    });
-});
 </script>
 
 </body>

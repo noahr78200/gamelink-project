@@ -70,37 +70,39 @@ if (!$user) {
 
                 <section id="act" class="box active">
                     <div>
-                        <h2>Jeux Favoris :</h2>
+                        <h2>Mes Jeux Notés :</h2>
                         <div class="favorites-grid">
                             <?php
-                            //On récupére les jeux favoris 
-                            $stmt_favoris = $pdo->prepare("SELECT j.id_jeu, j.titre, j.cover_url
-                                FROM favoris f
-                                JOIN jeu j ON f.id_jeu = j.id_jeu
-                                WHERE f.id_joueur = ?
-                                ORDER BY f.date_ajout DESC
+                            // On récupère les jeux que l'utilisateur a notés
+                            $stmt_jeux_notes = $pdo->prepare("SELECT j.id_jeu, j.titre, j.cover_url, a.valeur, a.date_notation
+                                FROM avis a
+                                JOIN jeu j ON a.id_jeu = j.id_jeu
+                                WHERE a.id_joueur = ? AND a.valeur IS NOT NULL
+                                ORDER BY a.date_notation DESC
                                 LIMIT 15");
-                            $stmt_favoris->execute([$user_id]);
-                            $favoris = $stmt_favoris->fetchAll();
+                            $stmt_jeux_notes->execute([$user_id]);
+                            $jeux_notes = $stmt_jeux_notes->fetchAll();
                             
-                            if (empty($favoris)): ?>
-                                <p class="no-favorites">Aucun jeu favori pour le moment. Ajoutez des jeux à vos favoris !</p>
+                            if (empty($jeux_notes)): ?>
+                                <p class="no-favorites">Aucun jeu noté pour le moment. Notez des jeux pour les voir apparaître ici !</p>
                             <?php else: ?>
-                                <?php foreach ($favoris as $jeu): ?>
+                                <?php foreach ($jeux_notes as $jeu): ?>
                                     <div class="game-card">
                                         <a href="game.php?id=<?= $jeu['id_jeu'] ?>">
                                             <img src="<?= htmlspecialchars($jeu['cover_url']) ?>" 
                                                  alt="<?= htmlspecialchars($jeu['titre']) ?>"
                                                  onerror="this.src='../ICON/placeholder.jpg'">
                                             <p><?= htmlspecialchars($jeu['titre']) ?></p>
+                                            <div class="rating-stars">
+                                                <?php for ($i = 1; $i <= 5; $i++): ?>
+                                                    <span class="star <?= $i <= $jeu['valeur'] ? 'filled' : '' ?>">★</span>
+                                                <?php endfor; ?>
+                                            </div>
                                         </a>
                                     </div>
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </div>
-                    </div>
-                    <div>
-                        <h2>Jeux :</h2>
                     </div>
                 </section>
                 <section id="set" class="box">
