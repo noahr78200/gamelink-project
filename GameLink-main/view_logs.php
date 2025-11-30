@@ -1,9 +1,4 @@
 <?php
-// ==========================================
-// 📖 LECTEUR DE LOGS
-// ==========================================
-// Mets ce fichier à la racine : view_logs.php
-// Va sur : localhost/ton-projet/view_logs.php
 
 $log_file = __DIR__ . '/INCLUDES/track_debug.log';
 ?>
@@ -111,7 +106,6 @@ $log_file = __DIR__ . '/INCLUDES/track_debug.log';
     </div>
 
     <?php
-    // Compter les stats si possible
     try {
         $pdo = new PDO("mysql:host=localhost;dbname=gamelink;charset=utf8mb4", "root", "");
         

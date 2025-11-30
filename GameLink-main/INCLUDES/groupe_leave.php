@@ -1,11 +1,8 @@
 <?php
-// INCLUDES/groupe_leave.php
-// Quitter un groupe
 
 session_start();
 header('Content-Type: application/json');
 
-// Verifier connexion
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'message' => 'Non connecte']);
     exit;
@@ -17,7 +14,6 @@ $mon_id = $_SESSION['user_id'];
 $id_groupe = isset($_POST['groupe_id']) ? (int)$_POST['groupe_id'] : 0;
 
 try {
-    // Me retirer du groupe
     $requete = $pdo->prepare("DELETE FROM adhesion WHERE id_joueur = ? AND id_communaute = ?");
     $requete->execute([$mon_id, $id_groupe]);
     

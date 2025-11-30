@@ -1,8 +1,3 @@
--- ========================
--- SCHEMA GAMELINK - MariaDB/MySQL
--- ========================
-
--- Joueurs (utilisateurs)
 CREATE TABLE joueur (
     id_joueur       INT AUTO_INCREMENT PRIMARY KEY,
     pseudo          VARCHAR(50) NOT NULL UNIQUE,
@@ -14,7 +9,6 @@ CREATE TABLE joueur (
     pays            VARCHAR(100)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Éditeurs de jeux
 CREATE TABLE editeur (
     id_editeur      INT AUTO_INCREMENT PRIMARY KEY,
     nom             VARCHAR(150) NOT NULL UNIQUE,
@@ -22,9 +16,6 @@ CREATE TABLE editeur (
     pays            VARCHAR(100)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ========================
--- JEUX
--- ========================
 CREATE TABLE jeu (
     id_jeu          INT AUTO_INCREMENT PRIMARY KEY,
     id_editeur      INT NOT NULL,
@@ -48,9 +39,6 @@ CREATE TABLE plateforme (
     fabriquant      VARCHAR(120)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ========================
--- RELATIONS JEUX
--- ========================
 CREATE TABLE jeu_genre (
     id_jeu      INT NOT NULL,
     id_genre    INT NOT NULL,
@@ -69,9 +57,6 @@ CREATE TABLE jeu_plateforme (
     FOREIGN KEY (id_plateforme) REFERENCES plateforme(id_plateforme) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ========================
--- PLAYLIST
--- ========================
 CREATE TABLE playlist (
     id_playlist    INT AUTO_INCREMENT PRIMARY KEY,
     id_joueur      INT NOT NULL,
@@ -92,9 +77,6 @@ CREATE TABLE playlist_jeu (
     FOREIGN KEY (id_jeu) REFERENCES jeu(id_jeu) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ========================
--- AVIS & STATS
--- ========================
 CREATE TABLE avis (
     id_joueur       INT NOT NULL,
     id_jeu          INT NOT NULL,
@@ -118,9 +100,6 @@ CREATE TABLE statistique_jeu (
     FOREIGN KEY (id_jeu) REFERENCES jeu(id_jeu) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ========================
--- COMMUNAUTES
--- ========================
 CREATE TABLE communaute (
     id_communaute   INT AUTO_INCREMENT PRIMARY KEY,
     nom             VARCHAR(150) NOT NULL UNIQUE,
@@ -161,9 +140,6 @@ CREATE TABLE commentaire (
     FOREIGN KEY (id_joueur) REFERENCES joueur(id_joueur) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ========================
--- MESSAGERIE
--- ========================
 CREATE TABLE conversation (
     id_conversation INT AUTO_INCREMENT PRIMARY KEY,
     sujet           VARCHAR(200),
@@ -200,9 +176,6 @@ CREATE TABLE message_lu (
     FOREIGN KEY (id_joueur) REFERENCES joueur(id_joueur) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ========================
--- AMITIES
--- ========================
 CREATE TABLE amitie (
     id_amitie    INT AUTO_INCREMENT PRIMARY KEY,
     id_demandeur INT NOT NULL,
@@ -214,9 +187,6 @@ CREATE TABLE amitie (
     FOREIGN KEY (id_receveur) REFERENCES joueur(id_joueur) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ========================
--- EVENEMENTS
--- ========================
 CREATE TABLE evenement (
     id_evenement    INT AUTO_INCREMENT PRIMARY KEY,
     titre           VARCHAR(200) NOT NULL,
@@ -240,9 +210,6 @@ CREATE TABLE evenement_participant (
     FOREIGN KEY (id_joueur) REFERENCES joueur(id_joueur) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ========================
--- BADGES
--- ========================
 CREATE TABLE badge (
     id_badge        INT AUTO_INCREMENT PRIMARY KEY,
     nom             VARCHAR(120) NOT NULL UNIQUE,
@@ -259,13 +226,6 @@ CREATE TABLE joueur_badge (
     FOREIGN KEY (id_badge) REFERENCES badge(id_badge) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-
-
--- ==========================================
--- 📋 TABLES FINALES POUR GAMELINK
--- ==========================================
-
--- Table 1 : Activité des utilisateurs (qui est connecté)
 CREATE TABLE IF NOT EXISTS user_activity (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL UNIQUE,
@@ -275,7 +235,6 @@ CREATE TABLE IF NOT EXISTS user_activity (
     FOREIGN KEY (user_id) REFERENCES joueur(id_joueur) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Table 2 : Vues de pages (chaque visite)
 CREATE TABLE IF NOT EXISTS page_views (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
@@ -303,10 +262,6 @@ CREATE TABLE homepage_headline (
     body TEXT NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-
--- ========================
--- TABLE EASTER EGG : SNAKE GAME
--- ========================
 
 CREATE TABLE IF NOT EXISTS snake_scores (
     id_score        INT AUTO_INCREMENT PRIMARY KEY,

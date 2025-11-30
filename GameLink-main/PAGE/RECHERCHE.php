@@ -15,13 +15,11 @@ require_once __DIR__ . '/../INCLUDES/track.php';
     <link rel="icon" type="image/png" sizes="32x32" href="../ICON/LogoSimple.svg">
 </head>
  <?php 
-    // Inclure le header (qui affichera ou non le lien ADMIN)
     include __DIR__ . '/../INCLUDES/header.php'; 
     ?>
 <body>
 
     <main class="page-recherche">
-        <!-- Barre de recherche -->
         <section class="search-bar-section">
             <h1>Rechercher un jeu</h1>
             <div class="search-bar">
@@ -34,18 +32,15 @@ require_once __DIR__ . '/../INCLUDES/track.php';
             <p id="error-message" class="error-message"></p>
         </section>
 
-        <!-- Bouton pour voir tous les jeux -->
         <section class="all-games-section">
             <button id="show-all-button" class="show-all-button">
                 Afficher tous les jeux disponibles
             </button>
         </section>
 
-        <!-- Filtres -->
         <section class="filters-panel">
             <div class="filters-groups">
 
-                <!-- Tri par ordre -->
                 <div class="filter-group">
                     <span class="filter-label">Trier par</span>
                     <div class="filters">
@@ -57,7 +52,6 @@ require_once __DIR__ . '/../INCLUDES/track.php';
                     </div>
                 </div>
 
-                <!-- Plateformes -->
                 <div class="filter-group">
                     <span class="filter-label">Plateforme</span>
                     <div class="filters">
@@ -71,7 +65,6 @@ require_once __DIR__ . '/../INCLUDES/track.php';
                     </div>
                 </div>
 
-                <!-- Genres -->
                 <div class="filter-group">
                     <span class="filter-label">Genre</span>
                     <div class="filters">
@@ -86,7 +79,6 @@ require_once __DIR__ . '/../INCLUDES/track.php';
                     </div>
                 </div>
 
-                <!-- Éditeurs -->
                 <div class="filter-group">
                     <span class="filter-label">Éditeur</span>
                     <div class="filters">
@@ -106,18 +98,16 @@ require_once __DIR__ . '/../INCLUDES/track.php';
             </button>
         </section>
 
-        <!-- Liste des jeux -->
         <section class="games-section">
             <div class="games-header">
                 <p class="games-count" id="games-count">0 jeu trouvé</p>
                 <p class="loading-text" id="loading-text">Chargement en cours...</p>
             </div>
             <ul id="Game-list" class="game-list">
-                <!-- Les jeux seront ajoutés ici par JavaScript -->
             </ul>
         </section>
     </main>
 
     <script src="../JS/RECHERCHE.js" defer></script>
-</body>ssssss
+</body>
 </html>

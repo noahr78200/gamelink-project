@@ -57,7 +57,6 @@ function generateAvatarSVG($avatar_config, $size = 100) {
     $faceHTML = $faces[$config['faceType']];
     $hairHTML = $hairs[$config['hairStyle']]($config['hairColor']);
     
-    // Générer le SVG
     return '<svg viewBox="0 0 200 200" style="width: ' . $size . 'px; height: ' . $size . 'px; border-radius: 50%;">
                 <circle cx="100" cy="100" r="95" fill="#f0f0f0" />
                 <g>' . $hairHTML . '</g>

@@ -1,11 +1,8 @@
 <?php
-// INCLUDES/logout.php - Déconnexion de l'utilisateur
 session_start();
 
-// Détruire toutes les variables de session
 $_SESSION = array();
 
-// Détruire le cookie de session si il existe
 if (ini_get("session.use_cookies")) {
     $params = session_get_cookie_params();
     setcookie(session_name(), '', time() - 42000,
@@ -14,9 +11,7 @@ if (ini_get("session.use_cookies")) {
     );
 }
 
-// Détruire la session
 session_destroy();
 
-// Redirection vers la page d'accueil publique
 header('Location: ../index.php');
 exit;

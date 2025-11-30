@@ -1,8 +1,6 @@
 <?php
-// index.php - Page d'accueil publique
 session_start();
 
-// Récupérer le message flash si existant
 $flash_message = $_SESSION['flash_index'] ?? null;
 unset($_SESSION['flash_index']);
 ?>
@@ -18,7 +16,6 @@ unset($_SESSION['flash_index']);
     <link rel="icon" type="image/svg+xml" href="ICON/LogoSimple.svg">
 </head>
 <body>
-    <!-- HEADER -->
     <header>
         <nav class="Menu">
             <a href="index.php">
@@ -44,7 +41,6 @@ unset($_SESSION['flash_index']);
     </header>
     
     <main>
-        <!-- Messages Flash -->
         <?php if ($flash_message && isset($flash_message['error'])): ?>
             <div class="flash-message error-message">
                 ⚠ <?= htmlspecialchars($flash_message['error']) ?>
@@ -57,7 +53,6 @@ unset($_SESSION['flash_index']);
             </div>
         <?php endif; ?>
 
-        <!-- BANNIÈRE DE BIENVENUE -->
         <section class="welcome-banner">
             <h1>Bienvenue sur GameLink</h1>
             <p>Découvrez, notez et partagez vos jeux vidéo préférés avec une communauté passionnée</p>
@@ -75,11 +70,8 @@ unset($_SESSION['flash_index']);
             <?php endif; ?>
         </section>
 
-        <!-- SECTION 1 : CATALOGUE DE JEUX (Image à gauche) -->
         <section class="feature-section">
             <div class="feature-image">
-                <!-- Remplacez le placeholder par votre image -->
-                <!-- <img src="IMAGES/catalogue-jeux.jpg" alt="Catalogue de jeux"> -->
                 <img src="../ICON/SVG/INDEX_JPG/catalogue.jpg" alt="Catalogue de jeux">
             </div>
             <div class="feature-content">
@@ -94,11 +86,8 @@ unset($_SESSION['flash_index']);
             </div>
         </section>
 
-        <!-- SECTION 2 : SYSTÈME DE NOTATION (Image à droite) -->
         <section class="feature-section">
             <div class="feature-image">
-                <!-- Remplacez le placeholder par votre image -->
-                <!-- <img src="IMAGES/notation.jpg" alt="Système de notation"> -->
                 <img src="../ICON/SVG/INDEX_JPG/note.jpg" alt="Système de notation">
             </div>
             <div class="feature-content">
@@ -113,11 +102,8 @@ unset($_SESSION['flash_index']);
             </div>
         </section>
 
-        <!-- SECTION 3 : COMMUNAUTÉ/FORUMS (Image à gauche) -->
         <section class="feature-section">
             <div class="feature-image">
-                <!-- Remplacez le placeholder par votre image -->
-                <!-- <img src="IMAGES/communaute.jpg" alt="Communauté"> -->
                 <img src="../ICON/SVG/INDEX_JPG/commu.jpg" alt="Communauté">
             </div>
             <div class="feature-content">
@@ -132,11 +118,8 @@ unset($_SESSION['flash_index']);
             </div>
         </section>
 
-        <!-- SECTION 4 : PLAYLISTS PERSONNALISÉES (Image à droite) -->
         <section class="feature-section">
             <div class="feature-image">
-                <!-- Remplacez le placeholder par votre image -->
-                <!-- <img src="IMAGES/playlists.jpg" alt="Playlists"> -->
                 <img src="../ICON/SVG/INDEX_JPG/playlist.jpg" alt="Playlists">
             </div>
             <div class="feature-content">

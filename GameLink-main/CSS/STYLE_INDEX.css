@@ -1,9 +1,3 @@
-/* =============================
-   STYLE INDEX.PHP - GameLink
-   Version responsive optimisée
-   ============================= */
-
-/* Fond sombre général */
 body {
   background: #0f1115;
   color: #E7E9ED;
@@ -11,14 +5,10 @@ body {
   margin: 0;
   padding: 0;
 }
-
-/* Contenu principal */
 main {
   margin: 0 auto;
   padding: 40px 80px;
 }
-
-/* ===== BANNIÈRE DE BIENVENUE ===== */
 .welcome-banner {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -80,8 +70,6 @@ main {
   background: white;
   color: #667eea;
 }
-
-/* ===== SECTIONS ALTERNÉES ===== */
 .feature-section {
   display: flex;
   align-items: center;
@@ -89,14 +77,10 @@ main {
   padding: 60px 80px;
   background: #0f1115;
 }
-
-/* Section paire (image à droite) */
 .feature-section:nth-child(even) {
   flex-direction: row-reverse;
   background: #1a1e27;
 }
-
-/* Image de la bannière */
 .feature-image {
   flex: 0.8;
   min-width: 250px;
@@ -109,8 +93,6 @@ main {
   border-radius: 12px;
   box-shadow: 0 8px 25px rgba(0,0,0,0.5);
 }
-
-/* Placeholder pour images temporaires */
 .image-placeholder {
   width: 100%;
   aspect-ratio: 16/9;
@@ -124,8 +106,6 @@ main {
   font-weight: bold;
   box-shadow: 0 8px 25px rgba(0,0,0,0.5);
 }
-
-/* Contenu texte */
 .feature-content {
   flex: 1;
   min-width: 300px;
@@ -177,8 +157,6 @@ main {
 .feature-link:hover::after {
   transform: translateX(5px);
 }
-
-/* ===== MESSAGES FLASH ===== */
 .flash-message {
   max-width: 800px;
   margin: 20px auto;
@@ -200,9 +178,6 @@ main {
   box-shadow: 0 4px 15px rgba(81,207,102,0.3);
 }
 
-/* ===== RESPONSIVE ===== */
-
-/* Tablette (1024px et moins) */
 @media (max-width: 1024px) {
   main {
     padding: 30px 40px;
@@ -234,7 +209,6 @@ main {
   }
 }
 
-/* Tablette portrait / Mobile paysage (768px et moins) */
 @media (max-width: 768px) {
   main {
     padding: 20px;
@@ -263,7 +237,6 @@ main {
     text-align: center;
   }
   
-  /* Sections en colonne */
   .feature-section,
   .feature-section:nth-child(even) {
     flex-direction: column;
@@ -294,7 +267,6 @@ main {
   }
 }
 
-/* Mobile portrait (480px et moins) */
 @media (max-width: 480px) {
   main {
     padding: 15px;
@@ -348,7 +320,6 @@ main {
   }
 }
 
-/* Très petit mobile (360px et moins) */
 @media (max-width: 360px) {
   .welcome-banner h1 {
     font-size: 28px;

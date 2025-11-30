@@ -1,6 +1,4 @@
 <?php
-// INCLUDES/forum_delete_reply.php
-// Supprimer une reponse (seulement son auteur)
 
 session_start();
 header('Content-Type: application/json');
@@ -21,7 +19,6 @@ if ($id_reponse <= 0) {
 }
 
 try {
-    // Verifier que je suis l'auteur
     $stmt = $pdo->prepare("SELECT id_joueur FROM commentaire WHERE id_commentaire = ?");
     $stmt->execute([$id_reponse]);
     $reponse = $stmt->fetch();
@@ -36,7 +33,6 @@ try {
         exit;
     }
     
-    // Supprimer
     $stmt = $pdo->prepare("DELETE FROM commentaire WHERE id_commentaire = ?");
     $stmt->execute([$id_reponse]);
     

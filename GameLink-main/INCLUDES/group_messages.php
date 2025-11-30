@@ -1,11 +1,8 @@
 <?php
-// INCLUDES/group_messages.php
-// Recuperer les messages d'un groupe
 
 session_start();
 header('Content-Type: application/json');
 
-// Verifier connexion
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'message' => 'Non connecte']);
     exit;
@@ -22,7 +19,6 @@ if ($id_groupe <= 0) {
 }
 
 try {
-    // Verifier que je suis membre (en comptant les lignes)
     $requete = $pdo->prepare("
         SELECT COUNT(*) as nb
         FROM adhesion 
@@ -36,7 +32,6 @@ try {
         exit;
     }
     
-    // Recuperer les 50 derniers messages
     $requete = $pdo->prepare("
         SELECT p.id_publication, p.contenu, p.date_creation, j.pseudo
         FROM publication p
@@ -48,7 +43,6 @@ try {
     $requete->execute([$id_groupe]);
     $messages_bruts = $requete->fetchAll(PDO::FETCH_ASSOC);
     
-    // Formater les messages
     $messages = [];
     foreach ($messages_bruts as $msg) {
         $messages[] = [

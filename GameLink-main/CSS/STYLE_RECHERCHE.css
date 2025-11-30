@@ -1,8 +1,3 @@
-/* ============================
-   STYLE_RECHERCHE.css - GameLink
-   Version responsive optimisée
-   ============================ */
-
 :root {
   --bg: #0f1115;
   --bg-grad1: #11151c;
@@ -22,7 +17,6 @@
   --radius: 14px;
 }
 
-/* Décalage pour le header */
 body > main,
 .page-recherche {
   margin-top: 6rem;
@@ -34,17 +28,12 @@ body > main,
   font-size: clamp(14px, .9vw + 12px, 16px);
   color: var(--text);
 }
-
-/* Conteneur principal */
 .page-recherche {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-/* =============================
-   Barre de recherche
-   ============================= */
 .search-bar-section {
   display: flex;
   flex-direction: column;
@@ -57,7 +46,6 @@ body > main,
   margin: 0;
 }
 
-/* Barre de recherche */
 .search-bar {
   display: flex;
   align-items: center;
@@ -105,7 +93,6 @@ body > main,
   box-shadow: 0 4px 12px rgba(0, 0, 0, .45);
 }
 
-/* Message d'erreur */
 .error-message {
   margin-top: 6px;
   font-size: .85rem;
@@ -113,9 +100,6 @@ body > main,
   min-height: 20px;
 }
 
-/* =============================
-   Afficher tous les jeux
-   ============================= */
 .all-games-section {
   display: flex;
   justify-content: center;
@@ -142,9 +126,6 @@ body > main,
   box-shadow: 0 6px 16px rgba(0, 0, 0, .45);
 }
 
-/* =============================
-   Panneau de filtres
-   ============================= */
 .filters-panel {
   background: radial-gradient(circle at top, #202536 0, #141822 55%, #0e1118 100%);
   border-radius: var(--radius);
@@ -184,7 +165,6 @@ body > main,
   background: rgba(255, 255, 255, .05);
 }
 
-/* Groupes de filtres */
 .filters-groups {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -205,7 +185,6 @@ body > main,
   font-weight: 600;
 }
 
-/* Filtres type chips */
 .filters {
   display: flex;
   flex-wrap: wrap;
@@ -236,9 +215,6 @@ body > main,
   color: var(--accent);
 }
 
-/* =============================
-   Section des jeux
-   ============================= */
 .games-section {
   margin-top: .5rem;
 }
@@ -263,7 +239,6 @@ body > main,
   display: none;
 }
 
-/* Grille des jeux */
 #Game-list {
   list-style: none;
   padding: 0;
@@ -273,7 +248,6 @@ body > main,
   gap: var(--g);
 }
 
-/* Carte jeu */
 .game-card {
   background: linear-gradient(180deg, var(--panel-2), var(--panel-3));
   border-radius: var(--radius);
@@ -298,7 +272,6 @@ body > main,
   color: inherit;
 }
 
-/* Image de couverture */
 .game-cover {
   width: 100%;
   aspect-ratio: 3 / 4;
@@ -306,7 +279,6 @@ body > main,
   display: block;
 }
 
-/* Titre */
 .game-title {
   font-size: .95rem;
   margin: 10px 11px 6px;
@@ -314,18 +286,12 @@ body > main,
   line-height: 1.3;
 }
 
-/* Infos (note, date) */
 .game-info {
   margin: 0 11px 12px;
   font-size: .78rem;
   color: var(--muted);
 }
 
-/* =============================
-   RESPONSIVE - MOBILE
-   ============================= */
-
-/* Tablette (900px et moins) */
 @media (max-width: 900px) {
   body > main,
   .page-recherche {
@@ -345,7 +311,6 @@ body > main,
   }
 }
 
-/* Mobile portrait (768px et moins) */
 @media (max-width: 768px) {
   body > main,
   .page-recherche {
@@ -413,7 +378,6 @@ body > main,
   }
 }
 
-/* Petit mobile (480px et moins) */
 @media (max-width: 480px) {
   body > main,
   .page-recherche {
@@ -496,7 +460,6 @@ body > main,
   }
 }
 
-/* Très petit mobile (360px et moins) */
 @media (max-width: 360px) {
   .search-bar-section h1 {
     font-size: 1.1rem;

@@ -1,6 +1,4 @@
 <?php
-// INCLUDES/forum_reply.php
-// Repondre a une discussion
 
 session_start();
 header('Content-Type: application/json');
@@ -32,7 +30,6 @@ if (strlen($contenu) > 2000) {
 }
 
 try {
-    // Verifier que la discussion existe
     $stmt = $pdo->prepare("SELECT id_publication FROM publication WHERE id_publication = ? AND titre IS NOT NULL");
     $stmt->execute([$id_discussion]);
     
@@ -41,7 +38,6 @@ try {
         exit;
     }
     
-    // Creer la reponse (commentaire)
     $stmt = $pdo->prepare("INSERT INTO commentaire (id_publication, id_joueur, contenu, date_creation) VALUES (?, ?, ?, NOW())");
     $stmt->execute([$id_discussion, $mon_id, $contenu]);
     

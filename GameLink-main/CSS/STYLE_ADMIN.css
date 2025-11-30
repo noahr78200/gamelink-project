@@ -1,24 +1,13 @@
-/* =========================================================
-   GAME•LINK — Thème "Metal Grey" 
-   Palette : gris acier + métal brossé, focus accessibility,
-   hover subtils, cartes nettes, dashboards lisibles.
-   ========================================================= */
-
-/* -------------------------------
-   Design tokens (gris/métal)
--------------------------------- */
 :root{
-  /* Fond & panneaux */
   --bg: #0f1115;
   --bg-grad1: #11151c;
   --bg-grad2: #0c0f14;
 
-  --panel:   #1a1e27;     /* carte standard (remplace #807894 trop mauve) */
-  --panel-2: #171b23;     /* carte secondaire / alert / KPI */
-  --panel-3: #141820;     /* variantes sombres */
+  --panel:   #1a1e27;
+  --panel-2: #171b23;
+  --panel-3: #141820;
 
-  /* Traits & texte */
-  --border: #2a3140;      /* trait acier bleuté */
+  --border: #2a3140;
   --hoverBorder:#3a4559;
   --footerBorder:#232836;
 
@@ -29,35 +18,27 @@
   --navText:#E9ECF4;
   --placeholder:#606774;
 
-  /* Accents & états */
-  --up:#34d399;           /* vert acier */
-  --down:#f87171;         /* rouge acier */
+  --up:#34d399;
+  --down:#f87171;
   --warning:#f59e0b;
-  --accent:#6ea8ff;       /* bleu acier */
+  --accent:#6ea8ff;
   --accent-2:#9aa6ff;
 
-  /* Charts & textures */
-  --chart1:#202633;       /* fond graph “acier” */
+  --chart1:#202633;
   --chart2:#2c3444;
   --chartDash:#3c475a;
   --line:#525a66;
   --altRow:#1b2130;
 
-  /* Rayons & gaps */
   --g:16px;
   --radius:14px;
 
-  /* Ombres métalliques */
   --shadow-1: 0 8px 24px rgba(0,0,0,.35);
   --shadow-2: 0 2px 0 rgba(255,255,255,.03) inset, 0 1px 0 rgba(255,255,255,.02);
 
-  /* Halo discret */
   --glow: rgba(110,168,255,.12);
 }
 
-/* -------------------------------
-   Reset rapide + corps
--------------------------------- */
 *{ box-sizing: border-box; }
 html,body{ height:100%; }
 body.admin{
@@ -77,7 +58,6 @@ body.admin{
   border-radius: 6px;
 }
 
-/* Garde ta marge principale */
 body > main{
   margin-top: 6rem;
   margin-left: 1%;
@@ -85,9 +65,6 @@ body > main{
   font-size: clamp(14px, .9vw + 12px, 16px);
 }
 
-/* -------------------------------
-   Surface principale
--------------------------------- */
 .admin-surface{
   padding: var(--g);
   border: 1px solid var(--border);
@@ -98,9 +75,6 @@ body > main{
   box-shadow: var(--shadow-1), var(--shadow-2);
 }
 
-/* -------------------------------
-   KPI Row
--------------------------------- */
 .kpi-row{
   display:grid;
   grid-template-columns: repeat(4, minmax(0,1fr));
@@ -119,7 +93,6 @@ body > main{
   transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
 }
 .kpi-card::after{
-  /* Fines stries métalliques diagonales très discrètes */
   content:"";
   position:absolute; inset:0;
   background:
@@ -169,12 +142,9 @@ body > main{
 .delta.down{
   color: var(--down);
   border-color: rgba(248,113,113,.45);
-  background: rgba(248,113,113,.10);
+  background: rgba(255,255,255,.03);
 }
 
-/* -------------------------------
-   Grille principale (charts + side)
--------------------------------- */
 .admin-grid{
   display:grid;
   grid-template-columns: 11fr 16fr 9fr;
@@ -188,7 +158,6 @@ body > main{
   grid-auto-rows: 220px;
 }
 
-/* Cartes génériques */
 .card{
   background: linear-gradient(180deg, var(--panel), var(--panel-3));
   border: 1px solid var(--border);
@@ -213,7 +182,6 @@ body > main{
   margin-bottom: 10px;
 }
 
-/* Charts : placeholder "métal brossé" */
 .chart.big{ height: 420px; }
 
 .chart-placeholder{
@@ -221,9 +189,7 @@ body > main{
   border-radius: 10px;
   border: 1px dashed var(--chartDash);
   background:
-    /* reflets acier */
     linear-gradient( 180deg, rgba(255,255,255,.04), rgba(255,255,255,0) ),
-    /* métal brossé */
     repeating-linear-gradient( -12deg,
       rgba(255,255,255,.06) 0 1px,
       rgba(255,255,255,0) 1px 5px
@@ -233,16 +199,12 @@ body > main{
   overflow: hidden;
 }
 .chart-placeholder::after{
-  /* highlight doux qui balaye subtilement (sans animation par défaut) */
   content:"";
   position:absolute; inset:-20%;
   background: radial-gradient(600px 200px at -10% -10%, rgba(255,255,255,.06), transparent 60%);
   pointer-events:none;
 }
 
-/* -------------------------------
-   Toplist side card
--------------------------------- */
 .sidecard .toplist{ list-style:none; margin:0; padding:0; }
 .sidecard .toplist li{
   display:flex; justify-content:space-between; align-items:center;
@@ -258,9 +220,6 @@ body > main{
 .sidecard .toplist span{ color: var(--text); }
 .sidecard .toplist b{ color: var(--valueMild); font-weight:700; }
 
-/* -------------------------------
-   Reports grid + table
--------------------------------- */
 .reports-grid{
   display:grid;
   grid-template-columns: minmax(0,1.8fr) minmax(0,.6fr);
@@ -309,9 +268,6 @@ body > main{
   border: 1px solid rgba(255,255,255,.06);
 }
 
-/* -------------------------------
-   Alert card
--------------------------------- */
 .alert-card{
   display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
   background: linear-gradient(180deg, var(--panel-2), var(--panel-3));
@@ -320,9 +276,6 @@ body > main{
 .alert-icon{ font-size: 54px; filter: drop-shadow(0 2px 6px rgba(0,0,0,.4)); }
 .alert-text{ color: var(--text); text-align: center; font-weight: 600; }
 
-/* -------------------------------
-   Footer (si utilisé)
--------------------------------- */
 .footer{
   color: var(--footerText);
   padding:16px 24px;
@@ -332,16 +285,10 @@ body > main{
   border-radius: 0 0 12px 12px;
 }
 
-/* -------------------------------
-   Images header optionnelles
--------------------------------- */
 .logo{ height: 28px; width:auto; display:block; }
 .avatar-btn{ height: 28px; width:auto; display:block; opacity:.9; }
 .avatar-btn:hover{ opacity:1; }
 
-/* -------------------------------
-   Motion preferences
--------------------------------- */
 @media (prefers-reduced-motion: no-preference){
   .chart-placeholder::after{
     animation: sweep 4.5s ease-in-out infinite;
@@ -353,9 +300,6 @@ body > main{
   }
 }
 
-/* -------------------------------
-   Responsive
--------------------------------- */
 @media (max-width: 1200px){
   .admin-grid{ grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
   .sidecard{ order:3; }
@@ -366,7 +310,6 @@ body > main{
   .chart.big{ height: 260px; }
 }
 
-/* ===== Modal central (verre / métal clair) ===== */
 .modal-overlay{
   position: fixed; inset: 0; z-index: 999;
   display: grid; place-items: center;
@@ -455,7 +398,6 @@ body > main{
 .badge-warn{ color: #ffd27e; border-color: rgba(255,210,126,.45); background: rgba(255,210,126,.12); }
 .badge-bad{ color: #ff9b9b; border-color: rgba(255,155,155,.45); background: rgba(255,155,155,.12); }
 
-/* Boutons de la modale */
 .btn{
   border: 1px solid var(--border);
   background:
@@ -474,13 +416,11 @@ body > main{
 .btn.danger{ border-color: rgba(239,100,100,.55); background: linear-gradient(180deg, rgba(239,100,100,.22), rgba(239,100,100,.06)); }
 .btn.ghost{ background: transparent; }
 
-/* Ligne cliquable + sélection dans la table */
 .report-table tbody tr.report-row { cursor: pointer; }
 .report-table tbody tr.is-selected{
   outline: 2px solid var(--hoverBorder);
   outline-offset: -2px;
 }
-/* Charts sizing */
 .card.chart canvas{
   width: 100%;
   height: 100%;
@@ -488,7 +428,6 @@ body > main{
   border-radius: 10px;
 }
 
-/* Optionnel: on n’affiche la bordure en tirets QUE si placeholder */
 .card.chart .chart-placeholder{ display:none; }
 
   .admin-tabs {
@@ -563,24 +502,21 @@ body > main{
   margin-bottom: 6px;
 }
 
-/* 👇 IMPORTANT : on stylise à la fois input ET textarea */
 .newsletter-card .nl-field input,
 .newsletter-card .nl-field textarea {
   width: 100%;
   border: 1px solid var(--border);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.05); /* fond sombre, comme les autres */
+  background: rgba(255, 255, 255, 0.05);
   color: var(--text);
   padding: 10px 12px;
 }
 
-/* Hauteur minimale & resize du textarea */
 .newsletter-card .nl-field textarea {
   resize: vertical;
   min-height: 220px;
 }
 
-/* Ligne des boutons + email test */
 .newsletter-card .nl-actions {
   display: flex;
   gap: 10px;
@@ -596,12 +532,11 @@ body > main{
   max-width: 320px;
 }
 
-/* Petit texte d’info */
 .muted {
   font-size: 12px;
   color: var(--muted);
 }
-/* La carte Message à la une réutilise le look de la newsletter */
+
 .headline-card .nl-form {
   display: grid;
   gap: 12px;
@@ -635,7 +570,7 @@ body > main{
   align-items: center;
   flex-wrap: wrap;
 }
-/* ===== Message à la une (ACCUEIL) ===== */
+
 .headline-banner{
   background:
     radial-gradient(600px 260px at 0% -30%, var(--glow), transparent 60%),
@@ -660,10 +595,6 @@ body > main{
   line-height: 1.4;
 }
 
-
-/* -------------------------------
-   Tablette (1200px et moins)
--------------------------------- */
 @media (max-width: 1200px) {
   .admin-grid {
     grid-template-columns: 1fr 1fr;
@@ -688,10 +619,6 @@ body > main{
   }
 }
 
-
-/* -------------------------------
-   Mobile (800px et moins)
--------------------------------- */
 @media (max-width: 800px) {
   body > main {
     margin-top: 5rem;
@@ -704,7 +631,6 @@ body > main{
     border-radius: 12px;
   }
   
-  /* KPI Cards - 1 colonne */
   .kpi-row {
     grid-template-columns: 1fr;
     gap: 12px;
@@ -729,7 +655,6 @@ body > main{
     padding: 2px 8px;
   }
   
-  /* Grille admin - 1 colonne */
   .admin-grid {
     grid-template-columns: 1fr;
     gap: 12px;
@@ -744,7 +669,6 @@ body > main{
     height: 260px;
   }
   
-  /* Cartes */
   .card {
     padding: 10px;
   }
@@ -766,7 +690,6 @@ body > main{
     font-size: 14px;
   }
   
-  /* Bannière bienvenue */
   .admin-welcome {
     margin: 10px 5px;
     padding: 15px;
@@ -781,7 +704,6 @@ body > main{
     font-size: 14px;
   }
   
-  /* Tables */
   .report-table {
     font-size: 12px;
   }
@@ -791,13 +713,11 @@ body > main{
     padding: 8px 10px;
   }
   
-  /* Wrapper pour scroll horizontal */
   .card.table-wrapper {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
   
-  /* Newsletter & Headlines */
   .newsletter-card .nl-field textarea {
     min-height: 180px;
   }
@@ -816,7 +736,6 @@ body > main{
     max-width: 100%;
   }
   
-  /* Bannière message */
   .headline-banner {
     padding: 15px 18px;
     margin: 12px 0 20px;
@@ -830,7 +749,6 @@ body > main{
     font-size: 0.9rem;
   }
   
-  /* Modal */
   .modal-card {
     width: 95vw;
   }
@@ -848,4 +766,3 @@ body > main{
     padding: 14px;
   }
 }
-

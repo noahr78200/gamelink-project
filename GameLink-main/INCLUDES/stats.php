@@ -1,17 +1,8 @@
 <?php
-// ==========================================
-// 📊 STATISTIQUES - Version complète avec 24h
-// ==========================================
-// Fichier : INCLUDES/stats.php
 
-// Connexion à la base
 if (!isset($pdo)) {
     require_once __DIR__ . '/../DATA/DBConfig.php';
 }
-
-// ==========================================
-// STAT 1 : Inscriptions aujourd'hui
-// ==========================================
 
 try {
     $stmt = $pdo->query("
@@ -23,10 +14,6 @@ try {
 } catch (Exception $e) {
     $inscriptions_aujourd_hui = 0;
 }
-
-// ==========================================
-// STAT 2 : Connectés EN CE MOMENT (5 min)
-// ==========================================
 
 try {
     $stmt = $pdo->query("
@@ -40,10 +27,6 @@ try {
     $connectes_maintenant = 0;
 }
 
-// ==========================================
-// STAT 2.5 : Connectés dans les 24h (NOUVEAU !)
-// ==========================================
-
 try {
     $stmt = $pdo->query("
         SELECT COUNT(DISTINCT user_id) as count 
@@ -56,10 +39,6 @@ try {
     $connectes_24h = 0;
 }
 
-// ==========================================
-// STAT 3 : Pages vues aujourd'hui
-// ==========================================
-
 try {
     $stmt = $pdo->query("
         SELECT COUNT(*) as count 
@@ -70,10 +49,6 @@ try {
 } catch (Exception $e) {
     $pages_vues_aujourd_hui = 0;
 }
-
-// ==========================================
-// STAT 4 : Top 5 des pages les plus visitées
-// ==========================================
 
 try {
     $stmt = $pdo->query("
@@ -90,10 +65,6 @@ try {
 } catch (Exception $e) {
     $top_pages = [];
 }
-
-// ==========================================
-// BONUS : Total de joueurs inscrits
-// ==========================================
 
 try {
     $stmt = $pdo->query("SELECT COUNT(*) as count FROM joueur");

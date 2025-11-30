@@ -1,11 +1,8 @@
 <?php
-// INCLUDES/group_message.php
-// Envoyer un message dans un groupe
 
 session_start();
 header('Content-Type: application/json');
 
-// Verifier connexion
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'message' => 'Non connecte']);
     exit;
@@ -17,7 +14,6 @@ $mon_id = $_SESSION['user_id'];
 $id_groupe = isset($_POST['groupe_id']) ? (int)$_POST['groupe_id'] : 0;
 $message = isset($_POST['message']) ? trim($_POST['message']) : '';
 
-// Verifications
 if ($id_groupe <= 0) {
     echo json_encode(['success' => false, 'message' => 'Groupe invalide']);
     exit;
@@ -34,7 +30,6 @@ if (strlen($message) > 1000) {
 }
 
 try {
-    // Verifier que je suis membre (en comptant les lignes)
     $requete = $pdo->prepare("
         SELECT COUNT(*) as nb
         FROM adhesion 
@@ -48,7 +43,6 @@ try {
         exit;
     }
     
-    // Enregistrer le message
     $requete = $pdo->prepare("
         INSERT INTO publication (id_joueur, id_communaute, titre, contenu, date_creation) 
         VALUES (?, ?, NULL, ?, NOW())

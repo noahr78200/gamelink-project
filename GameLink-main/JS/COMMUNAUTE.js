@@ -1,15 +1,10 @@
-// COMMUNAUTE.js - COMPLET (Groupes + Forum)
-
-// Variables globales
 let groupeActuel = null;
 let minuteur = null;
 let discussionActuelle = null;
 
-// Quand la page est chargee
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Page chargee !');
     
-    // BOUTONS GROUPES
     let boutonsRejoindre = document.querySelectorAll('.rejoindre-groupe');
     for (let i = 0; i < boutonsRejoindre.length; i++) {
         boutonsRejoindre[i].addEventListener('click', rejoindreGroupe);
@@ -34,25 +29,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // FORMULAIRE CHAT GROUPES
     let formulaire = document.getElementById('formulaire-message');
     if (formulaire) {
         formulaire.addEventListener('submit', envoyerMessage);
     }
     
-    // FORMULAIRE CREER DISCUSSION
     let formCreer = document.getElementById('form-creer-discussion');
     if (formCreer) {
         formCreer.addEventListener('submit', creerDiscussion);
     }
     
-    // FORMULAIRE REPONDRE DISCUSSION
     let formRepondre = document.getElementById('form-repondre-discussion');
     if (formRepondre) {
         formRepondre.addEventListener('submit', repondreDiscussion);
     }
     
-    // FERMER POPUP SI CLIC SUR FOND
     let fondSombre = document.getElementById('fond-sombre');
     if (fondSombre) {
         fondSombre.addEventListener('click', function() {
@@ -63,21 +54,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// ========== ONGLETS ==========
 function afficherOnglet(nomOnglet) {
-    // Cacher tous les onglets
     let tousOnglets = document.querySelectorAll('.contenu-onglet');
     for (let i = 0; i < tousOnglets.length; i++) {
         tousOnglets[i].classList.remove('actif');
     }
     
-    // Desactiver tous les boutons
     let tousBoutons = document.querySelectorAll('.onglet');
     for (let i = 0; i < tousBoutons.length; i++) {
         tousBoutons[i].classList.remove('actif');
     }
     
-    // Afficher l'onglet choisi
     if (nomOnglet === 'groupes') {
         document.getElementById('onglet-groupes').classList.add('actif');
         tousBoutons[0].classList.add('actif');
@@ -87,7 +74,6 @@ function afficherOnglet(nomOnglet) {
     }
 }
 
-// ========== GROUPES (EXISTANT) ==========
 function rejoindreGroupe(evenement) {
     let bouton = evenement.target;
     let idGroupe = bouton.dataset.groupeId;
@@ -258,9 +244,6 @@ function envoyerMessage(evenement) {
         body: 'groupe_id=' + idGroupe + '&message=' + encodeURIComponent(message)
     })
     .then(function(reponse) {
-        if (!reponse.ok) {
-            throw new Error('Erreur serveur');
-        }
         return reponse.json();
     })
     .then(function(data) {
@@ -282,7 +265,6 @@ function envoyerMessage(evenement) {
     });
 }
 
-// ========== FORUM ==========
 function ouvrirPopupCreerDiscussion() {
     document.getElementById('popup-creer-discussion').classList.add('visible');
     document.getElementById('fond-sombre').classList.add('visible');
@@ -504,14 +486,12 @@ function supprimerReponse(idReponse) {
     });
 }
 
-// ========== UTILITAIRE ==========
 function nettoyerTexte(texte) {
     let div = document.createElement('div');
     div.textContent = texte;
     return div.innerHTML;
 }
 
-// Fermer avec Echap
 document.addEventListener('keydown', function(evenement) {
     if (evenement.key === 'Escape') {
         fermerChat();

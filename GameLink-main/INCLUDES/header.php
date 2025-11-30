@@ -1,15 +1,12 @@
 <?php
-// Démarrer la session si elle n'existe pas
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Inclure les fichiers nécessaires
 require_once __DIR__ . '/../INCLUDES/check_admin.php';
 require_once __DIR__ . '/../INCLUDES/avatar_svg.php';
 require_once __DIR__ . '/../DATA/DBConfig.php';
 
-// Récupérer le nom de la page actuelle
 $current_page = basename($_SERVER['PHP_SELF']);
 
 $header_avatar_config = null;

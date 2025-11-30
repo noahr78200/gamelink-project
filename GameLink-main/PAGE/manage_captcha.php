@@ -1,31 +1,19 @@
 <?php
-// ==========================================
-// FICHIER : manage_captcha.php (VERSION 100% CORRIGÉE)
-// BUT : Gérer les questions du captcha (pour les admins)
-// ==========================================
 
-// Protection admin
 require_once __DIR__ . '/../INCLUDES/check_admin.php';
 require_admin();
 
-// Chemin du fichier JSON
 define('CAPTCHA_JSON', __DIR__ . '/../DATA/captcha_bank.json');
 
-// --------- Fonctions améliorées ---------
-
-// Charger les questions depuis le JSON
 function load_captcha_bank() {
-    // Vérifier si le dossier DATA existe
     $dir = dirname(CAPTCHA_JSON);
     if (!is_dir($dir)) {
-        // Créer le dossier avec les bonnes permissions
         if (!@mkdir($dir, 0777, true)) {
             return ['error' => 'Impossible de créer le dossier DATA'];
         }
         @chmod($dir, 0777);
     }
     
-    // Si le fichier n'existe pas, créer un fichier avec une question par défaut
     if (!file_exists(CAPTCHA_JSON)) {
         $defaultBank = [
             [
@@ -47,7 +35,6 @@ function load_captcha_bank() {
         return $defaultBank;
     }
 
-    // Lire le fichier
     $txt = @file_get_contents(CAPTCHA_JSON);
     if ($txt === false) {
         return ['error' => 'Impossible de lire le fichier captcha_bank.json'];
@@ -62,9 +49,7 @@ function load_captcha_bank() {
     return $data;
 }
 
-// Sauvegarder les questions dans le JSON (avec gestion d'erreur)
 function save_captcha_bank(array $bank) {
-    // Vérifier que le dossier existe
     $dir = dirname(CAPTCHA_JSON);
     if (!is_dir($dir)) {
         if (!@mkdir($dir, 0777, true)) {
@@ -73,55 +58,46 @@ function save_captcha_bank(array $bank) {
         @chmod($dir, 0777);
     }
     
-    // Préparer le contenu JSON
     $jsonContent = json_encode($bank, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     
     if ($jsonContent === false) {
         return false;
     }
     
-    // Écrire dans le fichier
     $result = @file_put_contents(CAPTCHA_JSON, $jsonContent);
     
     if ($result === false) {
         return false;
     }
     
-    // Changer les permissions du fichier pour qu'il soit accessible
     @chmod(CAPTCHA_JSON, 0666);
     
     return true;
 }
 
-// --------- Variables de base ---------
 $bank    = load_captcha_bank();
 $message = '';
 $error   = '';
 
-// Vérifier s'il y a une erreur de chargement
 if (is_array($bank) && isset($bank['error'])) {
     $error = $bank['error'];
     $bank = [];
 }
 
-// Informations de débogage
 $fileExists = file_exists(CAPTCHA_JSON);
 $dirExists = is_dir(dirname(CAPTCHA_JSON));
 $dirWritable = is_writable(dirname(CAPTCHA_JSON));
 $fileWritable = $fileExists ? is_writable(CAPTCHA_JSON) : false;
 
-// --------- Gestion du formulaire ---------
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
-    // On recharge à chaque action pour être sûr
     $bank = load_captcha_bank();
     if (is_array($bank) && isset($bank['error'])) {
         $error = $bank['error'];
         $bank = [];
     }
 
-    // 1) Ajouter une nouvelle question
     if ($action === 'add') {
         $question = trim($_POST['question'] ?? '');
         $answer   = trim($_POST['answer'] ?? '');
@@ -129,14 +105,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($question === '' || $answer === '') {
             $error = "Merci de remplir la question ET la réponse 😊";
         } else {
-            // On ajoute une nouvelle entrée
             $bank[] = [
                 'q'       => $question,
                 'a'       => $answer,
                 'enabled' => true
             ];
             
-            // Sauvegarder avec gestion d'erreur
             if (save_captcha_bank($bank)) {
                 $message = "✅ Question ajoutée avec succès !";
                 $bank = load_captcha_bank();
@@ -146,7 +120,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // 2) Supprimer une question
     if ($action === 'delete') {
         $index = isset($_POST['index']) ? (int) $_POST['index'] : -1;
 
@@ -162,7 +135,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // 3) Activer / désactiver une question
     if ($action === 'toggle') {
         $index = isset($_POST['index']) ? (int) $_POST['index'] : -1;
 
@@ -481,7 +453,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 Exemple : <code>paris|Paris|PARIS</code>
             </div>
 
-            <!-- Formulaire d'ajout -->
             <form method="post">
                 <input type="hidden" name="action" value="add">
 
@@ -503,7 +474,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit" class="btn-primary">➕ Ajouter la question</button>
             </form>
 
-            <!-- Liste des questions -->
             <h2 class="questions-title"> Questions existantes (<?= count($bank) ?>)</h2>
 
             <?php if (empty($bank)): ?>
@@ -537,7 +507,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </td>
                             <td>
                                 <div class="action-buttons">
-                                    <!-- Bouton activer/désactiver -->
                                     <form method="post" style="margin:0;">
                                         <input type="hidden" name="action" value="toggle">
                                         <input type="hidden" name="index" value="<?= $i ?>">
@@ -546,7 +515,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         </button>
                                     </form>
 
-                                    <!-- Bouton supprimer -->
                                     <form method="post" style="margin:0;"
                                           onsubmit="return confirm('Supprimer cette question ?');">
                                         <input type="hidden" name="action" value="delete">

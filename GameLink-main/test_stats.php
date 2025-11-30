@@ -1,13 +1,7 @@
 <?php
-// ==========================================
-// 🔍 FICHIER DE TEST
-// ==========================================
-// Mets ce fichier à la racine de ton projet
-// Va sur : localhost/ton-projet/test_stats.php
 
 session_start();
 
-// Connexion à la base
 try {
     $pdo = new PDO(
         "mysql:host=localhost;dbname=gamelink;charset=utf8mb4",
@@ -18,10 +12,6 @@ try {
 } catch (Exception $e) {
     die("❌ Erreur de connexion : " . $e->getMessage());
 }
-
-// ==========================================
-// TEST 1 : Les tables existent-elles ?
-// ==========================================
 
 echo "<h2>📋 TEST 1 : Vérification des tables</h2>";
 
@@ -37,13 +27,8 @@ foreach ($tables as $table) {
 
 echo "<br>";
 
-// ==========================================
-// TEST 2 : Y a-t-il des données ?
-// ==========================================
-
 echo "<h2>📊 TEST 2 : Données dans les tables</h2>";
 
-// Comptage dans user_activity
 try {
     $stmt = $pdo->query("SELECT COUNT(*) as count FROM user_activity");
     $count = $stmt->fetch()['count'];
@@ -52,7 +37,6 @@ try {
     echo "❌ Erreur user_activity : " . $e->getMessage() . "<br>";
 }
 
-// Comptage dans page_views
 try {
     $stmt = $pdo->query("SELECT COUNT(*) as count FROM page_views");
     $count = $stmt->fetch()['count'];
@@ -61,7 +45,6 @@ try {
     echo "❌ Erreur page_views : " . $e->getMessage() . "<br>";
 }
 
-// Comptage des joueurs
 try {
     $stmt = $pdo->query("SELECT COUNT(*) as count FROM joueur");
     $count = $stmt->fetch()['count'];
@@ -71,10 +54,6 @@ try {
 }
 
 echo "<br>";
-
-// ==========================================
-// TEST 3 : La session fonctionne-t-elle ?
-// ==========================================
 
 echo "<h2>🔐 TEST 3 : Session utilisateur</h2>";
 
@@ -90,13 +69,8 @@ if (isset($_SESSION['id_joueur'])) {
 
 echo "<br>";
 
-// ==========================================
-// TEST 4 : Calcul des stats
-// ==========================================
-
 echo "<h2>📊 TEST 4 : Calcul des statistiques</h2>";
 
-// Joueurs actifs aujourd'hui
 try {
     $stmt = $pdo->query("
         SELECT COUNT(DISTINCT id_joueur) as count 
@@ -109,7 +83,6 @@ try {
     echo "❌ Erreur joueurs actifs : " . $e->getMessage() . "<br>";
 }
 
-// Connectés maintenant
 try {
     $stmt = $pdo->query("
         SELECT COUNT(DISTINCT id_joueur) as count 
@@ -122,7 +95,6 @@ try {
     echo "❌ Erreur connectés : " . $e->getMessage() . "<br>";
 }
 
-// Pages vues aujourd'hui
 try {
     $stmt = $pdo->query("
         SELECT COUNT(*) as count 
@@ -136,10 +108,6 @@ try {
 }
 
 echo "<br>";
-
-// ==========================================
-// TEST 5 : Voir les dernières activités
-// ==========================================
 
 echo "<h2>🕐 TEST 5 : Dernières activités</h2>";
 
@@ -172,15 +140,10 @@ try {
 
 echo "<br>";
 
-// ==========================================
-// TEST 6 : Tester l'insertion manuelle
-// ==========================================
-
 echo "<h2>✍️ TEST 6 : Test d'insertion</h2>";
 
 if (isset($_GET['test_insert']) && isset($_SESSION['id_joueur'])) {
     try {
-        // Insérer une activité
         $stmt = $pdo->prepare("
             INSERT INTO user_activity (id_joueur, last_activity, page_url)
             VALUES (?, NOW(), ?)
@@ -188,7 +151,6 @@ if (isset($_GET['test_insert']) && isset($_SESSION['id_joueur'])) {
         ");
         $stmt->execute([$_SESSION['id_joueur'], '/test', '/test']);
         
-        // Insérer une vue de page
         $stmt = $pdo->prepare("
             INSERT INTO page_views (id_joueur, page_url, viewed_at)
             VALUES (?, ?, NOW())

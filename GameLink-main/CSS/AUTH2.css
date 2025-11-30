@@ -1,191 +1,185 @@
 
-    /* ===== STYLE GÉNÉRAL ===== */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
     
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #0e0f12;
-      color: #e9ecf1;
-    }
-    
-    /* ===== EN-TÊTE ===== */
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px;
-      background-color: #0b0d10;
-      border-bottom: 1px solid #222833;
-    }
-    
-    header .brand {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-    
-    header .brand img {
-      height: 32px;
-    }
-    
-    header .brand span {
-      font-weight: bold;
-      font-size: 18px;
-    }
-    
-    header a {
-      color: #6ea8fe;
-      text-decoration: none;
-    }
-    
-    /* ===== CONTENU PRINCIPAL ===== */
-    main {
-      max-width: 980px;
-      margin: 40px auto;
-      padding: 0 16px;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 24px;
-    }
-    
-    .card {
-      background-color: #151922;
-      border: 1px solid #222833;
-      border-radius: 14px;
-      padding: 24px;
-    }
-    
-    .title {
-      font-size: 1.4rem;
-      margin: 0 0 14px;
-    }
-    
-    .muted {
-      color: #99a1b3;
-      font-size: 0.95rem;
-    }
-    
-    /* ===== ONGLETS ===== */
-    .tabbar {
-      display: flex;
-      gap: 10px;
-      margin: 12px 0 18px;
-    }
-    
-    .auth-tab {
-      padding: 10px 14px;
-      border-radius: 10px;
-      border: 1px solid #2a3140;
-      background-color: #10141c;
-      cursor: pointer;
-      color: #cfd6e4;
-    }
-    
-    .auth-tab.is-active {
-      background-color: #172033;
-      border-color: #2f3a51;
-      color: #fff;
-    }
-    
-    /* ===== FORMULAIRES ===== */
-    .auth-form {
-      display: none;
-    }
-    
-    .auth-form.is-active {
-      display: block;
-    }
-    
-    .field {
-      margin: 14px 0;
-    }
-    
-    label {
-      display: block;
-      margin-bottom: 6px;
-      color: #d9deea;
-      font-size: 0.95rem;
-    }
-    
-    input[type="text"],
-    input[type="email"],
-    input[type="password"] {
-      width: 100%;
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid #2a3140;
-      background-color: #0f131a;
-      color: #e9ecf1;
-      outline: none;
-      font-size: 16px;
-    }
-    
-    input::placeholder {
-      color: #7d889c;
-    }
-    
-    .password-wrap {
-      display: flex;
-      gap: 6px;
-      align-items: stretch;
-    }
-    
-    .toggle-visibility {
-      padding: 0 12px;
-      border-radius: 10px;
-      border: 1px solid #2a3140;
-      background-color: #0f131a;
-      color: #cfd6e4;
-      cursor: pointer;
-    }
-    
-    .btn-primary {
-      margin-top: 10px;
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1px solid #3a65d0;
-      background-color: #1e3d85;
-      color: #fff;
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    
-    .btn-primary:hover {
-      background-color: #2a4a95;
-    }
-    
-    .btn-primary:disabled {
-      opacity: 0.7;
-      cursor: default;
-    }
-    
-    .error {
-      color: #ff6b6b;
-      font-size: 0.9rem;
-      min-height: 1.1em;
-      margin: 6px 2px 0;
-    }
-    
-    /* ===== GRILLE ===== */
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-    }
-    
-    @media (max-width: 900px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-    }
-    
-    .note {
-      margin-top: 8px;
-    }
-  
+body {
+  font-family: Arial, sans-serif;
+  background-color: #0e0f12;
+  color: #e9ecf1;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background-color: #0b0d10;
+  border-bottom: 1px solid #222833;
+}
+
+header .brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+header .brand img {
+  height: 32px;
+}
+
+header .brand span {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+header a {
+  color: #6ea8fe;
+  text-decoration: none;
+}
+
+main {
+  max-width: 980px;
+  margin: 40px auto;
+  padding: 0 16px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.card {
+  background-color: #151922;
+  border: 1px solid #222833;
+  border-radius: 14px;
+  padding: 24px;
+}
+
+.title {
+  font-size: 1.4rem;
+  margin: 0 0 14px;
+}
+
+.muted {
+  color: #99a1b3;
+  font-size: 0.95rem;
+}
+
+.tabbar {
+  display: flex;
+  gap: 10px;
+  margin: 12px 0 18px;
+}
+
+.auth-tab {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #2a3140;
+  background-color: #10141c;
+  cursor: pointer;
+  color: #cfd6e4;
+}
+
+.auth-tab.is-active {
+  background-color: #172033;
+  border-color: #2f3a51;
+  color: #fff;
+}
+
+.auth-form {
+  display: none;
+}
+
+.auth-form.is-active {
+  display: block;
+}
+
+.field {
+  margin: 14px 0;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  color: #d9deea;
+  font-size: 0.95rem;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #2a3140;
+  background-color: #0f131a;
+  color: #e9ecf1;
+  outline: none;
+  font-size: 16px;
+}
+
+input::placeholder {
+  color: #7d889c;
+}
+
+.password-wrap {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+}
+
+.toggle-visibility {
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid #2a3140;
+  background-color: #0f131a;
+  color: #cfd6e4;
+  cursor: pointer;
+}
+
+.btn-primary {
+  margin-top: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #3a65d0;
+  background-color: #1e3d85;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.btn-primary:hover {
+  background-color: #2a4a95;
+}
+
+.btn-primary:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.error {
+  color: #ff6b6b;
+  font-size: 0.9rem;
+  min-height: 1.1em;
+  margin: 6px 2px 0;
+}
+
+/* ===== GRILLE ===== */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.note {
+  margin-top: 8px;
+}

@@ -1,6 +1,4 @@
 <?php
-// INCLUDES/forum_delete.php
-// Supprimer une discussion ou une reponse
 
 session_start();
 header('Content-Type: application/json');
@@ -28,7 +26,6 @@ if (!in_array($type, ['discussion', 'reponse'])) {
 
 try {
     if ($type === 'discussion') {
-        // Verifier que c'est bien ma discussion
         $stmt = $pdo->prepare("SELECT id_auteur FROM forum_discussion WHERE id_discussion = ?");
         $stmt->execute([$id]);
         $discussion = $stmt->fetch();
@@ -43,14 +40,12 @@ try {
             exit;
         }
         
-        // Supprimer (les reponses seront supprimees automatiquement avec ON DELETE CASCADE)
         $stmt = $pdo->prepare("DELETE FROM forum_discussion WHERE id_discussion = ?");
         $stmt->execute([$id]);
         
         echo json_encode(['success' => true, 'message' => 'Discussion supprimee']);
         
     } else {
-        // Verifier que c'est bien ma reponse
         $stmt = $pdo->prepare("SELECT id_auteur FROM forum_reponse WHERE id_reponse = ?");
         $stmt->execute([$id]);
         $reponse = $stmt->fetch();
@@ -65,7 +60,6 @@ try {
             exit;
         }
         
-        // Supprimer
         $stmt = $pdo->prepare("DELETE FROM forum_reponse WHERE id_reponse = ?");
         $stmt->execute([$id]);
         

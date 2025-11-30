@@ -1,15 +1,12 @@
 <?php
-// PAGE/COMMUNAUTE.php
-// Page avec GROUPES et FORUM
 
 session_start();
 
-// Verifier connexion
 if (!isset($_SESSION['user_id'])) {
     header('Location: ../index.php');
     exit;
 }
-// TRACKING AUTOMATIQUE - Ne touche plus jamais à cette ligne !
+
 require_once __DIR__ . '/../INCLUDES/track.php';
 require_once __DIR__ . '/../INCLUDES/check_admin.php';
 require_once __DIR__ . '/../DATA/DBConfig.php';
@@ -17,7 +14,6 @@ require_once __DIR__ . '/../DATA/DBConfig.php';
 $mon_id = $_SESSION['user_id'];
 $mon_pseudo = $_SESSION['user_pseudo'];
 
-// RECUPERER LES 6 GROUPES
 $groupes = [];
 
 try {
@@ -39,7 +35,6 @@ try {
     $groupes = [];
 }
 
-// RECUPERER LES DISCUSSIONS DU FORUM
 $discussions = [];
 
 try {
@@ -65,7 +60,6 @@ try {
     $discussions = [];
 }
 
-// RECUPERER LES DISCUSSIONS TENDANCES (les plus commentées)
 $tendances = [];
 
 try {
@@ -87,11 +81,9 @@ try {
     $tendances = [];
 }
 
-// RECUPERER L'ACTIVITE RECENTE
 $activites = [];
 
 try {
-    // Dernières discussions créées
     $stmt = $pdo->query("
         SELECT 
             'discussion' as type,
@@ -106,7 +98,6 @@ try {
     ");
     $discussions_recentes = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Derniers commentaires
     $stmt = $pdo->query("
         SELECT 
             'commentaire' as type,
@@ -122,7 +113,6 @@ try {
     ");
     $commentaires_recents = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Dernières adhésions aux groupes
     $stmt = $pdo->query("
         SELECT 
             'adhesion' as type,
@@ -137,15 +127,12 @@ try {
     ");
     $adhesions_recentes = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Fusionner et trier toutes les activités
     $activites = array_merge($discussions_recentes, $commentaires_recents, $adhesions_recentes);
     
-    // Trier par date
     usort($activites, function($a, $b) {
         return strtotime($b['date_creation']) - strtotime($a['date_creation']);
     });
     
-    // Garder seulement les 10 plus récentes
     $activites = array_slice($activites, 0, 10);
     
 } catch (Exception $erreur) {
@@ -170,13 +157,11 @@ try {
 
    
  <?php 
-    // Inclure le header (qui affichera ou non le lien ADMIN) .
     include __DIR__ . '/../INCLUDES/header.php'; 
     ?>
 
 
 <main>
-    <!-- ONGLETS -->
     <div class="onglets-container">
         <button class="onglet actif" onclick="afficherOnglet('groupes')">
              GROUPES
@@ -186,11 +171,8 @@ try {
         </button>
     </div>
 
-    <!-- ========== ONGLET GROUPES ========== -->
     <div id="onglet-groupes" class="contenu-onglet actif">
-        <!-- CONTAINER AVEC SIDEBAR -->
         <div class="container-avec-sidebar">
-            <!-- CONTENU PRINCIPAL GROUPES -->
             <div class="contenu-principal">
                 <div class="page-communaute">
                     <div class="titre-section">
@@ -235,9 +217,7 @@ try {
                 </div>
             </div>
 
-            <!-- SIDEBAR POUR GROUPES -->
             <aside class="sidebar">
-                <!-- DISCUSSIONS TENDANCES -->
                 <div class="sidebar-widget">
                     <div class="widget-titre"> Tendances</div>
                     <?php if (empty($tendances)): ?>
@@ -257,7 +237,6 @@ try {
                     <?php endif; ?>
                 </div>
 
-                <!-- ACTIVITÉ RÉCENTE -->
                 <div class="sidebar-widget">
                     <div class="widget-titre"> Activité Récente</div>
                     <?php if (empty($activites)): ?>
@@ -265,7 +244,6 @@ try {
                     <?php else: ?>
                         <?php foreach ($activites as $activite): ?>
                             <?php
-                            // Calculer le temps écoulé
                             $temps = strtotime($activite['date_creation']);
                             $diff = time() - $temps;
                             if ($diff < 60) {
@@ -278,7 +256,6 @@ try {
                                 $temps_affiche = 'Il y a ' . floor($diff / 86400) . 'j';
                             }
                             
-                            // Déterminer le texte et la couleur selon le type
                             $couleur = '#10b981';
                             if ($activite['type'] == 'discussion') {
                                 $texte = 'a créé une discussion';
@@ -305,11 +282,8 @@ try {
         </div>
     </div>
 
-    <!-- ========== ONGLET FORUM ========== -->
     <div id="onglet-forum" class="contenu-onglet">
-        <!-- CONTAINER AVEC SIDEBAR -->
         <div class="container-avec-sidebar">
-            <!-- CONTENU PRINCIPAL FORUM -->
             <div class="contenu-principal">
                 <div class="page-forum">
                     <div class="titre-section">
@@ -363,9 +337,7 @@ try {
                 </div>
             </div>
 
-            <!-- SIDEBAR POUR FORUM -->
             <aside class="sidebar">
-                <!-- DISCUSSIONS TENDANCES -->
                 <div class="sidebar-widget">
                     <div class="widget-titre"> Tendances</div>
                     <?php if (empty($tendances)): ?>
@@ -385,7 +357,6 @@ try {
                     <?php endif; ?>
                 </div>
 
-                <!-- ACTIVITÉ RÉCENTE -->
                 <div class="sidebar-widget">
                     <div class="widget-titre"> Activité Récente</div>
                     <?php if (empty($activites)): ?>
@@ -393,7 +364,6 @@ try {
                     <?php else: ?>
                         <?php foreach ($activites as $activite): ?>
                             <?php
-                            // Calculer le temps écoulé
                             $temps = strtotime($activite['date_creation']);
                             $diff = time() - $temps;
                             if ($diff < 60) {
@@ -406,7 +376,6 @@ try {
                                 $temps_affiche = 'Il y a ' . floor($diff / 86400) . 'j';
                             }
                             
-                            // Déterminer le texte et la couleur selon le type
                             $couleur = '#10b981';
                             if ($activite['type'] == 'discussion') {
                                 $texte = 'a créé une discussion';
@@ -433,7 +402,6 @@ try {
         </div>
     </div>
 
-    <!-- POPUP CREER DISCUSSION -->
     <div id="popup-creer-discussion" class="popup-overlay">
         <div class="popup-contenu">
             <div class="popup-header">
@@ -457,7 +425,6 @@ try {
         </div>
     </div>
 
-    <!-- POPUP VOIR DISCUSSION -->
     <div id="popup-voir-discussion" class="popup-overlay">
         <div class="popup-contenu grande">
             <div class="popup-header">
@@ -473,7 +440,6 @@ try {
         </div>
     </div>
 
-    <!-- BULLE CHAT GROUPES -->
     <div id="bulle-chat" class="bulle-chat">
         <div class="contenu-bulle">
             <div class="haut-bulle">

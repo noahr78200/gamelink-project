@@ -1,6 +1,4 @@
 <?php
-// INCLUDES/forum_get.php
-// Recuperer une discussion et ses reponses
 
 session_start();
 header('Content-Type: application/json');
@@ -21,7 +19,6 @@ if ($id_discussion <= 0) {
 }
 
 try {
-    // Recuperer la discussion
     $stmt = $pdo->prepare("
         SELECT p.id_publication, p.titre, p.contenu, p.date_creation, p.id_joueur, j.pseudo
         FROM publication p
@@ -36,7 +33,6 @@ try {
         exit;
     }
     
-    // Formater la date
     $temps = strtotime($discussion['date_creation']);
     $diff = time() - $temps;
     if ($diff < 3600) {
@@ -56,7 +52,6 @@ try {
         'est_auteur' => ($discussion['id_joueur'] == $mon_id)
     ];
     
-    // Recuperer les reponses (commentaires)
     $stmt = $pdo->prepare("
         SELECT c.id_commentaire, c.contenu, c.date_creation, c.id_joueur, j.pseudo
         FROM commentaire c

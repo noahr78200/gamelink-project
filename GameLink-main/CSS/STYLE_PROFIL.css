@@ -195,6 +195,7 @@ body {
     cursor: pointer;
     font-weight: 600;
     margin-top: .5rem;
+    width: 16rem;
 }
 
 .btn:hover {
@@ -206,7 +207,6 @@ body {
     color: white;
 }
 
-/* Styles pour la grille de favoris */
 .favorites-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));

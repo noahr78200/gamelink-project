@@ -76,7 +76,6 @@ if (!$user) {
                         <h2>Mes Jeux Notés :</h2>
                         <div class="favorites-grid">
                             <?php
-                            // On récupère les jeux que l'utilisateur a notés
                             $stmt_jeux_notes = $pdo->prepare("SELECT j.id_jeu, j.titre, j.cover_url, a.valeur, a.date_notation
                                 FROM avis a
                                 JOIN jeu j ON a.id_jeu = j.id_jeu

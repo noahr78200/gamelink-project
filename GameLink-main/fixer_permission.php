@@ -1,25 +1,10 @@
 <?php
-/**
- * 🔧 SCRIPT DE RÉPARATION AUTOMATIQUE DES PERMISSIONS
- * 
- * Ce script va :
- * 1. Créer le dossier DATA s'il n'existe pas
- * 2. Changer les permissions automatiquement
- * 3. Créer le fichier captcha_bank.json
- * 4. Tester que tout fonctionne
- * 
- * UTILISATION :
- * 1. Mets ce fichier à la racine de ton projet
- * 2. Va sur : http://localhost/ton-projet/fixer_permissions.php
- * 3. Clique sur "Réparer maintenant"
- */
 
 $dataDir = __DIR__ . '/DATA';
 $captchaFile = $dataDir . '/captcha_bank.json';
 $logs = [];
 $allGood = false;
 
-// Questions par défaut
 $defaultQuestions = [
     ['q' => 'Quelle est la capitale de la France ?', 'a' => 'paris|Paris|PARIS', 'enabled' => true],
     ['q' => 'Langue officielle du Brésil ?', 'a' => 'portugais|Portugais', 'enabled' => true],
@@ -35,11 +20,9 @@ function addLog($emoji, $message, $isError = false) {
     ];
 }
 
-// Si on clique sur "Réparer"
 if (isset($_POST['fix'])) {
     addLog('🚀', 'Démarrage de la réparation...');
     
-    // Étape 1 : Créer le dossier DATA
     if (!is_dir($dataDir)) {
         if (@mkdir($dataDir, 0777, true)) {
             addLog('✅', 'Dossier DATA créé avec succès !');
@@ -50,17 +33,14 @@ if (isset($_POST['fix'])) {
         addLog('ℹ️', 'Le dossier DATA existe déjà.');
     }
     
-    // Étape 2 : Changer les permissions du dossier (essayer plusieurs méthodes)
     if (is_dir($dataDir)) {
         $permFixed = false;
         
-        // Méthode 1 : chmod 777
         if (@chmod($dataDir, 0777)) {
             addLog('✅', 'Permissions du dossier DATA changées en 777 (lecture + écriture + exécution pour tous)');
             $permFixed = true;
         }
         
-        // Méthode 2 : chown (uniquement sur Linux/Mac)
         if (!$permFixed && function_exists('posix_getpwuid')) {
             $processUser = posix_getpwuid(posix_geteuid());
             if (@chown($dataDir, $processUser['name'])) {
@@ -74,14 +54,12 @@ if (isset($_POST['fix'])) {
         }
     }
     
-    // Étape 3 : Créer le fichier JSON
     if (is_dir($dataDir)) {
         $jsonContent = json_encode($defaultQuestions, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         
         if (@file_put_contents($captchaFile, $jsonContent)) {
             addLog('✅', 'Fichier captcha_bank.json créé avec ' . count($defaultQuestions) . ' questions !');
             
-            // Changer les permissions du fichier
             if (@chmod($captchaFile, 0666)) {
                 addLog('✅', 'Permissions du fichier configurées (666 = lecture + écriture pour tous)');
             }
@@ -90,13 +68,11 @@ if (isset($_POST['fix'])) {
         }
     }
     
-    // Étape 4 : Tester l'écriture
     if (file_exists($captchaFile)) {
         $testContent = @file_get_contents($captchaFile);
         if ($testContent !== false) {
             addLog('✅', 'Test de lecture : OK !');
             
-            // Test d'écriture
             $testData = json_decode($testContent, true);
             if (is_array($testData)) {
                 if (@file_put_contents($captchaFile, json_encode($testData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
@@ -113,7 +89,6 @@ if (isset($_POST['fix'])) {
     }
 }
 
-// État actuel
 $dirExists = is_dir($dataDir);
 $dirWritable = $dirExists && is_writable($dataDir);
 $fileExists = file_exists($captchaFile);

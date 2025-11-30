@@ -1,6 +1,4 @@
 <?php
-// INCLUDES/forum_create.php
-// Creer une discussion sur le forum
 
 session_start();
 header('Content-Type: application/json');
@@ -22,7 +20,6 @@ if (empty($titre) || empty($contenu)) {
 }
 
 try {
-    // Verifier si communaute Forum existe
     $stmt = $pdo->query("SELECT id_communaute FROM communaute WHERE nom = 'Forum General' LIMIT 1");
     $forum = $stmt->fetch();
     
@@ -34,7 +31,6 @@ try {
         $id_communaute = $forum['id_communaute'];
     }
     
-    // Creer la discussion
     $stmt = $pdo->prepare("INSERT INTO publication (id_joueur, id_communaute, titre, contenu, date_creation) VALUES (?, ?, ?, ?, NOW())");
     $stmt->execute([$mon_id, $id_communaute, $titre, $contenu]);
     

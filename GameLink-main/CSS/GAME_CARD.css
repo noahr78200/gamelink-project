@@ -1,5 +1,3 @@
-/* ----- GAME CARD DESIGN ----- */
-
 :root {
   --card-bg: rgba(255, 255, 255, 0.08);
   --card-border: rgba(255, 255, 255, 0.15);
@@ -9,7 +7,6 @@
   --gap: 1.5rem;
 }
 
-/* Grille des jeux */
 #Game-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -19,7 +16,6 @@
   margin: 0 auto;
 }
 
-/* Carte de jeu */
 .card {
   display: flex;
   flex-direction: column;
@@ -42,7 +38,6 @@
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
 }
 
-/* Image */
 .card img {
   width: 100%;
   height: 250px;
@@ -51,16 +46,10 @@
   transition: transform 0.4s ease;
 }
 
-/* Effet de zoom fluide sans bouger le layout */
 .card:hover img {
   transform: scale(1.05);
 }
 
-.card:hover img {
-  transform: scale(1.05);
-}
-
-/* Titre */
 .card h2 {
   color: #fff;
   font-family: "Roboto", system-ui, sans-serif;
@@ -72,7 +61,6 @@
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-/* Responsive */
 @media (min-width: 1600px) {
   #Game-list {
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));

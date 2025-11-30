@@ -231,7 +231,6 @@ $avatar_config = $user['avatar_config'] ?? null;
     </div>
 
     <script>
-        // Configuration initiale depuis PHP
         let config = <?= $avatar_config ? $avatar_config : 'null' ?> || {
             skinColor: '#F4C2A0',
             faceType: 'face1',
@@ -459,7 +458,6 @@ $avatar_config = $user['avatar_config'] ?? null;
             });
         }
 
-        // Initialisation
         createColorButtons();
         createChoiceButtons();
         updateAvatar();

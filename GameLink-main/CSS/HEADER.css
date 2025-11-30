@@ -1,21 +1,13 @@
 :root {
-    /* Fond & panneaux */
     --bg: #0f1115;
     --bg-grad1: #11151c;
     --bg-grad2: #0c0f14;
-
-    /* Traits & texte */
     --border: #2a3140;
     --hoverBorder: #3a4559;
-
     --text: #E7E9ED;
     --muted: #8c95a3;
     --navText: #E9ECF4;
-
-    /* Accents */
-    --accent: #6ea8ff;
-    
-    /* Halo discret */
+    --accent: #6ea8ff;  
     --glow: rgba(110, 168, 255, .12);
 }
 
@@ -23,16 +15,12 @@
     --bg: #f5f5f5;
     --bg-grad1: #ffffff;
     --bg-grad2: #e0e0e0;
-
     --border: #cccccc;
     --hoverBorder: #bbbbbb;
-
     --text: #1a1a1a;
     --muted: #6b6b6b;
     --navText: #1a1a1a;
-
     --accent: #6ea8ff;
-
     --glow: rgba(110, 168, 255, .2);
 }
 
@@ -41,18 +29,13 @@
     --bg-grad1: #11151c;
     --bg-grad2: #0c0f14;
 
-    /* Traits & texte */
     --border: #2a3140;
     --hoverBorder: #3a4559;
 
     --text: #E7E9ED;
     --muted: #8c95a3;
     --navText: #E9ECF4;
-
-    /* Accents */
-    --accent: #6ea8ff;
-    
-    /* Halo discret */
+    --accent: #6ea8ff;  
     --glow: rgba(110, 168, 255, .12);
 }
 
@@ -70,7 +53,6 @@ body {
     background:
         radial-gradient(1200px 560px at 75% -15%, var(--glow), transparent 60%),
         linear-gradient(180deg, var(--bg-grad1), var(--bg-grad2));
-    /* MÊME POLICE QUE ADMIN */
     font: 14px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -81,9 +63,6 @@ a {
     color: var(--text);
 }
 
-/* -------------------------------
-   Marge principale pour le contenu
--------------------------------- */
 body > main {
     margin-top: 6rem;
     margin-left: 1%;
@@ -91,9 +70,6 @@ body > main {
     font-size: clamp(14px, .9vw + 12px, 16px);
 }
 
-/* ==========================================
-   HEADER PRINCIPAL
-   ========================================== */
 header {
     position: fixed;
     top: 0;
@@ -111,14 +87,12 @@ header {
     padding: 0 2%;
 }
 
-/* Logo GameLink (à gauche) */
 header .logo {
     height: 2.5rem;
     width: auto;
     display: block;
 }
 
-/* Menu de navigation */
 .Menu {
     display: flex;
     align-items: center;
@@ -127,7 +101,6 @@ header .logo {
     font-weight: 500;
 }
 
-/* Liens du menu */
 .Menu a {
     color: var(--navText);
     padding: 0.5rem 1rem;
@@ -141,13 +114,11 @@ header .logo {
     transform: translateY(-2px);
 }
 
-/* Lien actif (page actuelle) */
 .Menu a.active {
     background: rgba(110, 168, 255, 0.2);
     color: var(--accent);
 }
 
-/* Icône de profil (à droite) */
 header > a:last-child img {
     height: 2.5rem;
     width: auto;
@@ -169,9 +140,6 @@ header > a:last-child img:hover {
     box-shadow: 0 5px 15px rgba(255,255,255,0.3);
 }
 
-/* ==========================================
-   BOUTON HAMBURGER (caché par défaut)
-   ========================================== */
 .hamburger {
     display: none;
     flex-direction: column;
@@ -194,7 +162,6 @@ header > a:last-child img:hover {
     transition: all 0.3s ease;
 }
 
-/* Animation du hamburger quand le menu est ouvert */
 .hamburger.active span:nth-child(1) {
     transform: translateY(9px) rotate(45deg);
 }
@@ -207,23 +174,17 @@ header > a:last-child img:hover {
     transform: translateY(-9px) rotate(-45deg);
 }
 
-/* ==========================================
-   RESPONSIVE - TABLETTE ET MOBILE
-   ========================================== */
 @media (max-width: 1024px) {
-    /* Afficher le bouton hamburger */
     .hamburger {
         display: flex;
     }
 
-    /* Container pour hamburger + profil */
     header > a:last-child {
         display: flex;
         align-items: center;
         gap: 1rem;
     }
 
-    /* Menu déroulant */
     .Menu {
         position: fixed;
         top: 5rem;
@@ -241,13 +202,11 @@ header > a:last-child img:hover {
         transition: all 0.3s ease;
     }
 
-    /* Menu ouvert */
     .Menu.active {
         max-height: 400px;
         opacity: 1;
     }
 
-    /* Liens du menu mobile */
     .Menu a {
         width: 100%;
         text-align: center;
@@ -265,7 +224,6 @@ header > a:last-child img:hover {
         background: rgba(110, 168, 255, 0.25);
     }
 
-    /* Ajustements du header */
     header .logo {
         height: 2rem;
     }
@@ -274,15 +232,11 @@ header > a:last-child img:hover {
         height: 2rem;
     }
 
-    /* Ajuster la marge du contenu */
     body > main {
         margin-top: 5.5rem;
     }
 }
 
-/* ==========================================
-   RESPONSIVE - MOBILE
-   ========================================== */
 @media (max-width: 768px) {
     header {
         height: 4rem;
@@ -328,9 +282,6 @@ header > a:last-child img:hover {
     }
 }
 
-/* ==========================================
-   RESPONSIVE - PETIT MOBILE
-   ========================================== */
 @media (max-width: 480px) {
     header {
         height: 3.5rem;
@@ -381,16 +332,12 @@ header > a:last-child img:hover {
     }
 }
 
-/* ==========================================
-   Focus visible (accessibilité)
-   ========================================== */
 :focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
     border-radius: 6px;
 }
 
-/* Focus pour le hamburger */
 .hamburger:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 4px;

@@ -1,28 +1,19 @@
 <?php
-// Démarrer la session
 session_start();
 
-// Se connecter à la base de données
 require __DIR__ . '/../DATA/DBConfig.php';
 
-// Fonction pour sécuriser le texte
 function h($texte) { 
     return htmlspecialchars($texte, ENT_QUOTES, 'UTF-8'); 
 }
 
-// Récupérer l'ID du jeu
 if (!isset($_GET['id'])) {
     header("Location: RECHERCHE.php");
     exit;
 }
 $gameId = (int)$_GET['id'];
 
-// Récupérer l'utilisateur connecté
 $userId = $_SESSION['user_id'] ?? null;
-
-// ========================================
-// RÉCUPÉRER LES INFOS DU JEU D'ABORD
-// ========================================
 
 $CLIENT_ID = 'spy0n0vev24kqu6gg3m6t9gh0a9d6r';
 $TOKEN = 'jmapwgfaw3021u1ce2zdrqix57gxhz';
@@ -51,7 +42,6 @@ if (!$jeu) {
     exit;
 }
 
-// Extraire les informations
 $titre = $jeu['name'] ?? "Sans titre";
 $resume = $jeu['summary'] ?? "Aucune description disponible.";
 $genres = isset($jeu['genres']) ? implode(", ", array_column($jeu['genres'], 'name')) : "Non spécifié";
@@ -59,34 +49,26 @@ $plateformes = isset($jeu['platforms']) ? implode(", ", array_column($jeu['platf
 $editeur = $jeu['involved_companies'][0]['company']['name'] ?? "Non spécifié";
 $dateSortie = isset($jeu['first_release_date']) ? date('Y-m-d', $jeu['first_release_date']) : null;
 
-// Image de couverture
 if (isset($jeu['cover']['image_id'])) {
     $image = 'https://images.igdb.com/igdb/image/upload/t_cover_big/' . $jeu['cover']['image_id'] . '.jpg';
 } else {
     $image = '../IMG/placeholder.jpg';
 }
 
-// ========================================
-// FONCTION : CRÉER LE JEU DANS LA BDD
-// ========================================
 function creerJeuDansBDD($pdo, $gameId, $titre, $editeur, $dateSortie, $resume, $image) {
     try {
-        // Vérifier si le jeu existe déjà
         $sql = "SELECT id_jeu FROM jeu WHERE id_jeu = ?";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$gameId]);
         
         if (!$stmt->fetch()) {
-            // Le jeu n'existe pas, on doit d'abord créer l'éditeur
             
-            // 1. Vérifier si l'éditeur existe
             $sql = "SELECT id_editeur FROM editeur WHERE nom = ?";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([$editeur]);
             $editeurData = $stmt->fetch();
             
             if (!$editeurData) {
-                // Créer l'éditeur
                 $sql = "INSERT INTO editeur (nom) VALUES (?)";
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([$editeur]);
@@ -95,26 +77,18 @@ function creerJeuDansBDD($pdo, $gameId, $titre, $editeur, $dateSortie, $resume, 
                 $idEditeur = $editeurData['id_editeur'];
             }
             
-            // 2. Créer le jeu
             $sql = "INSERT INTO jeu (id_jeu, id_editeur, titre, date_sortie, description, cover_url) 
                     VALUES (?, ?, ?, ?, ?, ?)";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([$gameId, $idEditeur, $titre, $dateSortie, $resume, $image]);
         }
     } catch (PDOException $e) {
-        // Si erreur, on ne bloque pas, on continue
         error_log("Erreur création jeu: " . $e->getMessage());
     }
 }
 
-// Créer le jeu dans la BDD si nécessaire
 creerJeuDansBDD($pdo, $gameId, $titre, $editeur, $dateSortie, $resume, $image);
 
-// ========================================
-// ÉTAPE 1 : GÉRER LES ACTIONS
-// ========================================
-
-// ACTION : Supprimer un commentaire
 if (isset($_POST['delete_comment']) && $userId) {
     try {
         $sql = "DELETE FROM avis WHERE id_joueur = ? AND id_jeu = ?";
@@ -127,7 +101,6 @@ if (isset($_POST['delete_comment']) && $userId) {
     }
 }
 
-// ACTION : Noter le jeu (AJAX)
 if (isset($_POST['ajax_rating']) && $userId) {
     header('Content-Type: application/json');
     
@@ -135,19 +108,16 @@ if (isset($_POST['ajax_rating']) && $userId) {
         $note = (int)$_POST['ajax_rating'];
         
         if ($note >= 1 && $note <= 5) {
-            // Vérifier si une note existe déjà
             $sql = "SELECT id_joueur FROM avis WHERE id_joueur = ? AND id_jeu = ?";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([$userId, $gameId]);
             $existe = $stmt->fetch();
             
             if ($existe) {
-                // Mettre à jour
                 $sql = "UPDATE avis SET valeur = ?, date_notation = NOW() WHERE id_joueur = ? AND id_jeu = ?";
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([$note, $userId, $gameId]);
             } else {
-                // Créer
                 $sql = "INSERT INTO avis (id_joueur, id_jeu, valeur, date_notation) VALUES (?, ?, ?, NOW())";
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([$userId, $gameId, $note]);
@@ -166,25 +136,21 @@ if (isset($_POST['ajax_rating']) && $userId) {
     }
 }
 
-// ACTION : Ajouter un commentaire
 if (isset($_POST['comment_text']) && $userId) {
     try {
         $commentaire = trim($_POST['comment_text']);
         
         if ($commentaire != "") {
-            // Vérifier si un avis existe déjà
             $sql = "SELECT id_joueur FROM avis WHERE id_joueur = ? AND id_jeu = ?";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([$userId, $gameId]);
             $existe = $stmt->fetch();
             
             if ($existe) {
-                // Mettre à jour
                 $sql = "UPDATE avis SET texte_commentaire = ?, date_commentaire = NOW() WHERE id_joueur = ? AND id_jeu = ?";
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([$commentaire, $userId, $gameId]);
             } else {
-                // Créer
                 $sql = "INSERT INTO avis (id_joueur, id_jeu, texte_commentaire, date_commentaire) VALUES (?, ?, ?, NOW())";
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([$userId, $gameId, $commentaire]);
@@ -199,12 +165,7 @@ if (isset($_POST['comment_text']) && $userId) {
     }
 }
 
-// ========================================
-// ÉTAPE 2 : RÉCUPÉRER LES NOTES
-// ========================================
-
 try {
-    // Note moyenne
     $sql = "SELECT valeur FROM avis WHERE id_jeu = ? AND valeur IS NOT NULL";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([$gameId]);
@@ -216,23 +177,21 @@ try {
         $noteMoyenne = round(array_sum($notes) / $nombreNotes, 1);
     }
 
-    // Ma note personnelle
     $maNote = 0;
     if ($userId) {
         $sql = "SELECT valeur FROM avis WHERE id_joueur = ? AND id_jeu = ?";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$userId, $gameId]);
-        $maNote = $stmt->fetchColumn() ?: 0;
+        $row = $stmt->fetch();
+        if ($row) {
+            $maNote = (int)$row['valeur'];
+        }
     }
 } catch (PDOException $e) {
     $nombreNotes = 0;
     $noteMoyenne = 0;
     $maNote = 0;
 }
-
-// ========================================
-// ÉTAPE 3 : RÉCUPÉRER LES COMMENTAIRES
-// ========================================
 
 try {
     $sql = "SELECT a.texte_commentaire, a.date_commentaire, a.id_joueur, j.pseudo
@@ -247,7 +206,6 @@ try {
     $commentaires = [];
 }
 
-// Vérifier si le jeu est en favoris pour l'utilisateur connecté
 $isFavori = false;
 if ($userId) {
     try {
@@ -273,7 +231,6 @@ if ($userId) {
 <body>
 
 <?php 
-// Inclure le header seulement s'il existe
 if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
     include __DIR__ . '/../INCLUDES/header.php';
 }
@@ -281,24 +238,18 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
 
 <div class="game-container">
     
-    <!-- Bouton retour -->
     <a href="RECHERCHE.php" class="btn-back">← Retour</a>
 
-    <!-- CARTE PRINCIPALE -->
     <div class="game-main">
         
-        <!-- Image à gauche -->
         <div class="game-left">
             <img src="<?= h($image) ?>" alt="<?= h($titre) ?>">
         </div>
         
-        <!-- Infos à droite -->
         <div class="game-right">
             
-            <!-- Titre -->
             <h1 class="game-title"><?= h($titre) ?></h1>
 
-            <!-- Résumé (limité à 5 lignes) -->
             <div class="game-summary">
                 <p class="summary-text" id="resume"><?= nl2br(h($resume)) ?></p>
                 <?php if (strlen($resume) > 300): ?>
@@ -306,7 +257,6 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
                 <?php endif; ?>
             </div>
             
-            <!-- Métadonnées -->
             <div class="game-meta">
                 <div class="meta-item">
                     <span class="meta-label">Genre:</span> <?= h($genres) ?>
@@ -322,10 +272,8 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
                 </div>
             </div>
             
-            <!-- Notation -->
             <div class="rating-box">
                 
-                <!-- Note moyenne -->
                 <div class="rating-display">
                     <div class="rating-number"><?= $noteMoyenne ?></div>
                     <div>
@@ -338,7 +286,6 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
                     </div>
                 </div>
 
-                <!-- Ma notation -->
                 <?php if ($userId): ?>
                     <div class="user-rating">
                         <h3>Votre note :</h3>
@@ -358,11 +305,9 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
         
     </div>
 
-    <!-- COMMENTAIRES -->
     <div class="comments-section">
         <h2>💬 Commentaires (<?= count($commentaires) ?>)</h2>
 
-        <!-- Formulaire -->
         <?php if ($userId): ?>
             <form method="post" class="comment-form">
                 <textarea name="comment_text" placeholder="Votre avis..." required></textarea>
@@ -374,7 +319,6 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
             </p>
         <?php endif; ?>
 
-        <!-- Liste -->
         <div class="comments-list">
             <?php if (empty($commentaires)): ?>
                 <p class="no-comments">Aucun commentaire</p>
@@ -412,7 +356,6 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
 </div>
 
 <script>
-// Fonction pour déplier le résumé
 function toggleResume() {
     var texte = document.getElementById('resume');
     var bouton = event.target;
@@ -426,9 +369,7 @@ function toggleResume() {
     }
 }
 
-// Fonction pour noter
 function noterJeu(note) {
-    // Afficher visuellement
     var etoiles = document.querySelectorAll('.star-btn');
     for (var i = 0; i < etoiles.length; i++) {
         if (i < note) {
@@ -438,7 +379,6 @@ function noterJeu(note) {
         }
     }
     
-    // Envoyer au serveur
     var donnees = new FormData();
     donnees.append('ajax_rating', note);
     

@@ -1,6 +1,4 @@
-/* CSS/COMMUNAUTE.css - Styles pour la page Communauté avec Sidebar */
 
-/* ========== LAYOUT AVEC SIDEBAR ========== */
 .container-avec-sidebar {
     display: flex;
     gap: 30px;
@@ -13,8 +11,6 @@
     flex: 1;
     min-width: 0;
 }
-
-/* ========== SIDEBAR ========== */
 .sidebar {
     width: 380px;
     display: flex;
@@ -75,8 +71,6 @@
     padding: 20px;
     font-style: italic;
 }
-
-/* ========== TENDANCES ========== */
 .tendance-item {
     padding: 12px;
     background: rgba(255, 255, 255, 0.03);
@@ -117,8 +111,6 @@
     align-items: center;
     padding-left: 28px;
 }
-
-/* ========== ACTIVITÉ RÉCENTE ========== */
 .activite-item {
     padding: 12px;
     background: rgba(255, 255, 255, 0.03);
@@ -147,12 +139,10 @@
     font-size: 0.8em;
     color: #8b92a8;
 }
-
-/* ========== ONGLETS AMÉLIORÉS (À GAUCHE) ========== */
 .onglets-container {
     display: flex;
     gap: 20px;
-    justify-content: flex-start; /* ← À GAUCHE ! */
+    justify-content: flex-start;
     margin-bottom: 40px;
     padding-left: 20px;
 }
@@ -173,8 +163,6 @@
     position: relative;
     overflow: hidden;
 }
-
-/* Effet brillant */
 .onglet::before {
     content: '';
     position: absolute;
@@ -205,8 +193,6 @@
     color: white;
     box-shadow: 0 12px 40px rgba(102, 126, 234, 0.7);
 }
-
-/* ========== CONTENU ONGLETS ========== */
 .contenu-onglet {
     display: none;
 }
@@ -215,9 +201,6 @@
     display: block;
     animation: apparition 0.5s ease;
 }
-
-
-/* ========== TITRE SECTION AMÉLIORÉ ========== */
 .titre-section {
     text-align: center;
     margin-bottom: 50px;
@@ -229,8 +212,6 @@
     position: relative;
     overflow: hidden;
 }
-
-/* Effet de brillance en fond */
 .titre-section::before {
     content: '';
     position: absolute;
@@ -240,8 +221,8 @@
     height: 200%;
     background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
     animation: rotation 20s linear infinite;
-    z-index: 0; /* EN-DESSOUS du contenu ! */
-    pointer-events: none; /* Ne bloque pas les clics ! */
+    z-index: 0;
+    pointer-events: none;
 }
 
 
@@ -250,7 +231,6 @@
     font-size: 3.2em;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     background-clip: text;
-   
     font-weight: 900;
     letter-spacing: -1px;
     position: relative;
@@ -266,15 +246,11 @@
     z-index: 1;
     line-height: 1.6;
 }
-
-/* S'assurer que les boutons dans titre-section sont cliquables */
 .titre-section .bouton {
     position: relative;
-    z-index: 2; /* AU-DESSUS de tout dans titre-section ! */
-    pointer-events: auto; /* Toujours cliquable ! */
+    z-index: 2;
+    pointer-events: auto;
 }
-
-/* ========== GROUPES ========== */
 .grille-groupes {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -333,8 +309,6 @@
     display: flex;
     gap: 10px;
 }
-
-/* ========== BOUTONS ========== */
 .bouton {
     padding: 12px 20px;
     border: none;
@@ -384,8 +358,6 @@
 .bouton.gris:hover {
     background: rgba(255, 255, 255, 0.15);
 }
-
-/* ========== FORUM ========== */
 .liste-discussions {
     display: flex;
     flex-direction: column;
@@ -442,8 +414,6 @@
     font-size: 1.1em;
     margin-bottom: 10px;
 }
-
-/* ========== POPUPS (STYLE FORUM) ========== */
 .popup-overlay {
     display: none;
     position: fixed;
@@ -570,8 +540,6 @@
     gap: 15px;
     justify-content: flex-end;
 }
-
-/* ========== DISCUSSION COMPLÈTE ========== */
 #discussion-post-original,
 #discussion-reponses {
     padding: 30px;
@@ -647,8 +615,6 @@
     border-color: #667eea;
     box-shadow: 0 0 25px rgba(102, 126, 234, 0.5);
 }
-
-/* ========== BULLE CHAT (MÊME STYLE QUE LE FORUM) ========== */
 .bulle-chat {
     position: fixed;
     top: 50%;
@@ -789,8 +755,6 @@
     font-style: italic;
     font-size: 1.05em;
 }
-
-/* ========== FOND SOMBRE ========== */
 .fond-sombre {
     display: none;
     position: fixed;
@@ -800,15 +764,13 @@
     height: 100%;
     background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(5px);
-    z-index: 999; /* EN-DESSOUS des popups et de la bulle chat ! */
+    z-index: 999;
 }
 
 .fond-sombre.visible {
     display: block;
     animation: apparition 0.3s ease;
 }
-
-/* ========== RESPONSIVE ========== */
 @media (max-width: 1200px) {
     .container-avec-sidebar {
         flex-direction: column;

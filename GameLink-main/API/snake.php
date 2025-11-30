@@ -1,15 +1,10 @@
 <?php
-// ==========================================
-// 🐍 API SNAKE GAME
-// ==========================================
 
 session_start();
 header('Content-Type: application/json');
 
-// Connexion BDD
 require_once __DIR__ . '/../DATA/DBConfig.php';
 
-// Vérifier que l'utilisateur est connecté
 if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'message' => 'Non connecté']);
     exit;
@@ -21,7 +16,6 @@ $action = $_GET['action'] ?? $_POST['action'] ?? '';
 try {
     switch ($action) {
         case 'savescore':
-            // Sauvegarder un nouveau score
             $data = json_decode(file_get_contents('php://input'), true);
             $score = intval($data['score'] ?? 0);
             
@@ -30,11 +24,9 @@ try {
                 exit;
             }
 
-            // Insérer le score
             $stmt = $pdo->prepare("INSERT INTO snake_scores (id_joueur, score) VALUES (?, ?)");
             $stmt->execute([$userId, $score]);
 
-            // Vérifier si c'est un nouveau record personnel
             $stmt = $pdo->prepare("
                 SELECT MAX(score) as max_score 
                 FROM snake_scores 
@@ -52,7 +44,6 @@ try {
             break;
 
         case 'gethighscore':
-            // Récupérer le meilleur score de l'utilisateur
             $stmt = $pdo->prepare("
                 SELECT MAX(score) as high_score 
                 FROM snake_scores 
@@ -68,9 +59,8 @@ try {
             break;
 
         case 'getleaderboard':
-            // Récupérer le leaderboard
             $limit = intval($_GET['limit'] ?? 10);
-            $limit = min(max($limit, 1), 100); // Entre 1 et 100
+            $limit = min(max($limit, 1), 100);
             
             $stmt = $pdo->prepare("
                 SELECT 
@@ -93,7 +83,6 @@ try {
             break;
 
         case 'getstats':
-            // Récupérer les statistiques personnelles
             $stmt = $pdo->prepare("
                 SELECT 
                     COUNT(*) as total_games,

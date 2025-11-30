@@ -1,9 +1,5 @@
 <?php
-// ==========================================
-// 👥 GESTION DES UTILISATEURS - ADMIN
-// ==========================================
 
-// Vérifier que PDO est disponible
 if (!isset($pdo)) {
     echo '<section class="admin-surface">';
     echo '<div class="card">';
@@ -14,18 +10,15 @@ if (!isset($pdo)) {
     return;
 }
 
-// Paramètres de pagination
 $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 $per_page = 20;
 $offset = ($page - 1) * $per_page;
 
-// Variables pour stocker les résultats
 $users = array();
 $total_users = 0;
 $total_pages = 0;
 
 try {
-    // ÉTAPE 1 : Compter le total d'utilisateurs
     $count_sql = "SELECT COUNT(*) as total FROM joueur";
     $stmt_count = $pdo->prepare($count_sql);
     $stmt_count->execute();
@@ -34,7 +27,6 @@ try {
     $total_users = $count_result ? intval($count_result['total']) : 0;
     $total_pages = $total_users > 0 ? ceil($total_users / $per_page) : 1;
 
-    // ÉTAPE 2 : Récupérer les utilisateurs
     $sql = "SELECT 
         id_joueur,
         pseudo,
@@ -56,7 +48,6 @@ try {
     $error_display = "Erreur lors de la récupération des utilisateurs : " . htmlspecialchars($e->getMessage());
 }
 
-// Fonction pour calculer le temps écoulé
 function formatTimeAgo($datetime) {
     if (empty($datetime)) {
         return 'Jamais';
@@ -89,7 +80,6 @@ function formatTimeAgo($datetime) {
 }
 ?>
 
-<!-- Interface utilisateurs -->
 <section class="admin-surface">
     <div class="card users-card">
         <div class="card-title">
@@ -122,7 +112,6 @@ function formatTimeAgo($datetime) {
                     <tbody>
                         <?php foreach ($users as $user): ?>
                             <?php 
-                                // Déterminer le rôle
                                 $role = ($user['id_joueur'] == 7) ? 'Administrateur' : 'Utilisateur';
                                 $role_class = ($user['id_joueur'] == 7) ? 'role-admin' : 'role-user';
                             ?>
@@ -170,7 +159,6 @@ function formatTimeAgo($datetime) {
                 </table>
             </div>
 
-            <!-- Pagination -->
             <?php if ($total_pages > 1): ?>
                 <div class="users-pagination">
                     <div class="pagination-info">
@@ -188,7 +176,6 @@ function formatTimeAgo($datetime) {
                         <?php endif; ?>
 
                         <?php 
-                        // Afficher 5 numéros de page max
                         $start = max(1, $page - 2);
                         $end = min($total_pages, $page + 2);
                         
@@ -216,7 +203,6 @@ function formatTimeAgo($datetime) {
 </section>
 
 <style>
-/* ==================== STYLES UTILISATEURS ==================== */
 
 .users-card {
     min-height: 400px;
@@ -226,7 +212,6 @@ function formatTimeAgo($datetime) {
     margin-bottom: 20px;
 }
 
-/* Tableau */
 .users-table-wrapper {
     overflow-x: auto;
     margin-top: 0;
@@ -274,7 +259,6 @@ function formatTimeAgo($datetime) {
     vertical-align: middle;
 }
 
-/* Textes */
 .user-id {
     font-family: ui-monospace, monospace;
     font-weight: 700;
@@ -299,7 +283,6 @@ function formatTimeAgo($datetime) {
     color: var(--valueMild);
 }
 
-/* Rôles */
 .user-role {
     display: flex;
     align-items: center;
@@ -331,7 +314,6 @@ function formatTimeAgo($datetime) {
     border-color: rgba(156, 163, 175, 0.3);
 }
 
-/* Pagination */
 .users-pagination {
     display: flex;
     justify-content: space-between;
@@ -392,7 +374,6 @@ function formatTimeAgo($datetime) {
     transform: none;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     .users-table {
         font-size: 13px;

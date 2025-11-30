@@ -1,11 +1,7 @@
 <?php
-// test_connexion.php
-// Script de test pour vérifier la configuration
-
 echo "<h1>🔍 Test de Configuration GameLink</h1>";
 echo "<hr>";
 
-// Test 1 : Version PHP
 echo "<h2>✅ Test 1 : Version PHP</h2>";
 echo "Version PHP : " . phpversion();
 if (version_compare(phpversion(), '7.4.0', '>=')) {
@@ -15,7 +11,6 @@ if (version_compare(phpversion(), '7.4.0', '>=')) {
 }
 echo "<br>";
 
-// Test 2 : Extensions PHP requises
 echo "<h2>✅ Test 2 : Extensions PHP</h2>";
 $required_extensions = ['pdo', 'pdo_mysql', 'mbstring', 'session'];
 foreach ($required_extensions as $ext) {
@@ -27,13 +22,11 @@ foreach ($required_extensions as $ext) {
 }
 echo "<br>";
 
-// Test 3 : Connexion à la base de données
 echo "<h2>✅ Test 3 : Connexion Base de Données</h2>";
 try {
     require_once __DIR__ . '/DATA/DBConfig.php';
     echo "✅ Connexion réussie à la base de données 'gamelink'<br>";
     
-    // Test des tables
     $tables = ['joueur', 'jeu', 'genre', 'plateforme', 'playlist', 'communaute'];
     echo "<br><strong>Tables vérifiées :</strong><br>";
     foreach ($tables as $table) {
@@ -54,7 +47,6 @@ try {
 }
 echo "<br>";
 
-// Test 4 : Fichiers importants
 echo "<h2>✅ Test 4 : Fichiers importants</h2>";
 $files = [
     'index.php' => 'Page d\'accueil publique',
@@ -76,7 +68,6 @@ foreach ($files as $file => $desc) {
 }
 echo "<br>";
 
-// Test 5 : Permissions
 echo "<h2>✅ Test 5 : Permissions fichiers</h2>";
 $writable_files = ['PAGE/captcha_bank.json'];
 foreach ($writable_files as $file) {
@@ -93,7 +84,6 @@ foreach ($writable_files as $file) {
 }
 echo "<br>";
 
-// Test 6 : Configuration PHP
 echo "<h2>✅ Test 6 : Configuration PHP</h2>";
 echo "upload_max_filesize : " . ini_get('upload_max_filesize') . "<br>";
 echo "post_max_size : " . ini_get('post_max_size') . "<br>";

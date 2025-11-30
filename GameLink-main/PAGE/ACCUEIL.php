@@ -1,24 +1,19 @@
 <?php
-// Démarrer la session
 session_start();
 
-// Protection : redirection si non connecté
 if (!isset($_SESSION['user_id'])) {
     header('Location: ../index.php?login_required=1');
     exit;
 }
 
-// Connexion à la base de données
 require_once __DIR__ . '/../DATA/DBConfig.php';
 
-// Récupérer les infos de l'utilisateur
 $user_id = $_SESSION['user_id'];
 $user_pseudo = $_SESSION['user_pseudo'];
 
 $headlineTitle = '';
 $headlineBody  = '';
 
-// Charger le message actuel
 try {
     $stmt = $pdo->prepare("SELECT title, body FROM homepage_headline WHERE id = 1");
     $stmt->execute();
@@ -27,12 +22,8 @@ try {
         $headlineBody  = $row['body'];
     }
 } catch (Exception $e) {
-    // en prod tu loggueras l'erreur, ici on peut ignorer pour ne pas casser la page
 }
 
-// ========================================
-// ÉTAPE 1 : RÉCUPÉRER LES JEUX À 5 ÉTOILES
-// ========================================
 $topGames = [];
 try {
     $sql = "SELECT j.id_jeu, j.titre, j.cover_url, 
@@ -51,17 +42,10 @@ try {
     $topGames = [];
 }
 
-// ========================================
-// ÉTAPE 2 : RÉCUPÉRER LES JEUX PAR GENRE
-// ========================================
-
-// Informations API IGDB
 $CLIENT_ID = 'spy0n0vev24kqu6gg3m6t9gh0a9d6r';
 $TOKEN = 'jmapwgfaw3021u1ce2zdrqix57gxhz';
 
-// Fonction SIMPLE pour récupérer des jeux par ID de genre
 function getGamesByGenreId($genreId, $CLIENT_ID, $TOKEN) {
-    // Requête IGDB avec l'ID du genre
     $requete = 'fields id, name, cover.image_id, rating;
                 where genres = (' . $genreId . ') & rating != null;
                 sort rating desc;
@@ -82,13 +66,6 @@ function getGamesByGenreId($genreId, $CLIENT_ID, $TOKEN) {
     $data = json_decode($reponse, true);
     return is_array($data) ? $data : [];
 }
-
-// IDs de genres IGDB (les vrais IDs !)
-// RPG = 12
-// Shooter = 5
-// Racing = 10
-// Action = 4 (Platform) ou 25 (Hack and slash)
-// Strategy = 15
 
 $genres = [
     'RPG' => getGamesByGenreId(12, $CLIENT_ID, $TOKEN),
@@ -119,14 +96,11 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
 
 <main>
     
-    <!-- BANNIÈRE DE BIENVENUE -->
     <div class="welcome-banner">
         <h1>Bienvenue, <?= htmlspecialchars($user_pseudo) ?> !</h1>
         <p>Découvrez les meilleurs jeux vidéo du moment</p>
     </div>
 
-    <!-- Banniere event -->
-    <!-- MESSAGE À LA UNE -->
 <?php if ($headlineTitle || $headlineBody): ?>
     <section class="steam-banner">
         <div class="steam-banner-top">
@@ -143,7 +117,6 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
     </section>
 <?php endif; ?>
 
-    <!-- SECTION : JEUX À 5 ÉTOILES -->
     <div class="carousel-container">
         <h2 class="section-title">Jeux du moment</h2>
         
@@ -171,7 +144,6 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
         <?php endif; ?>
     </div>
 
-    <!-- SECTION : RPG -->
     <div class="carousel-container">
         <h2 class="section-title"> RPG</h2>
         
@@ -202,7 +174,6 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
         <?php endif; ?>
     </div>
 
-    <!-- SECTION : SHOOTER -->
     <div class="carousel-container">
         <h2 class="section-title">Shooter</h2>
         
@@ -233,7 +204,6 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
         <?php endif; ?>
     </div>
 
-    <!-- SECTION : COURSE -->
     <div class="carousel-container">
         <h2 class="section-title">Course</h2>
         
@@ -264,7 +234,6 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
         <?php endif; ?>
     </div>
 
-    <!-- SECTION : ACTION -->
     <div class="carousel-container">
         <h2 class="section-title">Action</h2>
         
@@ -294,7 +263,6 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
         <?php endif; ?>
     </div>
 
-    <!-- SECTION : STRATÉGIE -->
     <div class="carousel-container">
         <h2 class="section-title">Stratégie</h2>
         
@@ -328,15 +296,13 @@ if (file_exists(__DIR__ . '/../INCLUDES/header.php')) {
 </main>
 
 <script>
-// Fonction SIMPLE pour faire défiler les carrousels
 function scrollCarousel(carouselId, direction) {
     var carousel = document.getElementById(carouselId);
     
-    // Taille différente pour le carrousel des jeux à 5 étoiles
     if (carouselId === 'top-games') {
-        var scrollAmount = 460; // largeur d'une grande carte + gap
+        var scrollAmount = 460;
     } else {
-        var scrollAmount = 240; // largeur d'une petite carte + gap
+        var scrollAmount = 240;
     }
     
     carousel.scrollBy({

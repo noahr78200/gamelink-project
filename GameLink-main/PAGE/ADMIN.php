@@ -1,25 +1,16 @@
 <?php
-// ==========================================
-// 🎮 PAGE ADMIN FINALE
-// ==========================================
-
 session_start();
 
-// Vérification admin
 require_once __DIR__ . '/../INCLUDES/check_admin.php';
+
 require_admin();
 
-// Connexion BDD
 require_once __DIR__ . '/../DATA/DBConfig.php';
-
-// Charger les stats
 require_once __DIR__ . '/../INCLUDES/stats.php';
 
-// ===== Message à la une (BDD) =====
 $headlineTitle = '';
 $headlineBody  = '';
 
-// 1) Charger le message actuel
 try {
     $stmt = $pdo->prepare("SELECT title, body FROM homepage_headline WHERE id = 1");
     $stmt->execute();
@@ -28,11 +19,8 @@ try {
         $headlineBody  = $row['body'];
     }
 } catch (Exception $e) {
-    // TODO : logger l'erreur en prod si besoin
-    // echo 'Erreur headline SELECT : ' . $e->getMessage();
 }
 
-// 2) Si le formulaire "Message à la une" est soumis
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['headline_form'])) {
     $headlineTitle = trim($_POST['headline_title'] ?? '');
     $headlineBody  = trim($_POST['headline_body']  ?? '');
@@ -52,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['headline_form'])) {
         ]);
     }
 
-    // Redirection pour éviter le re-submit et rester sur l'onglet Edition
     header('Location: ADMIN.php?tab=edition&headline_saved=1');
     exit;
 }
@@ -68,9 +55,6 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
   <link rel="stylesheet" href="../CSS/STYLE_ADMIN.css" type="text/css"/>
   <link rel="stylesheet" href="../CSS/STYLE_ADMIN2.css" type="text/css"/>
   <link rel="icon" type="image/png" sizes="32x32" href="../ICON/LogoSimple.svg">
-  <style>
-  
-  </style>
 </head>
 
 <?php include __DIR__ . '/../INCLUDES/header.php'; ?>
@@ -78,7 +62,6 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
 <body class="admin">
  
   <main>
-    <!-- Message de bienvenue -->
     <div class="admin-welcome">
       <h2> Bienvenue Admin !</h2>
       <p>Connecté avec l'ID : <strong><?= htmlspecialchars($_SESSION['user_id'] ?? $_SESSION['user_pseudo'] ?? 'Admin') ?></strong></p>
@@ -87,7 +70,6 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
       </p>
     </div>
 
-    <!-- Onglets -->
     <div class="admin-tabs">
       <a href="?tab=dashboard" class="admin-tab <?= $current_tab === 'dashboard' ? 'active' : '' ?>">
         📊 Statistiques
@@ -103,14 +85,11 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
       </a>
     </div>
 
-    <!-- ONGLET STATISTIQUES -->
     <div class="tab-content <?= $current_tab === 'dashboard' ? 'active' : '' ?>">
       <section class="admin-surface">
         
-        <!-- LES 4 COMPTEURS PRINCIPAUX -->
         <div class="kpi-row">
           
-          <!-- COMPTEUR 1 : Inscriptions aujourd'hui -->
           <div class="kpi-card">
             <div class="kpi-label">Inscriptions aujourd'hui :</div>
             <div class="kpi-main">
@@ -121,7 +100,6 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
             </div>
           </div>
 
-          <!-- COMPTEUR 2 : Connectés MAINTENANT -->
           <div class="kpi-card">
             <div class="kpi-label">Connectés maintenant :</div>
             <div class="kpi-main">
@@ -132,7 +110,6 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
             </div>
           </div>
 
-          <!-- COMPTEUR 3 : Connectés 24h (NOUVEAU !) -->
           <div class="kpi-card">
             <div class="kpi-label">Connectés 24h :</div>
             <div class="kpi-main">
@@ -143,7 +120,6 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
             </div>
           </div>
 
-          <!-- COMPTEUR 4 : Pages vues aujourd'hui -->
           <div class="kpi-card">
             <div class="kpi-label">Pages vues aujourd'hui :</div>
             <div class="kpi-main">
@@ -155,7 +131,6 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
           </div>
         </div>
 
-        <!-- Grille avec les graphiques -->
         <div class="admin-grid">
           <div class="stack">
             <div class="card chart">
@@ -173,7 +148,6 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
             <canvas id="chartBig"></canvas>
           </div>
 
-          <!-- Top 5 des pages -->
           <aside class="card sidecard">
             <div class="card-title">📄 Pages les plus visitées aujourd'hui</div>
             <ul class="toplist">
@@ -187,7 +161,6 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
                   <li>
                     <span title="<?= htmlspecialchars($page['page_url']) ?>">
                       <?php 
-                      // Afficher juste le nom de la page
                       $page_name = basename(parse_url($page['page_url'], PHP_URL_PATH));
                       echo htmlspecialchars($page_name ?: $page['page_url']);
                       ?>
@@ -200,7 +173,6 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
           </aside>
         </div>
 
-        <!-- Signalements -->
         <div class="reports-grid">
           <section class="card">
             <div class="card-title">Contenu signalé</div>
@@ -229,7 +201,6 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
                   <td>Inapproprié</td>
                   <td>OCT 6</td>
                 </tr>
-
                 <tr class="report-row"
                     data-id="rep_1002"
                     data-offender="YUIAuber"
@@ -245,89 +216,8 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
                   <td>Inapproprié</td>
                   <td>OCT 6</td>
                 </tr>
-
                 <tr class="report-row"
                     data-id="rep_1003"
-                    data-offender="SamsiLaFrappe"
-                    data-message="esp3ce de retard"
-                    data-reason="Inapproprié"
-                    data-date="2025-10-06T11:05:00+02:00"
-                    data-game="CS:GO"
-                    data-chat="Message privé"
-                    data-reporter="Rakun"
-                    data-strikes2025="4">
-                  <td><span class="avatar"></span>SamsiLaFrappe</td>
-                  <td>« esp3ce de retard »</td>
-                  <td>Inapproprié</td>
-                  <td>OCT 6</td>
-                </tr>
-
-                <tr class="report-row"
-                    data-id="rep_1004"
-                    data-offender="CiscoKillerDu92"
-                    data-message="go troll dog"
-                    data-reason="Inapproprié"
-                    data-date="2025-10-06T10:29:00+02:00"
-                    data-game="Valorant"
-                    data-chat="Chat d'équipe"
-                    data-reporter="Zlp"
-                    data-strikes2025="2">
-                  <td><span class="avatar"></span>CiscoKillerDu92</td>
-                  <td>« go troll dog »</td>
-                  <td>Inapproprié</td>
-                  <td>OCT 6</td>
-                </tr>
-
-                <tr class="report-row"
-                    data-id="rep_1005"
-                    data-offender="CircuitLogiqueMaVie"
-                    data-message="fais ton chronographe sale fou"
-                    data-reason="Inapproprié"
-                    data-date="2025-10-06T14:12:00+02:00"
-                    data-game="Processing"
-                    data-chat="Chat d'équipe"
-                    data-reporter="TweeDleDee"
-                    data-strikes2025="1">
-                  <td><span class="avatar"></span>CircuitLogiqueMaVie</td>
-                  <td>« fais ton chronographe sale fou »</td>
-                  <td>Inapproprié</td>
-                  <td>OCT 6</td>
-                </tr>
-
-                <tr class="report-row"
-                    data-id="rep_1006"
-                    data-offender="Clio2NordPasDeCalais"
-                    data-message="toi jvais t'attraper fdp ezzzz"
-                    data-reason="Inapproprié"
-                    data-date="2025-10-06T14:12:00+02:00"
-                    data-game="Rocket League"
-                    data-chat="Chat d'équipe"
-                    data-reporter="YTUUZI"
-                    data-strikes2025="1">
-                  <td><span class="avatar"></span>Clio2NordPasDeCalais</td>
-                  <td>« toi jvais t'attraper fdp ezzzz »</td>
-                  <td>Inapproprié</td>
-                  <td>OCT 6</td>
-                </tr>
-
-                <tr class="report-row"
-                    data-id="rep_1007"
-                    data-offender="AZAMAT"
-                    data-message="DECALE AU B STFU"
-                    data-reason="Inapproprié"
-                    data-date="2025-10-06T14:12:00+02:00"
-                    data-game="Valorant"
-                    data-chat="Chat d'équipe"
-                    data-reporter="ModArno"
-                    data-strikes2025="1">
-                  <td><span class="avatar"></span>AZAMAT</td>
-                  <td>« DECALE AU B STFU »</td>
-                  <td>Inapproprié</td>
-                  <td>OCT 6</td>
-                </tr>
-
-                <tr class="report-row"
-                    data-id="rep_1008"
                     data-offender="GandalfBriveLaGaillarde"
                     data-message="Bot Gap french retard"
                     data-reason="Inapproprié"
@@ -352,7 +242,6 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
       </section>
     </div>
 
-    <!-- ONGLET CAPTCHA -->
     <div class="tab-content <?= $current_tab === 'captcha' ? 'active' : '' ?>">
       <?php 
       $captcha_file = __DIR__ . '/manage_captcha.php';
@@ -369,7 +258,6 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
       ?>
     </div>
 
-    <!-- ONGLET UTILISATEURS -->
     <div class="tab-content <?= $current_tab === 'users' ? 'active' : '' ?>">
       <?php 
       $users_file = __DIR__ . '/users_management.php';
@@ -386,10 +274,8 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
       ?>
     </div>
 
-    <!-- ONGLET EDITION -->
     <div class="tab-content <?= $current_tab === 'edition' ? 'active' : '' ?>">
       <section class="admin-surface">
-        <!-- Message à la une -->
         <section class="card headline-card" id="headline">
           <div class="card-title">Message à la une</div>
 
@@ -428,7 +314,6 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
           </form>
         </section>
 
-        <!-- Newsletter -->
         <section class="card newsletter-card" id="newsletter">
   <div class="card-title">Newsletter — Edition</div>
    <form id="newsletterForm" class="nl-form" method="post" action="../API/newsletter_send.php">
@@ -477,7 +362,6 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
     >
     <div class="spacer"></div>
 
-    <!-- Deux boutons submit, avec un name="action" différent -->
     <button type="submit" class="btn warn" name="action" value="test">
       Envoyer un test
     </button>
@@ -493,7 +377,6 @@ $current_tab = $_GET['tab'] ?? 'dashboard';
 
   </main>
 
-  <!-- Modal détaillé : Signalement -->
   <div class="modal-overlay" id="reportModal" aria-hidden="true">
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <header class="modal-header">
